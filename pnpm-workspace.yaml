@@ -1,0 +1,16 @@
+packages:
+  - "packages/*"
+  - "apps/*"
+
+onlyBuiltDependencies:
+  - "@parcel/watcher"
+  - "@playwright/browser-chromium"
+  - "esbuild"
+  - "lmdb"
+  - "msgpackr-extract"
+allowBuilds:
+  "@parcel/watcher": true
+  "@playwright/browser-chromium": true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true

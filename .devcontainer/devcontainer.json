@@ -1,0 +1,32 @@
+{
+  "name": "Angular i18n Tools",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
+  "postCreateCommand": "corepack enable && corepack prepare pnpm@11.5.2 --activate && pnpm install",
+  "forwardPorts": [9130, 9131],
+  "portsAttributes": {
+    "9130": {
+      "label": "VS Code extension web host",
+      "onAutoForward": "notify"
+    },
+    "9131": {
+      "label": "Storybook",
+      "onAutoForward": "notify"
+    }
+  },
+  "customizations": {
+    "codespaces": {
+      "openFiles": ["README.md", ".tours/vscode-extension-features.tour"]
+    },
+    "vscode": {
+      "extensions": [
+        "vsls-contrib.codetour",
+        "angular.ng-template",
+        "vitest.explorer",
+        "ms-playwright.playwright"
+      ],
+      "settings": {
+        "typescript.tsdk": "node_modules/typescript/lib"
+      }
+    }
+  }
+}

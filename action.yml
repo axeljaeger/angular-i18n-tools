@@ -1,0 +1,44 @@
+name: Angular i18n Tools Check
+description: Check Angular built-in localization JSON catalogs for duplicate, missing, and orphaned localization IDs.
+
+inputs:
+  path:
+    description: Workspace path to scan, relative to the workflow workspace.
+    required: false
+    default: "."
+  install-dependencies:
+    description: Install this action's pnpm dependencies before running the checker.
+    required: false
+    default: "true"
+  annotations:
+    description: Emit GitHub workflow annotations for localization issues.
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Enable pnpm
+      if: ${{ inputs.install-dependencies == 'true' }}
+      shell: bash
+      run: corepack enable
+
+    - name: Install action dependencies
+      if: ${{ inputs.install-dependencies == 'true' }}
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: pnpm install --frozen-lockfile
+
+    - name: Build checker
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: pnpm --filter @angular-i18n-tools/core run build
+
+    - name: Check Angular i18n catalogs
+      shell: bash
+      run: |
+        args=("${{ github.workspace }}/${{ inputs.path }}")
+        if [[ "${{ inputs.annotations }}" == "true" ]]; then
+          args=("--github-annotations" "${args[@]}")
+        fi
+        node "${{ github.action_path }}/packages/core/dist/cli.js" "${args[@]}"

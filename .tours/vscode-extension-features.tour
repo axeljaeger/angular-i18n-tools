@@ -1,0 +1,85 @@
+{
+  "title": "Angular i18n Tools: VS Code Extension Features",
+  "description": "A guided tour of the VS Code extension features for Angular built-in localization IDs.",
+  "isPrimary": true,
+  "steps": [
+    {
+      "file": "packages/vscode-extension/src/extension.ts",
+      "line": 41,
+      "title": "Extension activation",
+      "description": "The extension wires all VS Code-facing capabilities from one activation point: the tree view, navigation commands, rename support, code actions, diagnostics, semantic highlighting, and drag/drop support."
+    },
+    {
+      "file": "packages/vscode-extension/src/extension.ts",
+      "line": 47,
+      "title": "Localization tree view",
+      "description": "The `angularI18nTools.localizationTree` view is backed by `LocalizationTreeProvider`. It shows dot-separated Angular localization IDs as a hierarchy."
+    },
+    {
+      "file": "packages/vscode-extension/src/extension.ts",
+      "line": 167,
+      "title": "Group and leaf context menus",
+      "description": "Tree items use context values to expose different menus for groups and leaves. Groups get group rename; leaves get source rename and translation navigation."
+    },
+    {
+      "file": "packages/core/src/index.ts",
+      "line": 251,
+      "title": "Recursive ID hierarchy",
+      "description": "`buildTree` splits IDs by `.` and creates nested nodes. For example, `settingsDialog.accountPane.username` becomes `settingsDialog > accountPane > username`."
+    },
+    {
+      "file": "packages/vscode-extension/src/syntax.ts",
+      "line": 70,
+      "title": "Angular localization microsyntax highlighting",
+      "description": "The semantic token parser finds Angular i18n metadata in HTML and `$localize` strings. Custom IDs are emitted as `variable` tokens so themes color them like programming identifiers."
+    },
+    {
+      "file": "packages/vscode-extension/src/extension.ts",
+      "line": 479,
+      "title": "Go to definition",
+      "description": "The definition provider maps from source IDs to runtime JSON translations, and from translation keys back to source references."
+    },
+    {
+      "file": "packages/vscode-extension/src/extension.ts",
+      "line": 444,
+      "title": "Rename provider",
+      "description": "The rename provider delegates to core edit generation so renaming a localization ID updates templates, `$localize` calls, and runtime JSON catalogs together."
+    },
+    {
+      "file": "packages/vscode-extension/src/extension.ts",
+      "line": 297,
+      "title": "Group rename",
+      "description": "Group rename is a prefix refactor. Renaming `settingsDialog` to `preferencesDialog` rewrites every descendant source ID and translation key."
+    },
+    {
+      "file": "packages/vscode-extension/src/extension.ts",
+      "line": 422,
+      "title": "Drag and drop as refactoring",
+      "description": "The tree drag/drop controller turns dropping a leaf or group onto another group into a rename operation. It reuses the same workspace edit path as other refactors."
+    },
+    {
+      "file": "packages/vscode-extension/src/extension.ts",
+      "line": 385,
+      "title": "Diagnostics",
+      "description": "Catalog diagnostics are published to VS Code with stable diagnostic codes. Missing translations underline source IDs; orphaned translations underline unused catalog keys."
+    },
+    {
+      "file": "packages/vscode-extension/src/extension.ts",
+      "line": 502,
+      "title": "Quick fixes",
+      "description": "The code action provider turns missing and orphaned translation diagnostics into quick fixes: add a missing key to the matching locale catalog, or remove an orphaned key."
+    },
+    {
+      "file": "packages/vscode-extension/src/adapter.ts",
+      "line": 132,
+      "title": "Catalog edit helpers",
+      "description": "The quick fixes use text-edit helpers that preserve valid JSON when adding missing keys or deleting orphaned catalog entries."
+    },
+    {
+      "file": "packages/vscode-extension/src/test/suite/index.ts",
+      "line": 1,
+      "title": "Web extension integration tests",
+      "description": "The web test suite exercises the extension in a VS Code web host, including definitions, semantic tokens, rename edits, group refactors, move refactors, diagnostics, and quick fixes."
+    }
+  ]
+}

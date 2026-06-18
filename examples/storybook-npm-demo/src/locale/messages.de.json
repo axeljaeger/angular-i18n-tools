@@ -1,0 +1,8 @@
+{
+  "locale": "de",
+  "translations": {
+    "storybookDemo.title": "Storybook-Addon aus npm",
+    "storybookDemo.body": "Diese Demo verwendet das veroeffentlichte Storybook-Addon-Paket.",
+    "storybookDemo.primaryAction": "Sprache wechseln"
+  }
+}

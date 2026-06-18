@@ -1,0 +1,10 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/vscode-extension" },
+    { "path": "./packages/storybook-addon" },
+    { "path": "./packages/ng-generator" },
+    { "path": "./apps/sample-angular" }
+  ]
+}

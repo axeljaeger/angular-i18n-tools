@@ -1,0 +1,50 @@
+{
+  "name": "@angular-i18n-tools/core",
+  "version": "0.0.1",
+  "description": "Framework-neutral analysis helpers for Angular built-in localization.",
+  "license": "MIT",
+  "author": "Axel Jaeger",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axeljaeger/angular-i18n-tools.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/axeljaeger/angular-i18n-tools/issues"
+  },
+  "homepage": "https://github.com/axeljaeger/angular-i18n-tools#readme",
+  "keywords": [
+    "angular",
+    "i18n",
+    "localization",
+    "translation",
+    "cli",
+    "catalog",
+    "github-actions"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "angular-i18n-tools": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "pnpm run build && node dist/cli.js",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.0"
+  }
+}

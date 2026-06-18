@@ -1,0 +1,46 @@
+{
+  "name": "angular-i18n-tools",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Tooling for Angular built-in localization workflows.",
+  "license": "MIT",
+  "author": "Axel Jaeger",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axeljaeger/angular-i18n-tools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/axeljaeger/angular-i18n-tools/issues"
+  },
+  "homepage": "https://github.com/axeljaeger/angular-i18n-tools#readme",
+  "keywords": [
+    "angular",
+    "i18n",
+    "localization",
+    "translation",
+    "storybook",
+    "vscode",
+    "github-action"
+  ],
+  "type": "module",
+  "packageManager": "pnpm@11.5.2",
+  "scripts": {
+    "build": "pnpm -r --if-present run build",
+    "test": "pnpm -r --if-present run test",
+    "lint": "pnpm -r --if-present run lint",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "check:i18n": "pnpm --filter @angular-i18n-tools/core run build && node packages/core/dist/cli.js apps/sample-angular",
+    "dev:storybook": "pnpm --filter @angular-i18n-tools/sample-angular run storybook",
+    "dev:vscode-web": "pnpm --dir packages/vscode-extension run dev:web",
+    "watch:vscode": "pnpm --dir packages/vscode-extension run watch"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=11.0.0"
+  }
+}

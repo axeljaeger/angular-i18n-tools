@@ -1,0 +1,113 @@
+{
+  "name": "angular-i18n-tools-vscode",
+  "displayName": "Angular i18n Tools",
+  "description": "VS Code tooling for Angular built-in localization IDs.",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": "Axel Jaeger",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axeljaeger/angular-i18n-tools.git",
+    "directory": "packages/vscode-extension"
+  },
+  "bugs": {
+    "url": "https://github.com/axeljaeger/angular-i18n-tools/issues"
+  },
+  "homepage": "https://github.com/axeljaeger/angular-i18n-tools#readme",
+  "keywords": [
+    "angular",
+    "i18n",
+    "localization",
+    "translation",
+    "vscode",
+    "extension",
+    "rename-provider"
+  ],
+  "private": true,
+  "publisher": "angular-i18n-tools",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Other"
+  ],
+  "browser": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:html",
+    "onLanguage:typescript",
+    "onView:angularI18nTools.localizationTree",
+    "onCommand:angularI18nTools.refresh",
+    "onCommand:angularI18nTools.renameTreeNode",
+    "onCommand:angularI18nTools.renameTreeGroup",
+    "onCommand:angularI18nTools.openTreeNodeTranslation"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "angularI18nTools.refresh",
+        "title": "Angular i18n: Refresh Localization Tree"
+      },
+      {
+        "command": "angularI18nTools.renameTreeNode",
+        "title": "Angular i18n: Rename Localization ID",
+        "icon": "$(symbol-variable)"
+      },
+      {
+        "command": "angularI18nTools.renameTreeGroup",
+        "title": "Angular i18n: Rename Localization Group",
+        "icon": "$(symbol-namespace)"
+      },
+      {
+        "command": "angularI18nTools.openTreeNodeTranslation",
+        "title": "Open Translation...",
+        "icon": "$(go-to-file)"
+      }
+    ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "angularI18nTools.renameTreeNode",
+          "when": "view == angularI18nTools.localizationTree && viewItem == localizationLeaf",
+          "group": "navigation@1"
+        },
+        {
+          "command": "angularI18nTools.renameTreeGroup",
+          "when": "view == angularI18nTools.localizationTree && viewItem == localizationGroup",
+          "group": "navigation@1"
+        },
+        {
+          "command": "angularI18nTools.openTreeNodeTranslation",
+          "when": "view == angularI18nTools.localizationTree && viewItem == localizationLeaf",
+          "group": "navigation@2"
+        }
+      ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "angularI18nTools.localizationTree",
+          "name": "Angular i18n"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "pnpm --filter @angular-i18n-tools/core run build && vitest run",
+    "test:web": "pnpm --filter @angular-i18n-tools/core run build && pnpm run build && node scripts/run-web-tests.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "dev:web": "node ../../scripts/with-workbench-port.mjs --offset 0 --fallback-port 3000 -- vscode-test-web --browser none --quality stable --extensionDevelopmentPath=. --port {port} ../../apps/sample-angular",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@angular-i18n-tools/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.100.0",
+    "@vscode/test-web": "^0.0.80",
+    "esbuild": "^0.25.0",
+    "vitest": "^3.2.0"
+  }
+}

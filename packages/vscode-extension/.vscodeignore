@@ -1,0 +1,6 @@
+src/**
+scripts/**
+dist/web/**
+*.tsbuildinfo
+tsconfig*.json
+**/*.map

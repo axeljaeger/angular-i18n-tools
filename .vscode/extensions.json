@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "vsls-contrib.codetour",
+    "angular.ng-template",
+    "vitest.explorer",
+    "ms-playwright.playwright"
+  ]
+}

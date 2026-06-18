@@ -1,0 +1,15 @@
+{
+  "$schema": "../../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "ng-add": {
+      "description": "Add Angular built-in runtime localization catalogs to an Angular application.",
+      "factory": "./dist/runtime-localize/index.js#runtimeLocalize",
+      "schema": "./dist/runtime-localize/schema.json"
+    },
+    "runtime-localize": {
+      "description": "Configure Angular built-in runtime localization catalogs.",
+      "factory": "./dist/runtime-localize/index.js#runtimeLocalize",
+      "schema": "./dist/runtime-localize/schema.json"
+    }
+  }
+}

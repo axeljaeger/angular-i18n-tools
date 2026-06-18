@@ -1,0 +1,58 @@
+{
+  "name": "@angular-i18n-tools/storybook-addon",
+  "version": "0.0.1",
+  "description": "Storybook addon helpers for Angular built-in localization workflows.",
+  "license": "MIT",
+  "author": "Axel Jaeger",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axeljaeger/angular-i18n-tools.git",
+    "directory": "packages/storybook-addon"
+  },
+  "bugs": {
+    "url": "https://github.com/axeljaeger/angular-i18n-tools/issues"
+  },
+  "homepage": "https://github.com/axeljaeger/angular-i18n-tools#readme",
+  "keywords": [
+    "angular",
+    "i18n",
+    "localization",
+    "translation",
+    "storybook",
+    "storybook-addon",
+    "addon"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/preset.d.ts",
+      "default": "./dist/preset.js"
+    },
+    "./preview": {
+      "types": "./dist/preview.d.ts",
+      "default": "./dist/preview.js"
+    },
+    "./manager": {
+      "types": "./dist/manager.d.ts",
+      "default": "./dist/manager.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "peerDependencies": {
+    "storybook": "^10.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "storybook": "10.4.2"
+  }
+}

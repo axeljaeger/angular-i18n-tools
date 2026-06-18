@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "AngularI18nToolsRuntimeLocalize",
+  "title": "Angular i18n Runtime Localization",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "Angular CLI application project to configure."
+    },
+    "sourceLocale": {
+      "type": "string",
+      "description": "Default/source locale that does not load runtime translations.",
+      "default": "en-US"
+    },
+    "locales": {
+      "type": "array",
+      "description": "Runtime locales to create and load.",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "de",
+        "fr"
+      ]
+    },
+    "queryParam": {
+      "type": "string",
+      "description": "URL query parameter used to select the locale.",
+      "default": "locale"
+    }
+  }
+}

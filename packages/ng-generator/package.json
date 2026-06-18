@@ -1,0 +1,47 @@
+{
+  "name": "@angular-i18n-tools/ng-generator",
+  "version": "0.0.1",
+  "description": "Angular CLI generators for Angular built-in runtime localization workflows.",
+  "license": "MIT",
+  "author": "Axel Jaeger",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axeljaeger/angular-i18n-tools.git",
+    "directory": "packages/ng-generator"
+  },
+  "bugs": {
+    "url": "https://github.com/axeljaeger/angular-i18n-tools/issues"
+  },
+  "homepage": "https://github.com/axeljaeger/angular-i18n-tools#readme",
+  "keywords": [
+    "angular",
+    "angular-cli",
+    "schematics",
+    "generator",
+    "i18n",
+    "localization",
+    "translation"
+  ],
+  "type": "module",
+  "schematics": "./collection.json",
+  "files": [
+    "collection.json",
+    "dist",
+    "src/runtime-localize/schema.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/copy-assets.mjs",
+    "test": "pnpm run build && vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@angular-devkit/core": "^21.2.0",
+    "@angular-devkit/schematics": "^21.2.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.0"
+  }
+}

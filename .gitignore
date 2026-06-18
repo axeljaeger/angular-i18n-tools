@@ -1,0 +1,11 @@
+node_modules/
+.pnpm-store/
+dist/
+coverage/
+.angular/
+.storybook-cache/
+.vscode-test-web/
+storybook-static/
+storybook-demo/
+*.tsbuildinfo
+npm-debug.log*
