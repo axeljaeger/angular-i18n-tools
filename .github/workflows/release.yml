@@ -23,9 +23,6 @@ jobs:
   release:
     name: Package And Publish
     runs-on: ubuntu-latest
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -72,15 +69,15 @@ jobs:
         run: pnpm dlx @vscode/vsce package --no-dependencies --out ../../artifacts/angular-i18n-tools-vscode-extension.vsix
 
       - name: Publish core package to npm
-        if: ${{ (github.event_name == 'release' || inputs.publish == 'true') && env.NODE_AUTH_TOKEN != '' }}
+        if: ${{ github.event_name == 'release' || inputs.publish == 'true' }}
         run: npm publish ./packages/core --access public --provenance
 
       - name: Publish Storybook addon package to npm
-        if: ${{ (github.event_name == 'release' || inputs.publish == 'true') && env.NODE_AUTH_TOKEN != '' }}
+        if: ${{ github.event_name == 'release' || inputs.publish == 'true' }}
         run: npm publish ./packages/storybook-addon --access public --provenance
 
       - name: Publish Angular generator package to npm
-        if: ${{ (github.event_name == 'release' || inputs.publish == 'true') && env.NODE_AUTH_TOKEN != '' }}
+        if: ${{ github.event_name == 'release' || inputs.publish == 'true' }}
         run: npm publish ./packages/ng-generator --access public --provenance
 
       - name: Upload release package artifacts
