@@ -1,6 +1,6 @@
 {
   "name": "@angular-i18n-tools/core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Framework-neutral analysis helpers for Angular built-in localization.",
   "license": "MIT",
   "author": "Axel Jaeger",

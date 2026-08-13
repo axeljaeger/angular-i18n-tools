@@ -1,6 +1,6 @@
 {
   "name": "@angular-i18n-tools/storybook-addon",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Storybook addon helpers for Angular built-in localization workflows.",
   "license": "MIT",
   "author": "Axel Jaeger",
