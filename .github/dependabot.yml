@@ -1,0 +1,33 @@
+version: 2
+
+updates:
+  # The root pnpm workspace and the standalone npm-consumer example.
+  - package-ecosystem: "npm"
+    directories:
+      - "/"
+      - "/examples/storybook-npm-demo"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 10
+    groups:
+      angular:
+        patterns:
+          - "@angular/*"
+          - "@angular-devkit/*"
+          - "typescript"
+          - "zone.js"
+      storybook:
+        patterns:
+          - "storybook"
+          - "@storybook/*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Europe/Berlin"
