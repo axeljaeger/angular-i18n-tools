@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Explore Angular i18n Tools: live Angular CLI and Nx demos, a Storybook locale switcher, and tooling for Angular built-in localization.">
+  <meta name="description" content="Angular i18n Tools: a Storybook language switcher, VS Code extension, catalog checks, and an Angular setup generator.">
   <meta name="theme-color" content="#172c39">
-  <title>Angular i18n Tools — Live demos</title>
+  <title>Angular i18n Tools — Products</title>
   <link rel="icon" href="data:,">
   <script>
     // Preserve links from when the root of this site served Storybook.
@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip" href="#demos">Skip to demos</a>
+  <a class="skip" href="#products">Skip to products</a>
   <div class="wrap">
     <nav aria-label="Main navigation">
       <a class="wordmark" href="./"><span aria-hidden="true">a /</span> Angular i18n Tools</a>
@@ -24,33 +24,37 @@
     </nav>
     <main>
       <header>
-        <p class="eyebrow">Live demos · Angular built-in i18n</p>
-        <h1>Angular localization. <span>See it in action.</span></h1>
-        <p>Explore a settings dialog and user profile in English, German, and French. Both demos use the same sample components in different workspace setups.</p>
+        <h1>Tools for <span>Angular localization.</span></h1>
+        <p>Work with Angular’s built-in i18n, stable message IDs, and runtime JSON translation catalogs.</p>
       </header>
-      <section id="demos" aria-label="Choose a demo" class="demos">
-        <article>
-          <h2>Plain Angular application</h2>
-          <p>A standard Angular CLI project.</p>
+      <section id="products" aria-label="Our products" class="products">
+        <article class="featured">
+          <h2>Storybook language switcher</h2>
+          <p>Preview your components in different languages. Try the globe toolbar to switch between English, German, and French; the preview reloads with the selected translations.</p>
           <div class="actions">
-            <a class="button" href="angular/">Open Angular app <span aria-hidden="true">↗</span></a>
-            <a href="angular/storybook/?path=/story/sample-settings-dialog--default">Angular Storybook <span aria-hidden="true">→</span></a>
+            <a class="button" href="angular/storybook/?path=/story/sample-settings-dialog--default">Plain Angular demo <span aria-hidden="true">↗</span></a>
+            <a class="button" href="nx/storybook/?path=/story/sample-settings-dialog--default">Nx workspace demo <span aria-hidden="true">↗</span></a>
           </div>
-          <p class="locales">App languages: <a href="angular/?locale=de" lang="de" aria-label="Plain Angular app in German">Deutsch</a> · <a href="angular/?locale=fr" lang="fr" aria-label="Plain Angular app in French">Français</a></p>
+          <div class="secondary">
+            <a href="https://github.com/axeljaeger/angular-i18n-tools#storybook-addon">Addon setup</a>
+            <span>Sample apps: <a href="angular/">Angular</a> · <a href="nx/">Nx</a></span>
+          </div>
         </article>
         <article>
-          <h2>Angular application in NX workspace</h2>
-          <p>The same app with Nx build targets.</p>
-          <div class="actions">
-            <a class="button" href="nx/">Open Nx app <span aria-hidden="true">↗</span></a>
-            <a href="nx/storybook/?path=/story/sample-settings-dialog--default">Nx Storybook <span aria-hidden="true">→</span></a>
-          </div>
-          <p class="locales">App languages: <a href="nx/?locale=de" lang="de" aria-label="Nx app in German">Deutsch</a> · <a href="nx/?locale=fr" lang="fr" aria-label="Nx app in French">Français</a></p>
+          <h2><a href="https://github.com/axeljaeger/angular-i18n-tools#vs-code-extension">VS Code extension <span aria-hidden="true">→</span></a></h2>
+          <p>Navigate and rename message IDs, and find missing translations in your editor.</p>
+        </article>
+        <article>
+          <h2><a href="https://github.com/axeljaeger/angular-i18n-tools#github-action">Catalog checks <span aria-hidden="true">→</span></a></h2>
+          <p>Catch duplicate, missing, and orphaned translations with the CLI and GitHub Action.</p>
+        </article>
+        <article>
+          <h2><a href="https://github.com/axeljaeger/angular-i18n-tools#angular-generator">Angular setup generator <span aria-hidden="true">→</span></a></h2>
+          <p>Add runtime JSON localization to a standalone Angular app.</p>
         </article>
       </section>
-      <p class="tip"><strong>Try it:</strong> open Storybook and use the globe toolbar to switch languages. The preview reloads with the selected translations.</p>
     </main>
-    <footer>Also includes VS Code tooling, catalog checks, and an Angular setup generator. <a href="https://github.com/axeljaeger/angular-i18n-tools#readme">Read the docs →</a></footer>
+    <footer><a href="https://github.com/axeljaeger/angular-i18n-tools#readme">Source code, installation &amp; documentation on GitHub <span aria-hidden="true">↗</span></a></footer>
   </div>
 </body>
 </html>

@@ -2,7 +2,9 @@
 
 The main entry point is `https://axeljaeger.github.io/angular-i18n-tools/`.
 It introduces the project, explains what visitors can try, links to the GitHub
-repository, and offers both workspace demos:
+repository, and lists the products: Storybook language switcher first, followed
+by the VS Code extension, catalog checks, and Angular setup generator.
+The primary buttons open the two Storybook demos; sample apps are secondary links:
 
 | Path | Demo |
 | --- | --- |

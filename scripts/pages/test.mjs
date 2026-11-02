@@ -52,8 +52,16 @@ try {
   const origin = `http://127.0.0.1:${server.address().port}`;
   const url = origin + basePath;
   await page.goto(url);
-  await page.getByRole("heading", { name: "Angular localization. See it in action." }).waitFor();
+  await page.getByRole("heading", { name: "Tools for Angular localization." }).waitFor();
   assert.equal(await page.getByRole("link", { name: "View on GitHub" }).getAttribute("href"), "https://github.com/axeljaeger/angular-i18n-tools");
+  const products = page.getByRole("region", { name: "Our products" });
+  assert.deepEqual(await products.getByRole("heading", { level: 2 }).allTextContents(), [
+    "Storybook language switcher", "VS Code extension →", "Catalog checks →", "Angular setup generator →"
+  ]);
+  assert.equal(await products.locator(".button").count(), 2);
+  for (const href of await products.locator(".button").evaluateAll(links => links.map(link => link.getAttribute("href")))) {
+    assert.ok(href.includes("/storybook/"), "Primary actions must open Storybook demos");
+  }
   // Follow every local destination, including language-selected apps and Storybook links.
   const links = await page.locator("a[href]").evaluateAll(links => links.map(link => link.href));
   for (const href of new Set(links.filter(href => href.startsWith(origin)))) {
