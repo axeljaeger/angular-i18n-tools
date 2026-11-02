@@ -216,6 +216,14 @@ By default the action also emits GitHub workflow annotations for each issue, poi
     annotations: "false"
 ```
 
+## Zoneless Angular
+
+Both Angular examples use Angular 21's default zoneless change detection. Their build polyfills load only `@angular/localize/init`, and neither example depends on `zone.js`.
+
+Both Storybook targets (`storybook` and `build-storybook`) explicitly set `experimentalZoneless: true`, the option name used by the current Storybook Angular builder. Runtime localization and locale changes continue to load translations before rendering and reload the preview when needed.
+
+The localization generator also supports zoneless applications without adding Zone.js. When used in an existing zone-based application, it preserves that application's polyfills.
+
 ## Storybook Dogfood Demo
 
 `apps/sample-angular` is the development sample and uses `workspace:*` dependencies. `examples/storybook-npm-demo` is the publish-path sample and uses the npm package version directly:
