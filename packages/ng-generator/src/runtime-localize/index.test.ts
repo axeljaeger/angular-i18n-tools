@@ -70,6 +70,7 @@ function createWorkspace(polyfills: string[], builder: string): unknown {
     projects: {
       app: {
         projectType: "application",
+        i18n: { sourceLocale: "en-US", locales: { de: {}, fr: {} } },
         root: "",
         sourceRoot: "src",
         architect: {
@@ -91,7 +92,7 @@ describe("Nx project.json workspaces", () => {
     const tree = new UnitTestTree(new EmptyTree());
     tree.create("nx.json", "{}");
     tree.create(`apps/${name}/project.json`, JSON.stringify({
-      name, projectType: "application", sourceRoot: `apps/${name}/src`,
+      name, projectType: "application", i18n: { locales: { de: {}, fr: {} } }, sourceRoot: `apps/${name}/src`,
       tags: ["demo"], targets: {
         build: { executor, options: { browser: `apps/${name}/src/main.ts`, polyfills: ["zone.js"] } },
         serve: { executor: "@nx/angular:dev-server" }
@@ -192,5 +193,94 @@ describe("workspace dependency and adapter handling", () => {
     } }));
     const result = await runner.runSchematic("runtime-localize", {}, tree);
     expect(JSON.parse(result.readContent("project.json")).targets["extract-i18n"].executor).toBe("@nx/angular:extract-i18n");
+  });
+});
+
+describe.each(["Angular CLI", "Nx"])("locale discovery in %s", (kind) => {
+  function fixture(i18n?: Record<string, unknown>) {
+    const tree = new UnitTestTree(new EmptyTree());
+    const sourceRoot = kind === "Nx" ? "apps/shop/src" : "src";
+    const configPath = kind === "Nx" ? "apps/shop/project.json" : "angular.json";
+    const project = { name: "shop", root: kind === "Nx" ? "apps/shop" : "", projectType: "application", sourceRoot,
+      ...(i18n ? { i18n } : {}),
+      targets: { build: { [kind === "Nx" ? "executor" : "builder"]: "@angular/build:application", options: { browser: `${sourceRoot}/main.ts` } } }
+    };
+    tree.create(configPath, JSON.stringify(kind === "Nx" ? project : { version: 1, projects: { shop: project } }));
+    if (kind === "Nx") tree.create("nx.json", "{}");
+    tree.create(`${sourceRoot}/main.ts`, 'bootstrapApplication(AppComponent);\n');
+    return { tree, sourceRoot, configPath };
+  }
+
+  it("discovers configured target locales and source locale without CLI options", async () => {
+    const { tree, sourceRoot, configPath } = fixture({ sourceLocale: { code: "es", baseHref: "/es/" }, locales: { "pt-BR": {}, de: {} } });
+    const result = await runner.runSchematic("runtime-localize", {}, tree);
+    expect(result.exists(`${sourceRoot}/locale/messages.es.json`)).toBe(true);
+    expect(result.exists(`${sourceRoot}/locale/messages.pt-BR.json`)).toBe(true);
+    expect(result.exists(`${sourceRoot}/locale/messages.fr.json`)).toBe(false);
+    const config = JSON.parse(result.readContent(configPath));
+    expect((config.projects?.shop ?? config).i18n.sourceLocale).toEqual({ code: "es", baseHref: "/es/" });
+    expect(result.readContent(`${sourceRoot}/locale-loader.ts`)).toContain('new Set(["es"])');
+  });
+
+  it("reuses existing catalog paths and translations from the selected source tree", async () => {
+    const { tree, sourceRoot } = fixture({ locales: { pl: {} } });
+    const content = '{"locale":"it","translations":{"hello":"Ciao"}}';
+    tree.create(`${sourceRoot}/i18n/messages.it.json`, content);
+    tree.create(`${sourceRoot}/locale/messages.en-US.json`, '{"locale":"en-US","translations":{}}');
+    tree.create("apps/other/src/locale/messages.ja.json", '{"locale":"ja","translations":{}}');
+    const result = await runner.runSchematic("runtime-localize", {}, tree);
+    const loader = result.readContent(`${sourceRoot}/locale-loader.ts`);
+    expect(loader).toContain('import("./i18n/messages.it.json")');
+    expect(loader).toContain('messages.pl.json');
+    expect(loader).not.toContain('messages.en-US.json');
+    expect(loader).not.toContain('messages.ja.json');
+    expect(result.exists(`${sourceRoot}/locale/messages.it.json`)).toBe(false);
+    expect(result.readContent(`${sourceRoot}/i18n/messages.it.json`)).toBe(content);
+  });
+
+  it("respects a JSON catalog path explicitly configured for the locale", async () => {
+    const { tree, sourceRoot } = fixture({ locales: { fr: { translation: "translations/shop.fr.json" } } });
+    const content = '{"locale":"fr","translations":{"hello":"Bonjour"}}';
+    tree.create("translations/shop.fr.json", content);
+    const result = await runner.runSchematic("runtime-localize", {}, tree);
+    expect(result.readContent("translations/shop.fr.json")).toBe(content);
+    expect(result.readContent(`${sourceRoot}/locale-loader.ts`)).toContain("translations/shop.fr.json");
+    expect(result.exists(`${sourceRoot}/locale/messages.fr.json`)).toBe(false);
+  });
+
+  it("does not invent languages when neither configuration nor catalogs exist", async () => {
+    const { tree, sourceRoot } = fixture();
+    const result = await runner.runSchematic("runtime-localize", {}, tree);
+    expect(result.files.filter(path => /messages\..*\.json$/.test(path))).toEqual([`/${sourceRoot}/locale/messages.en-US.json`]);
+    expect(result.readContent(`${sourceRoot}/locale-loader.ts`)).not.toContain("const loaders");
+  });
+
+  it("lets explicit options override discovered source and target locales", async () => {
+    const { tree, sourceRoot } = fixture({ sourceLocale: "fr", locales: { de: {} } });
+    const result = await runner.runSchematic("runtime-localize", { sourceLocale: "it", locales: ["pt"] }, tree);
+    expect(result.exists(`${sourceRoot}/locale/messages.it.json`)).toBe(true);
+    expect(result.exists(`${sourceRoot}/locale/messages.de.json`)).toBe(false);
+    expect(result.readContent(`${sourceRoot}/locale-loader.ts`)).toContain('SupportedLocale = "it" | "pt"');
+  });
+
+  it("loads English as a target when the source language is German", async () => {
+    const { tree, sourceRoot } = fixture({ sourceLocale: "de", locales: { en: {}, de: {} } });
+    const result = await runner.runSchematic("runtime-localize", {}, tree);
+    const loader = result.readContent(`${sourceRoot}/locale-loader.ts`);
+    expect(loader).toContain('new Set(["de"])');
+    expect(loader).toContain('"en": () => import');
+    expect(loader).not.toContain('"de": () => import');
+  });
+
+  it("rejects ambiguous catalogs instead of choosing or merging silently", async () => {
+    const { tree, sourceRoot } = fixture();
+    tree.create(`${sourceRoot}/one/messages.de.json`, '{}');
+    tree.create(`${sourceRoot}/two/messages.de.json`, '{}');
+    await expect(runner.runSchematic("runtime-localize", {}, tree)).rejects.toThrow('Multiple catalogs for "de"');
+  });
+
+  it("rejects locale keys that could escape the catalog directory", async () => {
+    const { tree } = fixture({ locales: { "../../outside": {} } });
+    await expect(runner.runSchematic("runtime-localize", {}, tree)).rejects.toThrow("Invalid discovered or configured locale");
   });
 });

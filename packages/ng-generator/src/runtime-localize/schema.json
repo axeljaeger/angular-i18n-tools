@@ -10,19 +10,15 @@
     },
     "sourceLocale": {
       "type": "string",
-      "description": "Default/source locale that does not load runtime translations.",
-      "default": "en-US"
+      "description": "Optional override for the source locale; otherwise discovered from project i18n.sourceLocale (fallback en-US)."
     },
     "locales": {
       "type": "array",
-      "description": "Runtime locales to create and load.",
+      "description": "Optional override for target locales; otherwise discovered from project i18n.locales and messages.<locale>.json catalogs in the selected app.",
       "items": {
         "type": "string"
       },
-      "default": [
-        "de",
-        "fr"
-      ]
+      "default": []
     },
     "queryParam": {
       "type": "string",

@@ -184,11 +184,15 @@ as Angular CLI `angular.json` workspaces.
 
 ```sh
 # Angular CLI workspace
-npx ng add @angular-i18n-tools/ng-generator@0.0.3 --locales de fr
+npx ng add @angular-i18n-tools/ng-generator@0.0.4
 
 # Nx Angular workspace: replace my-app with your app name
-npm install --save-dev @angular-i18n-tools/ng-generator@0.0.3 && npx nx generate @angular-i18n-tools/ng-generator:runtime-localize --project=my-app --locales=de,fr
+npm install --save-dev @angular-i18n-tools/ng-generator@0.0.4 && npx nx generate @angular-i18n-tools/ng-generator:runtime-localize --project=my-app
 ```
+
+Version **0.0.4** discovers languages from project `i18n` configuration and existing
+runtime JSON catalogs; no language arguments are needed. Without target-language
+configuration or catalogs, it sets up only the source language.
 
 The generator adds a matching `@angular/localize` dependency when needed,
 configures polyfills and JSON extraction, creates catalogs and a loader, and

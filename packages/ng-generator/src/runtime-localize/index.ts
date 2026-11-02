@@ -1,3 +1,4 @@
+import { posix } from "node:path";
 import { NodePackageInstallTask } from "@angular-devkit/schematics/tasks/index.js";
 import { SchematicsException, type Rule, type Tree } from "@angular-devkit/schematics";
 
@@ -17,6 +18,7 @@ interface AngularProject {
   projectType?: string;
   root?: string;
   sourceRoot?: string;
+  i18n?: { sourceLocale?: string | { code: string }; locales?: Record<string, unknown> };
   architect?: Record<string, AngularTarget>;
   targets?: Record<string, AngularTarget>;
 }
@@ -33,19 +35,38 @@ export function runtimeLocalize(options: RuntimeLocalizeOptions): Rule {
   return (tree, context) => {
     const { project, projectName, save } = resolveProject(tree, options.project);
 
-    const sourceLocale = options.sourceLocale ?? "en-US";
-    const runtimeLocales = unique((options.locales ?? ["de", "fr"]).filter((locale) => locale !== sourceLocale));
+    const configuredSource = project.i18n?.sourceLocale;
+    const sourceLocale = options.sourceLocale
+      ?? (typeof configuredSource === "string" ? configuredSource : configuredSource?.code)
+      ?? "en-US";
     const queryParam = options.queryParam ?? "locale";
     const sourceRoot = project.sourceRoot ?? joinPath(project.root ?? "", "src");
     const localePath = joinPath(sourceRoot, "locale");
+    const catalogs = discoverCatalogs(tree, sourceRoot);
+    for (const [locale, configuration] of Object.entries(project.i18n?.locales ?? {})) {
+      const path = configuredJsonCatalog(configuration);
+      if (path) catalogs.set(locale, path);
+    }
+    const runtimeLocales = unique(options.locales?.length ? options.locales : [
+      ...Object.keys(project.i18n?.locales ?? {}), ...catalogs.keys()
+    ]).filter(locale => locale !== sourceLocale);
+    for (const locale of [sourceLocale, ...runtimeLocales]) {
+      if (!/^[A-Za-z0-9]+(?:[-_][A-Za-z0-9]+)*$/.test(locale)) {
+        throw new SchematicsException(`Invalid discovered or configured locale: "${locale}".`);
+      }
+      if (!catalogs.has(locale)) catalogs.set(locale, joinPath(localePath, `messages.${locale}.json`));
+    }
+    if (runtimeLocales.length === 0) {
+      context.logger.info("No target languages found. Configure i18n.locales or add messages.<locale>.json catalogs, then rerun. Only the source catalog is created.");
+    }
     const mainPath = getMainPath(project);
 
     updateProject(projectName, project, sourceLocale, localePath);
     save();
 
-    createCatalogs(tree, localePath, sourceLocale, runtimeLocales);
-    upsertFile(tree, joinPath(sourceRoot, "locale-loader.ts"), createLocaleLoader(sourceLocale, runtimeLocales, queryParam));
-    patchMainFile(tree, mainPath);
+    createCatalogs(tree, catalogs, [sourceLocale, ...runtimeLocales]);
+    upsertFile(tree, joinPath(sourceRoot, "locale-loader.ts"), createLocaleLoader(sourceLocale, runtimeLocales, queryParam, sourceRoot, catalogs));
+    patchMainFile(tree, mainPath, joinPath(sourceRoot, "locale-loader.ts"));
     if (addLocalizeDependency(tree, project.root ?? "")) context.addTask(new NodePackageInstallTask());
 
     return tree;
@@ -65,6 +86,10 @@ function updateProject(
     throw new SchematicsException(`Project "${projectName}" does not define a build target.`);
   }
 
+  project.i18n ??= {};
+  project.i18n.sourceLocale = typeof project.i18n.sourceLocale === "object"
+    ? { ...project.i18n.sourceLocale, code: sourceLocale }
+    : sourceLocale;
   build.options ??= {};
   build.options.polyfills = addLocalizePolyfill(build.options.polyfills);
   targets["extract-i18n"] = {
@@ -98,24 +123,60 @@ function addLocalizeDependency(tree: Tree, projectRoot: string): boolean {
   return true;
 }
 
-function createCatalogs(tree: Tree, localePath: string, sourceLocale: string, runtimeLocales: string[]): void {
-  for (const locale of [sourceLocale, ...runtimeLocales]) {
-    const catalogPath = joinPath(localePath, `messages.${locale}.json`);
+function configuredJsonCatalog(configuration: unknown): string | undefined {
+  const translation = configuration && typeof configuration === "object" && "translation" in configuration
+    ? configuration.translation
+    : configuration;
+  const paths = (Array.isArray(translation) ? translation : [translation])
+    .filter((path): path is string => typeof path === "string" && path.endsWith(".json"));
+  if (paths.length > 1) throw new SchematicsException("Multiple JSON catalogs configured for one locale. Keep one runtime catalog per locale.");
+  if (!paths[0]) return undefined;
+  const path = posix.normalize(paths[0]);
+  if (posix.isAbsolute(path) || path === ".." || path.startsWith("../")) {
+    throw new SchematicsException(`Catalog path must stay within the workspace: ${path}`);
+  }
+  return path;
+}
 
+function discoverCatalogs(tree: Tree, sourceRoot: string): Map<string, string> {
+  const catalogs = new Map<string, string>();
+  const visit = (directory: string): void => {
+    const entry = tree.getDir(directory);
+    for (const filename of entry.subfiles) {
+      const locale = /^messages\.([A-Za-z0-9]+(?:[-_][A-Za-z0-9]+)*)\.json$/.exec(filename)?.[1];
+      if (!locale) continue;
+      const path = joinPath(directory, filename);
+      if (catalogs.has(locale)) {
+        throw new SchematicsException(`Multiple catalogs for "${locale}" in the selected app: ${catalogs.get(locale)}, ${path}. Keep one runtime catalog per locale.`);
+      }
+      catalogs.set(locale, path);
+    }
+    for (const child of entry.subdirs) {
+      if (!child.startsWith(".") && !["node_modules", "dist", "coverage", "storybook-static"].includes(child)) visit(joinPath(directory, child));
+    }
+  };
+  visit(sourceRoot);
+  return catalogs;
+}
+
+function createCatalogs(tree: Tree, catalogs: Map<string, string>, locales: string[]): void {
+  for (const locale of locales) {
+    const catalogPath = catalogs.get(locale)!;
     if (!tree.exists(catalogPath)) {
       tree.create(catalogPath, `${JSON.stringify({ locale, translations: {} }, null, 2)}\n`);
     }
   }
 }
 
-function patchMainFile(tree: Tree, mainPath: string): void {
+function patchMainFile(tree: Tree, mainPath: string, loaderPath: string): void {
   const content = readText(tree, mainPath);
 
   if (content.includes("loadRuntimeTranslations")) {
     return;
   }
 
-  const importStatement = 'import { loadRuntimeTranslations } from "./locale-loader";\n';
+  const loaderImport = relativeImport(posix.dirname(mainPath), loaderPath.replace(/\.ts$/, ""));
+  const importStatement = `import { loadRuntimeTranslations } from ${JSON.stringify(loaderImport)};\n`;
   const withImport = `${importStatement}${content}`;
   const bootstrapStart = withImport.indexOf("bootstrapApplication(");
 
@@ -182,16 +243,37 @@ function findBootstrapChainEnd(content: string, callEnd: number): number {
   return callEnd;
 }
 
-function createLocaleLoader(sourceLocale: string, runtimeLocales: string[], queryParam: string): string {
-  const defaultLocales = unique(["en", sourceLocale]);
+function relativeImport(from: string, to: string): string {
+  const path = posix.relative(from, to);
+  return path.startsWith(".") ? path : `./${path}`;
+}
+
+function createLocaleLoader(sourceLocale: string, runtimeLocales: string[], queryParam: string, sourceRoot: string, catalogs: Map<string, string>): string {
+  const defaultLocales = unique([sourceLocale, ...(sourceLocale === "en-US" && !runtimeLocales.includes("en") ? ["en"] : [])]);
   const loaderEntries = runtimeLocales
-    .map((locale) => `  ${JSON.stringify(locale)}: () => import("./locale/messages.${locale}.json").then((module) => readTranslations(module.default))`)
+    .map((locale) => `  ${JSON.stringify(locale)}: () => import(${JSON.stringify(relativeImport(sourceRoot, catalogs.get(locale)!))}).then((module) => readTranslations(module.default))`)
     .join(",\n");
   const runtimeLocaleType = runtimeLocales.length > 0 ? "keyof typeof loaders" : "never";
   const supportedLocales = [...defaultLocales, ...runtimeLocales].map((locale) => JSON.stringify(locale)).join(" | ");
   const requestedChecks = [...defaultLocales, ...runtimeLocales]
     .map((locale) => `requested === ${JSON.stringify(locale)}`)
     .join(" || ");
+
+  if (runtimeLocales.length === 0) {
+    return `export type SupportedLocale = ${supportedLocales};
+
+export async function loadRuntimeTranslations(): Promise<SupportedLocale> {
+  const requested = new URLSearchParams(globalThis.location.search).get(${JSON.stringify(queryParam)});
+  const locale: SupportedLocale = ${requestedChecks} ? requested : ${JSON.stringify(sourceLocale)};
+  await loadTranslationsForLocale(locale);
+  return locale;
+}
+
+export async function loadTranslationsForLocale(locale: SupportedLocale): Promise<void> {
+  document.documentElement.lang = locale;
+}
+`;
+  }
 
   return `import { loadTranslations } from "@angular/localize";
 
