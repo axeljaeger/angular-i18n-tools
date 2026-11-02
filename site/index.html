@@ -31,24 +31,24 @@
         <article class="product-card">
           <h2>Angular setup generator</h2>
           <p>Set up runtime JSON localization in Angular CLI and Nx, with automatic language discovery.</p>
-          <div class="workspace-choice" role="group" aria-label="Workspace type">
-            <button type="button" aria-pressed="true" data-command="setup-command">Angular CLI</button>
-            <button type="button" aria-pressed="false" data-command="nx-command">Nx</button>
-          </div>
-          <p class="quick-start" id="command-hint">Run in your Angular workspace.</p>
+          <p class="quick-start">Angular CLI &amp; Nx · select one or more apps</p>
           <div class="command">
-            <code id="setup-command">npx ng add @angular-i18n-tools/ng-generator@0.0.4</code>
-            <code id="nx-command" hidden>npm install --save-dev @angular-i18n-tools/ng-generator@0.0.4 &amp;&amp; npx nx generate @angular-i18n-tools/ng-generator:runtime-localize --project=my-app</code>
+            <code id="setup-command">npx @angular-i18n-tools/ng-generator@0.0.5</code>
             <button type="button" class="copy" aria-live="polite" data-copy="setup-command">Copy</button>
           </div>
-          <div class="secondary"><a href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/packages/ng-generator/README.md">Angular CLI &amp; Nx setup guide →</a></div>
+          <div class="secondary"><a class="docs-link" href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/packages/ng-generator/README.md">Setup guide →</a></div>
         </article>
         <article class="product-card">
           <h2>Storybook language switcher</h2>
           <p>Switch component previews between languages with the globe toolbar.</p>
+          <p class="quick-start">Add to an existing Angular Storybook</p>
+          <div class="command">
+            <code id="storybook-command">npx @angular-i18n-tools/ng-generator@0.0.5 storybook</code>
+            <button type="button" class="copy" aria-live="polite" data-copy="storybook-command">Copy</button>
+          </div>
           <div class="actions">
             <a class="button" href="angular/storybook/?path=/story/sample-settings-dialog--default">Try the demo ↗</a>
-            <a href="https://github.com/axeljaeger/angular-i18n-tools#storybook-addon">Setup</a>
+            <a class="docs-link" href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/packages/ng-generator/README.md#storybook-setup">Setup guide →</a>
           </div>
         </article>
         <article>

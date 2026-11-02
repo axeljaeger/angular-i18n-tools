@@ -15,21 +15,3 @@ document.querySelectorAll("[data-copy]").forEach((button) => {
     }
   });
 });
-
-const workspaceButtons = document.querySelectorAll("[data-command]");
-workspaceButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    workspaceButtons.forEach((choice) => {
-      const selected = choice === button;
-      choice.setAttribute("aria-pressed", String(selected));
-      document.getElementById(choice.dataset.command).hidden = !selected;
-    });
-    const copyButton = document.querySelector("[data-copy]");
-    copyButton.dataset.copy = button.dataset.command;
-    copyButton.textContent = "Copy";
-    copyButton.removeAttribute("title");
-    document.getElementById("command-hint").textContent = button.dataset.command === "nx-command"
-      ? "Nx: replace my-app with your app name."
-      : "Run in your Angular workspace.";
-  });
-});

@@ -25,20 +25,17 @@ article { padding: 14px 18px; border: 1px solid #dce2db; border-radius: 9px; bac
 h2 { font-size: 16px; line-height: 1.25; letter-spacing: -.02em; }
 h2 a { text-decoration: none; }
 article p { font-size: 13px; color: #51636c; margin-top: 6px; }
-.product-card { grid-column: 1 / -1; padding: 18px 22px; border-color: #bbccaf; }
+.product-card { padding: 18px 22px; border-color: #bbccaf; }
 .product-card h2 { font-size: 21px; }
 .product-card p { font-size: 13px; }
 .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 12px 0 0; font-size: 13px; font-weight: 650; }
 .button { background: #172c39; color: white; padding: 9px 12px; border-radius: 5px; text-decoration: none; }
 .button:hover { background: #294756; }
 .secondary { font-size: 12px; color: #51636c; }
-.workspace-choice { display: flex; gap: 6px; margin-top: 12px; }
-.workspace-choice button, .copy { padding: 5px 10px; border: 1px solid #bdc8b8; border-radius: 4px; background: white; color: #172c39; cursor: pointer; font-size: 12px; }
-.workspace-choice [aria-pressed="true"] { background: #172c39; color: white; border-color: #172c39; }
 .product-card .quick-start { font-size: 11px; margin-top: 6px; }
 .command { display: flex; align-items: center; gap: 12px; margin: 6px 0 10px; padding: 10px 12px; border-radius: 5px; background: #f1f4ee; }
 .command code { min-width: 0; overflow-wrap: anywhere; font-size: 12px; line-height: 1.5; }
-.copy { min-width: 62px; flex-shrink: 0; }
+.copy { min-width: 62px; flex-shrink: 0; padding: 5px 10px; border: 1px solid #bdc8b8; border-radius: 4px; background: white; color: #172c39; cursor: pointer; font-size: 12px; }
 footer { margin-top: 14px; font-size: 12px; color: #51636c; }
 .skip { position: absolute; top: -100px; left: 16px; background: white; padding: 10px; }
 .skip:focus { top: 8px; }
@@ -55,8 +52,6 @@ footer { margin-top: 14px; font-size: 12px; color: #51636c; }
   .product-card { padding: 12px 14px; border: 1px solid #bbccaf; border-radius: 9px; background: white; }
   .product-card h2 { font-size: 20px; }
   .product-card p { font-size: 12px; }
-  .workspace-choice { margin-top: 8px; }
-  .workspace-choice button { font-size: 11px; padding: 4px 8px; }
   .product-card .quick-start { font-size: 11px; }
   .command { gap: 8px; padding: 8px; }
   .command code { font-size: 11px; line-height: 1.4; }
@@ -64,3 +59,5 @@ footer { margin-top: 14px; font-size: 12px; color: #51636c; }
   .button { font-size: 11px; padding: 7px 10px; }
   footer { font-size: 11px; margin-top: 10px; }
 }
+
+.docs-link { display: inline-block; font-size: 12px; font-weight: 400; color: #51636c; text-decoration: underline; text-underline-offset: 3px; }

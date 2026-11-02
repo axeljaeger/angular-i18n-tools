@@ -4,11 +4,11 @@ The main entry point is `https://axeljaeger.github.io/angular-i18n-tools/`.
 It introduces the project, explains what visitors can try, links to the GitHub
 repository, and lists the products in workflow order: Angular setup generator
 first, followed by the Storybook language switcher, VS Code extension, and catalog
-checks. The generator includes a workspace selector with copyable Angular CLI and Nx
-commands without language arguments and links to the full setup guide. Generator
-0.0.4 discovers languages from project configuration and existing runtime JSON
-catalogs; optional overrides are documented in the guide. Setup and Storybook use the same
-card design on desktop and mobile.
+checks. The generator uses one copyable workspace-aware npx command for both
+Angular CLI and Nx, with a terminal checkbox list for multiple applications.
+Storybook has its own one-line setup command for existing Angular Storybooks.
+Both product cards use the same documentation-link styling and link to the
+full setup guide.
 The Storybook product has one primary demo: the addon loads translations through
 an explicit preview loader and does not discover Angular CLI or Nx project
 configuration. The second Storybook remains available at its existing URL but
