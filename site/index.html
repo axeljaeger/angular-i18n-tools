@@ -28,14 +28,22 @@
         <p>Tools for Angular’s built-in i18n, stable message IDs, and runtime JSON catalogs.</p>
       </header>
       <section id="products" aria-label="Our products" class="products">
-        <article class="featured">
+        <article class="product-card">
           <h2>Angular setup generator</h2>
-          <p>Set up runtime JSON translations in Angular CLI and Nx apps: catalogs, extraction, and loading before bootstrap.</p>
-          <p class="quick-start">Angular CLI quick start · run in your workspace</p>
-          <div class="command"><code id="setup-command">npx ng add @angular-i18n-tools/ng-generator@0.0.3 --locales de fr</code><button type="button" class="copy" aria-live="polite" data-copy="setup-command">Copy</button></div>
+          <p>Configure runtime JSON catalogs, extraction, and translation loading for Angular CLI and Nx.</p>
+          <div class="workspace-choice" role="group" aria-label="Workspace type">
+            <button type="button" aria-pressed="true" data-command="setup-command">Angular CLI</button>
+            <button type="button" aria-pressed="false" data-command="nx-command">Nx</button>
+          </div>
+          <p class="quick-start" id="command-hint">Run in your Angular workspace.</p>
+          <div class="command">
+            <code id="setup-command">npx ng add @angular-i18n-tools/ng-generator@0.0.3 --locales de fr</code>
+            <code id="nx-command" hidden>npm install --save-dev @angular-i18n-tools/ng-generator@0.0.3 &amp;&amp; npx nx generate @angular-i18n-tools/ng-generator:runtime-localize --project=my-app --locales=de,fr</code>
+            <button type="button" class="copy" aria-live="polite" data-copy="setup-command">Copy</button>
+          </div>
           <div class="secondary"><a href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/packages/ng-generator/README.md">Angular CLI &amp; Nx setup guide →</a></div>
         </article>
-        <article>
+        <article class="product-card">
           <h2>Storybook language switcher</h2>
           <p>Switch component previews between languages with the globe toolbar.</p>
           <div class="actions">
@@ -45,11 +53,11 @@
         </article>
         <article>
           <h2><a href="https://github.com/axeljaeger/angular-i18n-tools#vs-code-extension">VS Code extension <span aria-hidden="true">→</span></a></h2>
-          <p>Navigate and rename message IDs. Find missing translations in your editor.</p>
+          <p>Navigate and rename message IDs. Find missing translations.</p>
         </article>
         <article>
           <h2><a href="https://github.com/axeljaeger/angular-i18n-tools#github-action">Catalog checks <span aria-hidden="true">→</span></a></h2>
-          <p>Find duplicate, missing, and orphaned translations in your terminal or CI.</p>
+          <p>Find duplicate, missing, and orphaned translations in CI.</p>
         </article>
       </section>
     </main>

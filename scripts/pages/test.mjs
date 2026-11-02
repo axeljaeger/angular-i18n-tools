@@ -63,9 +63,16 @@ try {
   for (const href of await products.locator(".button").evaluateAll(links => links.map(link => link.getAttribute("href")))) {
     assert.ok(href.includes("/storybook/"), "Primary actions must open Storybook demos");
   }
-  assert.equal(await page.locator("#setup-command").innerText(), "npx ng add @angular-i18n-tools/ng-generator@0.0.3 --locales de fr");
-  await page.getByRole("button", { name: "Copy", exact: true }).click();
-  await page.getByRole("button", { name: "Copied", exact: true }).waitFor();
+  const commands = {
+    "Angular CLI": "npx ng add @angular-i18n-tools/ng-generator@0.0.3 --locales de fr",
+    Nx: "npm install --save-dev @angular-i18n-tools/ng-generator@0.0.3 && npx nx generate @angular-i18n-tools/ng-generator:runtime-localize --project=my-app --locales=de,fr"
+  };
+  for (const [workspace, command] of Object.entries(commands)) {
+    await page.getByRole("button", { name: workspace, exact: true }).click();
+    await page.getByRole("button", { name: "Copy", exact: true }).click();
+    await page.getByRole("button", { name: "Copied", exact: true }).waitFor();
+    assert.equal(await page.evaluate(() => navigator.clipboard.readText()), command);
+  }
   // Follow every local destination, including language-selected apps and Storybook links.
   const links = await page.locator("a[href]").evaluateAll(links => links.map(link => link.href));
   for (const href of new Set(links.filter(href => href.startsWith(origin)))) {
@@ -73,11 +80,16 @@ try {
     assert.equal(response.status(), 200, href);
   }
   await mkdir(screenshots, { recursive: true });
-  for (const [width, height] of [[1280, 720], [360, 800], [390, 844]]) {
-    await page.setViewportSize({ width, height });
-    const contentHeight = await page.evaluate(() => document.documentElement.scrollHeight);
-    assert.ok(contentHeight <= height, `Landing page is ${contentHeight}px tall at ${width}x${height}`);
+  for (const workspace of Object.keys(commands)) {
+    await page.getByRole("button", { name: workspace, exact: true }).click();
+    for (const [width, height] of [[1280, 720], [360, 800], [390, 844]]) {
+      await page.setViewportSize({ width, height });
+      const contentHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+      assert.ok(contentHeight <= height, `${workspace} view is ${contentHeight}px tall at ${width}x${height}`);
+    }
   }
+  await page.screenshot({ path: resolve(screenshots, "landing-nx-mobile.png"), fullPage: true });
+  await page.getByRole("button", { name: "Angular CLI", exact: true }).click();
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.screenshot({ path: resolve(screenshots, "landing-desktop.png"), fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
