@@ -74,6 +74,13 @@ function installLocaleReloadHandler(): void {
 
 function reloadPreviewForLocale(locale: string): void {
   const url = new URL(window.location.href);
+  // Storybook initializes globals from the iframe URL before manager updates arrive.
+  // Keep both locale values in sync so initialization cannot trigger another reload.
+  const globals = (url.searchParams.get("globals") ?? "")
+    .split(";")
+    .filter((entry) => entry && !entry.startsWith(`${LOCALE_GLOBAL}:`));
+  globals.push(`${LOCALE_GLOBAL}:${locale}`);
+  url.searchParams.set("globals", globals.join(";"));
   url.searchParams.set("locale", locale);
   window.location.replace(url);
 }
