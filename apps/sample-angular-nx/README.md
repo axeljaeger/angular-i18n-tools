@@ -9,6 +9,11 @@ the plain demo uses **Plain angular application**. Story IDs remain stable for e
 Both demos start with the same content; update both copies when changing the
 showcase so they continue to demonstrate equivalent behavior.
 
+The landing page uses one Storybook demo because the addon does not read workspace
+configuration: both demos explicitly configure their translation loaders. This Nx
+project remains a sample for workspace-dependent tooling. The Angular setup
+generator currently requires `angular.json` and does not support Nx `project.json`.
+
 Nx 24 supports the sample's Angular 22.2 version. The demo uses Angular and
 Storybook builders as Nx executors, with local caching and an addon build
 dependency. Nx-specific configuration stays here; localization analysis stays

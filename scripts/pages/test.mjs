@@ -58,7 +58,7 @@ try {
   assert.deepEqual(await products.getByRole("heading", { level: 2 }).allTextContents(), [
     "Storybook language switcher", "VS Code extension →", "Catalog checks →", "Angular setup generator →"
   ]);
-  assert.equal(await products.locator(".button").count(), 2);
+  assert.equal(await products.locator(".button").count(), 1);
   for (const href of await products.locator(".button").evaluateAll(links => links.map(link => link.getAttribute("href")))) {
     assert.ok(href.includes("/storybook/"), "Primary actions must open Storybook demos");
   }
