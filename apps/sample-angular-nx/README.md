@@ -11,8 +11,8 @@ showcase so they continue to demonstrate equivalent behavior.
 
 The landing page uses one Storybook demo because the addon does not read workspace
 configuration: both demos explicitly configure their translation loaders. This Nx
-project remains a sample for workspace-dependent tooling. The Angular setup
-generator currently requires `angular.json` and does not support Nx `project.json`.
+project remains a sample for workspace-dependent tooling. The setup generator supports explicit Nx `project.json` build targets starting
+with version 0.0.3. See [the setup guide](../../packages/ng-generator/README.md).
 
 Nx 24 supports the sample's Angular 22.2 version. The demo uses Angular and
 Storybook builders as Nx executors, with local caching and an addon build

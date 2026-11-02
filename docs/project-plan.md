@@ -262,7 +262,7 @@ Example:
 ng generate @angular-i18n-tools/ng-generator:runtime-localize --locales de fr
 ```
 
-The generator is intentionally scoped to Angular CLI application projects that use standalone bootstrap through `bootstrapApplication(...)`.
+The generator supports Angular CLI `angular.json` and Nx `project.json` applications with explicit Angular build targets and standalone `bootstrapApplication(...)`. See [the setup guide](../packages/ng-generator/README.md).
 
 ---
 

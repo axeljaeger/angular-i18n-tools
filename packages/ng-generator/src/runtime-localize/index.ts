@@ -1,3 +1,4 @@
+import { NodePackageInstallTask } from "@angular-devkit/schematics/tasks/index.js";
 import { SchematicsException, type Rule, type Tree } from "@angular-devkit/schematics";
 
 export interface RuntimeLocalizeOptions {
@@ -12,6 +13,7 @@ interface AngularWorkspace {
 }
 
 interface AngularProject {
+  name?: string;
   projectType?: string;
   root?: string;
   sourceRoot?: string;
@@ -21,20 +23,15 @@ interface AngularProject {
 
 interface AngularTarget {
   builder?: string;
+  executor?: string;
   options?: Record<string, unknown>;
   configurations?: Record<string, unknown>;
   defaultConfiguration?: string;
 }
 
 export function runtimeLocalize(options: RuntimeLocalizeOptions): Rule {
-  return (tree) => {
-    const workspace = readJson<AngularWorkspace>(tree, "angular.json");
-    const projectName = options.project ?? findDefaultApplicationProject(workspace);
-    const project = workspace.projects?.[projectName];
-
-    if (!project) {
-      throw new SchematicsException(`Angular project "${projectName}" was not found.`);
-    }
+  return (tree, context) => {
+    const { project, projectName, save } = resolveProject(tree, options.project);
 
     const sourceLocale = options.sourceLocale ?? "en-US";
     const runtimeLocales = unique((options.locales ?? ["de", "fr"]).filter((locale) => locale !== sourceLocale));
@@ -43,19 +40,19 @@ export function runtimeLocalize(options: RuntimeLocalizeOptions): Rule {
     const localePath = joinPath(sourceRoot, "locale");
     const mainPath = getMainPath(project);
 
-    updateAngularWorkspace(workspace, projectName, project, sourceLocale, localePath);
-    writeJson(tree, "angular.json", workspace);
+    updateProject(projectName, project, sourceLocale, localePath);
+    save();
 
     createCatalogs(tree, localePath, sourceLocale, runtimeLocales);
     upsertFile(tree, joinPath(sourceRoot, "locale-loader.ts"), createLocaleLoader(sourceLocale, runtimeLocales, queryParam));
     patchMainFile(tree, mainPath);
+    if (addLocalizeDependency(tree, project.root ?? "")) context.addTask(new NodePackageInstallTask());
 
     return tree;
   };
 }
 
-function updateAngularWorkspace(
-  workspace: AngularWorkspace,
+function updateProject(
   projectName: string,
   project: AngularProject,
   sourceLocale: string,
@@ -71,9 +68,7 @@ function updateAngularWorkspace(
   build.options ??= {};
   build.options.polyfills = addLocalizePolyfill(build.options.polyfills);
   targets["extract-i18n"] = {
-    builder: build.builder?.startsWith("@angular/build:")
-      ? "@angular/build:extract-i18n"
-      : "@angular-devkit/build-angular:extract-i18n",
+    [build.executor ? "executor" : "builder"]: extractExecutor(build.executor ?? build.builder),
     options: {
       buildTarget: `${projectName}:build`,
       format: "json",
@@ -81,8 +76,26 @@ function updateAngularWorkspace(
       outputPath: localePath
     }
   };
-  workspace.projects ??= {};
-  workspace.projects[projectName] = project;
+
+}
+
+function addLocalizeDependency(tree: Tree, projectRoot: string): boolean {
+  type Package = { dependencies?: Record<string, string>; devDependencies?: Record<string, string> };
+  const packages = unique([joinPath(projectRoot, "package.json"), "package.json"])
+    .filter(path => tree.exists(path))
+    .map(path => ({ path, pkg: readJson<Package>(tree, path) }));
+  if (packages.some(({ pkg }) => pkg.dependencies?.["@angular/localize"] || pkg.devDependencies?.["@angular/localize"])) return false;
+  const selected = packages.find(({ pkg }) => pkg.dependencies?.["@angular/core"] || pkg.devDependencies?.["@angular/core"]);
+  if (!selected) {
+    if (packages.length === 0) return false;
+    throw new SchematicsException("Install @angular/core in the workspace or application package.json before running this generator.");
+  }
+  const { pkg, path } = selected;
+  const version = (pkg.dependencies?.["@angular/core"] ?? pkg.devDependencies?.["@angular/core"])!;
+  pkg.devDependencies ??= {};
+  pkg.devDependencies["@angular/localize"] = version;
+  writeJson(tree, path, pkg);
+  return true;
 }
 
 function createCatalogs(tree: Tree, localePath: string, sourceLocale: string, runtimeLocales: string[]): void {
@@ -251,7 +264,7 @@ function getMainPath(project: AngularProject): string {
   const main = buildOptions?.browser ?? buildOptions?.main;
 
   if (typeof main !== "string") {
-    throw new SchematicsException("Could not find build.options.browser or build.options.main in angular.json.");
+    throw new SchematicsException("Could not find build.options.browser or build.options.main in the selected project.");
   }
 
   return main;
@@ -269,15 +282,64 @@ function addLocalizePolyfill(polyfills: unknown): unknown {
   return ["@angular/localize/init"];
 }
 
-function findDefaultApplicationProject(workspace: AngularWorkspace): string {
-  const projects = Object.entries(workspace.projects ?? {});
-  const application = projects.find(([, project]) => project.projectType === "application") ?? projects[0];
+function extractExecutor(build: string | undefined): string {
+  if (build?.startsWith("@nx/angular:")) return "@nx/angular:extract-i18n";
+  if (build?.startsWith("@angular/build:")) return "@angular/build:extract-i18n";
+  return "@angular-devkit/build-angular:extract-i18n";
+}
 
-  if (!application) {
-    throw new SchematicsException("No Angular application project was found.");
+function resolveProject(tree: Tree, requestedName?: string): {
+  project: AngularProject;
+  projectName: string;
+  save: () => void;
+} {
+  const candidates: { project: AngularProject; projectName: string; save: () => void }[] = [];
+  // A repository can contain both an Angular CLI workspace and Nx projects.
+  if (tree.exists("angular.json")) {
+    const workspace = readJson<AngularWorkspace>(tree, "angular.json");
+    for (const [projectName, project] of Object.entries(workspace.projects ?? {})) {
+      candidates.push({ projectName, project, save: () => writeJson(tree, "angular.json", workspace) });
+    }
   }
-
-  return application[0];
+  if (tree.exists("nx.json")) {
+    const ignored = new Set(["node_modules", ".git", ".nx", "dist", "coverage", "storybook-static"]);
+    const discover = (directory: string): void => {
+      const entry = tree.getDir(directory);
+      if (tree.exists(joinPath(directory, "project.json"))) {
+        const path = joinPath(directory, "project.json");
+        const project = readJson<AngularProject>(tree, path);
+        const root = directory.replace(/^\//, "");
+        project.root ??= root;
+        const existing = candidates.find(candidate => candidate.project.root === root);
+        const projectName = project.name ?? existing?.projectName ?? root.split("/").pop() ?? "";
+        // Nx's schematic adapter can expose project.json projects through a virtual angular.json.
+        const duplicate = candidates.findIndex(candidate => candidate.projectName === projectName && candidate.project.root === root);
+        if (duplicate !== -1) candidates.splice(duplicate, 1);
+        candidates.push({ projectName, project, save: () => writeJson(tree, path, project) });
+      }
+      for (const child of entry.subdirs) {
+        if (!ignored.has(child) && !child.startsWith(".")) discover(joinPath(directory, child));
+      }
+    };
+    discover("");
+  }
+  const applications = candidates.filter(({ project }) => {
+    const target = (project.architect ?? project.targets)?.build;
+    const executor = target?.executor ?? target?.builder ?? "";
+    return project.projectType === "application" && /^(?:@angular\/build|@angular-devkit\/build-angular|@nx\/angular):/.test(executor);
+  });
+  const selected = requestedName
+    ? applications.filter(candidate => candidate.projectName === requestedName)
+    : applications;
+  if (selected.length === 0) {
+    throw new SchematicsException(requestedName
+      ? `Angular application "${requestedName}" was not found in angular.json or Nx project.json files.`
+      : "No supported Angular application was found in angular.json or Nx project.json files.");
+  }
+  if (selected.length > 1) {
+    throw new SchematicsException(`Select one Angular application with --project. Found: ${selected.map(candidate => candidate.projectName).join(", ")}.`);
+  }
+  return selected[0]!;
 }
 
 function readJson<T>(tree: Tree, path: string): T {

@@ -1,7 +1,7 @@
 {
   "name": "@angular-i18n-tools/ng-generator",
-  "version": "0.0.2",
-  "description": "Angular CLI generators for Angular built-in runtime localization workflows.",
+  "version": "0.0.3",
+  "description": "Setup generator for Angular built-in runtime localization in Angular CLI and Nx workspaces.",
   "license": "MIT",
   "author": "Axel Jaeger",
   "repository": {

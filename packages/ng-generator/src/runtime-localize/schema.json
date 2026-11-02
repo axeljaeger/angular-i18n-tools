@@ -6,7 +6,7 @@
   "properties": {
     "project": {
       "type": "string",
-      "description": "Angular CLI application project to configure."
+      "description": "Angular application in angular.json or an Nx project.json to configure. Required when multiple apps exist."
     },
     "sourceLocale": {
       "type": "string",

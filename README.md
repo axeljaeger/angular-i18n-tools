@@ -178,28 +178,25 @@ The examples use `@storybook/angular-vite` for Storybook and `@angular/build` fo
 
 ## Angular Generator
 
-Add runtime JSON localization setup to an existing standalone Angular application:
+Set up runtime JSON localization in a standalone Angular CLI or Nx application.
+Starting with **0.0.3**, the generator supports Nx `project.json` projects as well
+as Angular CLI `angular.json` workspaces.
 
 ```sh
-npm install --save-dev @angular-i18n-tools/ng-generator
-ng generate @angular-i18n-tools/ng-generator:runtime-localize --locales de fr
+# Angular CLI workspace
+npx ng add @angular-i18n-tools/ng-generator@0.0.3 --locales de fr
+
+# Nx Angular workspace: replace my-app with your app name
+npm install --save-dev @angular-i18n-tools/ng-generator@0.0.3 && npx nx generate @angular-i18n-tools/ng-generator:runtime-localize --project=my-app --locales=de,fr
 ```
 
-The generator:
+The generator adds a matching `@angular/localize` dependency when needed,
+configures polyfills and JSON extraction, creates catalogs and a loader, and
+wraps standalone bootstrap so translations load first. Catalogs start empty:
+extract source messages and fill translations before trying `?locale=de`.
 
-- adds `@angular/localize/init` to build polyfills
-- adds an `extract-i18n` target for JSON catalogs
-- creates `src/locale-loader.ts`
-- creates initial `messages.<locale>.json` catalogs
-- wraps `bootstrapApplication(...)` so translations load before Angular bootstraps
-
-It is currently scoped to Angular CLI application projects that bootstrap with `bootstrapApplication(...)`.
-
-The package also exposes `ng-add`, so consumers can use:
-
-```sh
-ng add @angular-i18n-tools/ng-generator --locales de fr
-```
+See the [setup guide](packages/ng-generator/README.md) for options, Nx requirements,
+supported build targets, and the extraction workflow.
 
 ## GitHub Action
 
