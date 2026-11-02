@@ -1,4 +1,5 @@
-import type { Preview } from "@storybook/angular";
+import "@angular/localize/init";
+import type { Preview } from "@storybook/angular-vite";
 import { loadTranslationsForLocale, type SupportedLocale } from "../src/locale-loader";
 
 const preview: Preview = {

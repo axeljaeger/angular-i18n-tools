@@ -85,7 +85,7 @@ The release workflow packages a VSIX artifact for GitHub releases. Marketplace p
 
 ## Storybook Addon
 
-Install the Storybook addon in an Angular Storybook project:
+Install the Storybook addon in an Angular Storybook project. The examples use `@storybook/angular-vite` with Vite 8 and the Analog Angular plugin:
 
 ```sh
 npm install --save-dev @angular-i18n-tools/storybook-addon
@@ -94,13 +94,13 @@ npm install --save-dev @angular-i18n-tools/storybook-addon
 Add it to `.storybook/main.ts`:
 
 ```ts
-import type { StorybookConfig } from "@storybook/angular";
+import type { StorybookConfig } from "@storybook/angular-vite";
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.ts"],
   addons: ["@angular-i18n-tools/storybook-addon"],
   framework: {
-    name: "@storybook/angular",
+    name: "@storybook/angular-vite",
     options: {}
   }
 };
@@ -111,7 +111,8 @@ export default config;
 Load runtime translations from `.storybook/preview.ts` before each story renders:
 
 ```ts
-import type { Preview } from "@storybook/angular";
+import "@angular/localize/init";
+import type { Preview } from "@storybook/angular-vite";
 import { loadTranslationsForLocale } from "../src/locale-loader";
 
 const preview: Preview = {
@@ -129,6 +130,8 @@ const preview: Preview = {
 export default preview;
 ```
 
+The Vite preview explicitly imports `@angular/localize/init` before loading translations; it does not inherit the app build polyfills.
+
 The local sample app uses the workspace package:
 
 ```sh
@@ -142,6 +145,17 @@ cd examples/storybook-npm-demo
 pnpm install
 pnpm run storybook
 ```
+
+Build and check the static preview under a GitHub Pages project path:
+
+```sh
+pnpm --filter @angular-i18n-tools/storybook-addon run build
+pnpm --filter @angular-i18n-tools/sample-angular run build-storybook
+pnpm --filter @angular-i18n-tools/sample-angular exec playwright install chromium
+pnpm --filter @angular-i18n-tools/sample-angular run test:storybook-static
+```
+
+The browser check verifies both stories, locale switching, URL-selected locales, asset loading, and that Zone.js is absent. Screenshots are saved in `apps/sample-angular/storybook-demo/`. CI builds the static Storybook on every pull request.
 
 ## Angular Generator
 
@@ -220,7 +234,7 @@ By default the action also emits GitHub workflow annotations for each issue, poi
 
 Both Angular examples use Angular 21's default zoneless change detection. Their build polyfills load only `@angular/localize/init`, and neither example depends on `zone.js`.
 
-Both Storybook targets (`storybook` and `build-storybook`) explicitly set `experimentalZoneless: true`, the option name used by the current Storybook Angular builder. Runtime localization and locale changes continue to load translations before rendering and reload the preview when needed.
+Both Storybook targets (`storybook` and `build-storybook`) explicitly set `zoneless: true`, using the Storybook Angular Vite builder. Runtime localization and locale changes continue to load translations before rendering and reload the preview when needed.
 
 The localization generator also supports zoneless applications without adding Zone.js. When used in an existing zone-based application, it preserves that application's polyfills.
 

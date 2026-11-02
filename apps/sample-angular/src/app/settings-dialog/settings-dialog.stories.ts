@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/angular";
+import type { Meta, StoryObj } from "@storybook/angular-vite";
 import { SettingsDialogComponent } from "./settings-dialog.component";
 
 const meta: Meta<SettingsDialogComponent> = {

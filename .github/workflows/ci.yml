@@ -34,6 +34,9 @@ jobs:
       - name: Build
         run: pnpm run build
 
+      - name: Build Storybook preview
+        run: pnpm --filter @angular-i18n-tools/sample-angular run build-storybook
+
       - name: Typecheck
         run: pnpm run typecheck
 

@@ -1,10 +1,10 @@
-import type { StorybookConfig } from "@storybook/angular";
+import type { StorybookConfig } from "@storybook/angular-vite";
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.ts"],
   addons: ["@angular-i18n-tools/storybook-addon"],
   framework: {
-    name: "@storybook/angular",
+    name: "@storybook/angular-vite",
     options: {}
   }
 };

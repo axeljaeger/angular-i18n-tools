@@ -24,8 +24,11 @@
     "@angular/cli": "^21.2.0",
     "@angular/compiler-cli": "^21.2.0",
     "@angular-i18n-tools/storybook-addon": "0.0.1",
-    "@storybook/angular": "10.6.5",
     "storybook": "10.6.5",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "@storybook/angular-vite": "10.6.5",
+    "@angular/build": "^21.2.0",
+    "@analogjs/vite-plugin-angular": "^2.7.3",
+    "vite": "^8.0.0"
   }
 }

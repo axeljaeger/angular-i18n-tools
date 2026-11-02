@@ -33,26 +33,28 @@
           "defaultConfiguration": "development"
         },
         "storybook": {
-          "builder": "@storybook/angular:start-storybook",
+          "builder": "@storybook/angular-vite:start-storybook",
           "options": {
-            "browserTarget": "storybook-npm-demo:build:development",
             "tsConfig": "tsconfig.json",
             "configDir": ".storybook",
             "port": 6006,
             "open": false,
-            "compodoc": false,
-            "experimentalZoneless": true
+            "zoneless": true,
+            "styles": [
+              "src/styles.css"
+            ]
           }
         },
         "build-storybook": {
-          "builder": "@storybook/angular:build-storybook",
+          "builder": "@storybook/angular-vite:build-storybook",
           "options": {
-            "browserTarget": "storybook-npm-demo:build:development",
             "tsConfig": "tsconfig.json",
             "configDir": ".storybook",
             "outputDir": "storybook-static",
-            "compodoc": false,
-            "experimentalZoneless": true
+            "zoneless": true,
+            "styles": [
+              "src/styles.css"
+            ]
           }
         }
       }

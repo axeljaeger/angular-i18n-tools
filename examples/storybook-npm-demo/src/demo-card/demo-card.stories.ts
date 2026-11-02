@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/angular";
+import type { Meta, StoryObj } from "@storybook/angular-vite";
 import { DemoCardComponent } from "./demo-card.component";
 
 const meta: Meta<DemoCardComponent> = {
