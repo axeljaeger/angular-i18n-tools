@@ -120,8 +120,8 @@ importers:
         version: link:../core
     devDependencies:
       '@types/vscode':
-        specifier: ^1.100.0
-        version: 1.120.0
+        specifier: ^1.144.0
+        version: 1.144.0
       '@vscode/test-web':
         specifier: ^0.0.81
         version: 0.0.81
@@ -3004,8 +3004,8 @@ packages:
   '@types/sockjs@0.3.36':
     resolution: {integrity: sha512-MK9V6NzAS1+Ud7JV9lJLFqW85VbC9dq3LmwZCuBe4wBDgKC0Kj/jd8Xl+nSviU+Qc3+m7umHHyHg//2KSa0a0Q==}
 
-  '@types/vscode@1.120.0':
-    resolution: {integrity: sha512-feaT4Rst+FkTch5zz/ZbNCxoIvo55YU80Be2kiL7OJcod4+CUYf2lUBPdIJzozNnSEMq1VRTGrWEcCGFB3fBmA==}
+  '@types/vscode@1.144.0':
+    resolution: {integrity: sha512-IDd4eQzu6MjGucfaQF0V/TY5vHX9o1albkKyZD6K/iVXSCcL5NSj4KW1wWfx1QDadPKWyxMaE/+M1wKLCJlXpA==}
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
@@ -8864,7 +8864,7 @@ snapshots:
     dependencies:
       '@types/node': 22.19.20
 
-  '@types/vscode@1.120.0': {}
+  '@types/vscode@1.144.0': {}
 
   '@types/ws@8.18.1':
     dependencies:
