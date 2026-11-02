@@ -71,7 +71,8 @@ try {
   await mkdir(screenshots, { recursive: true });
   for (const [width, height] of [[1280, 720], [360, 800], [390, 844]]) {
     await page.setViewportSize({ width, height });
-    assert.ok(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight), `Landing page exceeds one screen at ${width}x${height}`);
+    const contentHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+    assert.ok(contentHeight <= height, `Landing page is ${contentHeight}px tall at ${width}x${height}`);
   }
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.screenshot({ path: resolve(screenshots, "landing-desktop.png"), fullPage: true });
