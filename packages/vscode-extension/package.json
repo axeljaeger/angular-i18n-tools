@@ -105,9 +105,9 @@
     "@angular-i18n-tools/core": "workspace:*"
   },
   "devDependencies": {
-    "@types/vscode": "^1.100.0",
-    "@vscode/test-web": "^0.0.80",
-    "esbuild": "^0.25.0",
-    "vitest": "^3.2.0"
+    "@types/vscode": "^1.144.0",
+    "@vscode/test-web": "^0.0.81",
+    "esbuild": "^0.28.2",
+    "vitest": "^5.0.5"
   }
 }

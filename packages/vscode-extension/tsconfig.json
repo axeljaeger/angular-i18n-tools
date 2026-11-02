@@ -2,11 +2,11 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
-    "baseUrl": ".",
     "rootDir": "src",
     "outDir": "dist",
     "types": [
-      "vscode"
+      "vscode",
+      "node"
     ],
     "paths": {
       "@angular-i18n-tools/core": [
@@ -18,6 +18,8 @@
     "src/**/*.ts"
   ],
   "references": [
-    { "path": "../core" }
+    {
+      "path": "../core"
+    }
   ]
 }

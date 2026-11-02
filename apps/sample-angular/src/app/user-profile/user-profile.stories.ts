@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/angular";
+import type { Meta, StoryObj } from "@storybook/angular-vite";
 import { UserProfileComponent } from "./user-profile.component";
 
 const meta: Meta<UserProfileComponent> = {
