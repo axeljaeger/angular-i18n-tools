@@ -178,29 +178,28 @@ The examples use `@storybook/angular-vite` for Storybook and `@angular/build` fo
 
 ## Angular Generator
 
-Set up runtime JSON localization in a standalone Angular CLI or Nx application.
-Starting with **0.0.3**, the generator supports Nx `project.json` projects as well
-as Angular CLI `angular.json` workspaces.
+Set up Angular built-in runtime localization with one workspace-aware command:
 
 ```sh
-# Angular CLI workspace
-npx ng add @angular-i18n-tools/ng-generator@0.0.4
-
-# Nx Angular workspace: replace my-app with your app name
-npm install --save-dev @angular-i18n-tools/ng-generator@0.0.4 && npx nx generate @angular-i18n-tools/ng-generator:runtime-localize --project=my-app
+npx @angular-i18n-tools/ng-generator@0.0.5
 ```
 
-Version **0.0.4** discovers languages from project `i18n` configuration and existing
-runtime JSON catalogs; no language arguments are needed. Without target-language
-configuration or catalogs, it sets up only the source language.
+Angular CLI and Nx applications are discovered automatically. An interactive
+checkbox list lets you select several apps or all at once. Languages come from
+project configuration and existing JSON catalogs. For automation, use `--all`
+or `--project=shop,admin`; use `--dry-run` to preview changes.
 
-The generator adds a matching `@angular/localize` dependency when needed,
-configures polyfills and JSON extraction, creates catalogs and a loader, and
-wraps standalone bootstrap so translations load first. Catalogs start empty:
-extract source messages and fill translations before trying `?locale=de`.
+For existing Angular Storybooks, install and configure the language switcher with:
 
-See the [setup guide](packages/ng-generator/README.md) for options, Nx requirements,
-supported build targets, and the extraction workflow.
+```sh
+npx @angular-i18n-tools/ng-generator@0.0.5 storybook
+```
+
+This adds the addon, runtime loader integration, and discovered toolbar languages
+while retaining existing Storybook settings. It expects Storybook to be initialized.
+
+See the [setup guide](packages/ng-generator/README.md) for supported configurations,
+options, dependency installation, and the extraction/translation workflow.
 
 ## GitHub Action
 

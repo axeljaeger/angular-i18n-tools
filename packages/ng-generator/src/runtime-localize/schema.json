@@ -24,6 +24,23 @@
       "type": "string",
       "description": "URL query parameter used to select the locale.",
       "default": "locale"
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Angular applications to configure. Otherwise choose interactively."
+    },
+    "all": {
+      "type": "boolean",
+      "default": false,
+      "description": "Configure every supported Angular application without prompting."
+    },
+    "skipInstall": {
+      "type": "boolean",
+      "default": false,
+      "description": "Update dependencies without installing them."
     }
   }
 }

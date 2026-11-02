@@ -1,9 +1,11 @@
+import { parse as parseJson, type ParseError } from "jsonc-parser";
 import { posix } from "node:path";
 import { NodePackageInstallTask } from "@angular-devkit/schematics/tasks/index.js";
-import { SchematicsException, type Rule, type Tree } from "@angular-devkit/schematics";
+import { branchAndMerge, chain, SchematicsException, type Rule, type Tree, type SchematicContext } from "@angular-devkit/schematics";
 
-export interface RuntimeLocalizeOptions {
-  project?: string;
+import { selectProjects, type ProjectSelectionOptions } from "../project-selection.js";
+
+export interface RuntimeLocalizeOptions extends ProjectSelectionOptions {
   sourceLocale?: string;
   locales?: string[];
   queryParam?: string;
@@ -13,7 +15,7 @@ interface AngularWorkspace {
   projects?: Record<string, AngularProject>;
 }
 
-interface AngularProject {
+export interface AngularProject {
   name?: string;
   projectType?: string;
   root?: string;
@@ -32,45 +34,61 @@ interface AngularTarget {
 }
 
 export function runtimeLocalize(options: RuntimeLocalizeOptions): Rule {
-  return (tree, context) => {
-    const { project, projectName, save } = resolveProject(tree, options.project);
-
-    const configuredSource = project.i18n?.sourceLocale;
-    const sourceLocale = options.sourceLocale
-      ?? (typeof configuredSource === "string" ? configuredSource : configuredSource?.code)
-      ?? "en-US";
-    const queryParam = options.queryParam ?? "locale";
-    const sourceRoot = project.sourceRoot ?? joinPath(project.root ?? "", "src");
-    const localePath = joinPath(sourceRoot, "locale");
-    const catalogs = discoverCatalogs(tree, sourceRoot);
-    for (const [locale, configuration] of Object.entries(project.i18n?.locales ?? {})) {
-      const path = configuredJsonCatalog(configuration);
-      if (path) catalogs.set(locale, path);
-    }
-    const runtimeLocales = unique(options.locales?.length ? options.locales : [
-      ...Object.keys(project.i18n?.locales ?? {}), ...catalogs.keys()
-    ]).filter(locale => locale !== sourceLocale);
-    for (const locale of [sourceLocale, ...runtimeLocales]) {
-      if (!/^[A-Za-z0-9]+(?:[-_][A-Za-z0-9]+)*$/.test(locale)) {
-        throw new SchematicsException(`Invalid discovered or configured locale: "${locale}".`);
+  return async (tree) => {
+    const selected = await selectProjects(findApplications(tree), options, tree.exists("nx.json"));
+    let dependencyChanged = false;
+    return branchAndMerge(chain([
+      ...selected.map(project => (tree: Tree, context: SchematicContext) => {
+        dependencyChanged = configureRuntimeProject(tree, context, { ...options, project }) || dependencyChanged;
+        return tree;
+      }),
+      (tree, context) => {
+        if (dependencyChanged && !options.skipInstall) context.addTask(new NodePackageInstallTask());
+        return tree;
       }
-      if (!catalogs.has(locale)) catalogs.set(locale, joinPath(localePath, `messages.${locale}.json`));
-    }
-    if (runtimeLocales.length === 0) {
-      context.logger.info("No target languages found. Configure i18n.locales or add messages.<locale>.json catalogs, then rerun. Only the source catalog is created.");
-    }
-    const mainPath = getMainPath(project);
-
-    updateProject(projectName, project, sourceLocale, localePath);
-    save();
-
-    createCatalogs(tree, catalogs, [sourceLocale, ...runtimeLocales]);
-    upsertFile(tree, joinPath(sourceRoot, "locale-loader.ts"), createLocaleLoader(sourceLocale, runtimeLocales, queryParam, sourceRoot, catalogs));
-    patchMainFile(tree, mainPath, joinPath(sourceRoot, "locale-loader.ts"));
-    if (addLocalizeDependency(tree, project.root ?? "")) context.addTask(new NodePackageInstallTask());
-
-    return tree;
+    ]));
   };
+}
+
+export function configureRuntimeProject(tree: Tree, context: SchematicContext, options: RuntimeLocalizeOptions): boolean {
+  const { project, projectName, save } = resolveProject(tree, options.project);
+
+  const { sourceLocale, runtimeLocales, sourceRoot, localePath, catalogs, queryParam } = discoverLocales(tree, project, options);
+  if (runtimeLocales.length === 0) context.logger.info("No target languages found. Configure i18n.locales or add messages.<locale>.json catalogs, then rerun. Only the source catalog is created.");
+  const mainPath = getMainPath(project);
+
+  updateProject(projectName, project, sourceLocale, localePath);
+  save();
+
+  createCatalogs(tree, catalogs, [sourceLocale, ...runtimeLocales]);
+  upsertFile(tree, joinPath(sourceRoot, "locale-loader.ts"), createLocaleLoader(sourceLocale, runtimeLocales, queryParam, sourceRoot, catalogs));
+  patchMainFile(tree, mainPath, joinPath(sourceRoot, "locale-loader.ts"));
+  return addLocalizeDependency(tree, project.root ?? "");
+}
+
+export function discoverLocales(tree: Tree, project: AngularProject, options: RuntimeLocalizeOptions = {}) {
+  const configuredSource = project.i18n?.sourceLocale;
+  const sourceLocale = options.sourceLocale
+    ?? (typeof configuredSource === "string" ? configuredSource : configuredSource?.code)
+    ?? "en-US";
+  const queryParam = options.queryParam ?? "locale";
+  const sourceRoot = project.sourceRoot ?? joinPath(project.root ?? "", "src");
+  const localePath = joinPath(sourceRoot, "locale");
+  const catalogs = discoverCatalogs(tree, sourceRoot);
+  for (const [locale, configuration] of Object.entries(project.i18n?.locales ?? {})) {
+    const path = configuredJsonCatalog(configuration);
+    if (path) catalogs.set(locale, path);
+  }
+  const runtimeLocales = unique(options.locales?.length ? options.locales : [
+    ...Object.keys(project.i18n?.locales ?? {}), ...catalogs.keys()
+  ]).filter(locale => locale !== sourceLocale);
+  for (const locale of [sourceLocale, ...runtimeLocales]) {
+    if (!/^[A-Za-z0-9]+(?:[-_][A-Za-z0-9]+)*$/.test(locale)) {
+      throw new SchematicsException(`Invalid discovered or configured locale: "${locale}".`);
+    }
+    if (!catalogs.has(locale)) catalogs.set(locale, joinPath(localePath, `messages.${locale}.json`));
+  }
+  return { sourceLocale, runtimeLocales, sourceRoot, localePath, catalogs, queryParam };
 }
 
 function updateProject(
@@ -104,7 +122,7 @@ function updateProject(
 
 }
 
-function addLocalizeDependency(tree: Tree, projectRoot: string): boolean {
+export function addLocalizeDependency(tree: Tree, projectRoot: string): boolean {
   type Package = { dependencies?: Record<string, string>; devDependencies?: Record<string, string> };
   const packages = unique([joinPath(projectRoot, "package.json"), "package.json"])
     .filter(path => tree.exists(path))
@@ -370,11 +388,11 @@ function extractExecutor(build: string | undefined): string {
   return "@angular-devkit/build-angular:extract-i18n";
 }
 
-function resolveProject(tree: Tree, requestedName?: string): {
+export function findApplications(tree: Tree): {
   project: AngularProject;
   projectName: string;
   save: () => void;
-} {
+}[] {
   const candidates: { project: AngularProject; projectName: string; save: () => void }[] = [];
   // A repository can contain both an Angular CLI workspace and Nx projects.
   if (tree.exists("angular.json")) {
@@ -410,22 +428,24 @@ function resolveProject(tree: Tree, requestedName?: string): {
     const executor = target?.executor ?? target?.builder ?? "";
     return project.projectType === "application" && /^(?:@angular\/build|@angular-devkit\/build-angular|@nx\/angular):/.test(executor);
   });
-  const selected = requestedName
-    ? applications.filter(candidate => candidate.projectName === requestedName)
-    : applications;
-  if (selected.length === 0) {
-    throw new SchematicsException(requestedName
-      ? `Angular application "${requestedName}" was not found in angular.json or Nx project.json files.`
-      : "No supported Angular application was found in angular.json or Nx project.json files.");
-  }
-  if (selected.length > 1) {
-    throw new SchematicsException(`Select one Angular application with --project. Found: ${selected.map(candidate => candidate.projectName).join(", ")}.`);
-  }
-  return selected[0]!;
+  const names = applications.map(app => app.projectName);
+  if (new Set(names).size !== names.length) throw new SchematicsException("Angular application names must be unique across the workspace.");
+  return applications.sort((left, right) => left.projectName.localeCompare(right.projectName));
 }
 
-function readJson<T>(tree: Tree, path: string): T {
-  return JSON.parse(readText(tree, path)) as T;
+function resolveProject(tree: Tree, requestedName?: string) {
+  const applications = findApplications(tree);
+  const selected = applications.find(app => app.projectName === requestedName);
+  if (!selected) throw new SchematicsException(`Angular application "${requestedName}" was not found.`);
+  return selected;
+}
+
+
+export function readJson<T>(tree: Tree, path: string): T {
+  const errors: ParseError[] = [];
+  const value = parseJson(readText(tree, path), errors, { allowTrailingComma: true }) as T;
+  if (errors.length) throw new SchematicsException(`Invalid JSON configuration: ${path}.`);
+  return value;
 }
 
 function writeJson(tree: Tree, path: string, value: unknown): void {
