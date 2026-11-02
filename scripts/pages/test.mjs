@@ -69,7 +69,7 @@ try {
     assert.equal(response.status(), 200, href);
   }
   await mkdir(screenshots, { recursive: true });
-  for (const [width, height] of [[1280, 720], [390, 844]]) {
+  for (const [width, height] of [[1280, 720], [360, 800], [390, 844]]) {
     await page.setViewportSize({ width, height });
     assert.ok(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight), `Landing page exceeds one screen at ${width}x${height}`);
   }
