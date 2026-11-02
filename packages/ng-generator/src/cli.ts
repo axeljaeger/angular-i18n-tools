@@ -30,7 +30,7 @@ export async function runCli(args: string[], cwd = process.cwd()): Promise<void>
     version: { type: "boolean", short: "v" }
   } });
   if (values.help) {
-    console.log("Angular i18n Tools setup\n\n  npx @angular-i18n-tools/ng-generator\n  npx @angular-i18n-tools/ng-generator storybook\n\nRun inside an Angular CLI or Nx workspace. Select Angular applications with Space;\npress A to toggle all, and Enter to apply. Storybook setup requires an existing\nAngular Storybook.\n\nOptions: --project app1,app2  --all  --dry-run  --skip-install  --version");
+    console.log("Angular i18n Tools setup\n\n  npx @angular-i18n-tools/ng-generator\n  npx @angular-i18n-tools/ng-generator storybook\n\nRun inside an Angular CLI or Nx workspace. Select Angular projects with Space;\npress A to toggle all, and Enter to apply. Storybook setup requires an existing\nAngular Storybook.\n\nOptions: --project app1,app2  --all  --dry-run  --skip-install  --version");
     return;
   }
   if (values.version) {

@@ -60,8 +60,7 @@ export function configureRuntimeProject(tree: Tree, context: SchematicContext, o
   updateProject(projectName, project, sourceLocale, localePath);
   save();
 
-  createCatalogs(tree, catalogs, [sourceLocale, ...runtimeLocales]);
-  upsertFile(tree, joinPath(sourceRoot, "locale-loader.ts"), createLocaleLoader(sourceLocale, runtimeLocales, queryParam, sourceRoot, catalogs));
+  writeRuntimeCatalogSetup(tree, { sourceLocale, runtimeLocales, sourceRoot, catalogs, queryParam });
   patchMainFile(tree, mainPath, joinPath(sourceRoot, "locale-loader.ts"));
   return addLocalizeDependency(tree, project.root ?? "");
 }
@@ -89,6 +88,12 @@ export function discoverLocales(tree: Tree, project: AngularProject, options: Ru
     if (!catalogs.has(locale)) catalogs.set(locale, joinPath(localePath, `messages.${locale}.json`));
   }
   return { sourceLocale, runtimeLocales, sourceRoot, localePath, catalogs, queryParam };
+}
+
+export function writeRuntimeCatalogSetup(tree: Tree, setup: Pick<ReturnType<typeof discoverLocales>, "sourceLocale" | "runtimeLocales" | "sourceRoot" | "catalogs" | "queryParam">, loaderPath = joinPath(setup.sourceRoot, "locale-loader.ts")): void {
+  const { sourceLocale, runtimeLocales, sourceRoot, catalogs, queryParam } = setup;
+  createCatalogs(tree, catalogs, [sourceLocale, ...runtimeLocales]);
+  upsertFile(tree, loaderPath, createLocaleLoader(sourceLocale, runtimeLocales, queryParam, posix.dirname(loaderPath), catalogs));
 }
 
 function updateProject(
@@ -388,7 +393,7 @@ function extractExecutor(build: string | undefined): string {
   return "@angular-devkit/build-angular:extract-i18n";
 }
 
-export function findApplications(tree: Tree): {
+export function findProjects(tree: Tree): {
   project: AngularProject;
   projectName: string;
   save: () => void;
@@ -423,14 +428,17 @@ export function findApplications(tree: Tree): {
     };
     discover("");
   }
-  const applications = candidates.filter(({ project }) => {
+  const names = candidates.map(app => app.projectName);
+  if (new Set(names).size !== names.length) throw new SchematicsException("Project names must be unique across the workspace.");
+  return candidates.sort((left, right) => left.projectName.localeCompare(right.projectName));
+}
+
+export function findApplications(tree: Tree) {
+  return findProjects(tree).filter(({ project }) => {
     const target = (project.architect ?? project.targets)?.build;
     const executor = target?.executor ?? target?.builder ?? "";
     return project.projectType === "application" && /^(?:@angular\/build|@angular-devkit\/build-angular|@nx\/angular):/.test(executor);
   });
-  const names = applications.map(app => app.projectName);
-  if (new Set(names).size !== names.length) throw new SchematicsException("Angular application names must be unique across the workspace.");
-  return applications.sort((left, right) => left.projectName.localeCompare(right.projectName));
 }
 
 function resolveProject(tree: Tree, requestedName?: string) {

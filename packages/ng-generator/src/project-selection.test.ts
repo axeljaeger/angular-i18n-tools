@@ -10,7 +10,7 @@ describe("application selection", () => {
   it("offers checked choices for a whole Nx workspace", async () => {
     const prompt: ProjectPrompt = vi.fn(async (options: Parameters<ProjectPrompt>[0]) => {
       expect(options.choices.map(choice => [choice.value, choice.checked])).toEqual([["admin", true], ["shop", true]]);
-      expect(options.validate([])).toBe("Select at least one application.");
+      expect(options.validate([])).toBe("Select at least one project.");
       return ["admin", "shop"];
     });
     expect(await selectProjects(apps, {}, true, true, prompt)).toEqual(["admin", "shop"]);

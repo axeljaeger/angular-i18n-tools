@@ -1,23 +1,103 @@
 import ts from "typescript";
 import { SchematicsException } from "@angular-devkit/schematics";
 
+function unwrap(expression: ts.Expression): ts.Expression {
+  while (ts.isAsExpression(expression) || ts.isSatisfiesExpression(expression) || ts.isParenthesizedExpression(expression) || ts.isNonNullExpression(expression)) expression = expression.expression;
+  return expression;
+}
+
+function resolveConstant(source: ts.SourceFile, expression: ts.Expression, seen = new Set<string>()): ts.Expression {
+  expression = unwrap(expression);
+  if (!ts.isIdentifier(expression) || seen.has(expression.text)) return expression;
+  const name = expression.text;
+  seen.add(name);
+  for (const statement of source.statements) {
+    if (!ts.isVariableStatement(statement) || !(statement.declarationList.flags & ts.NodeFlags.Const)) continue;
+    const declaration = statement.declarationList.declarations.find(item => ts.isIdentifier(item.name) && item.name.text === name);
+    if (declaration?.initializer) return resolveConstant(source, declaration.initializer, seen);
+  }
+  return expression;
+}
+
+function snippet(source: ts.SourceFile, node?: ts.Node): string {
+  return node ? node.getText(source).replace(/\s+/g, " ").slice(0, 180) : "<missing>";
+}
+
+function location(source: ts.SourceFile, node?: ts.Node): string {
+  const position = source.getLineAndCharacterOfPosition(node?.getStart(source) ?? 0);
+  return `${source.fileName}:${position.line + 1}:${position.character + 1}`;
+}
+
 function objectForConfig(source: ts.SourceFile): ts.ObjectLiteralExpression {
   const exported = source.statements.find(ts.isExportAssignment);
   let expression = exported?.expression;
-  if (expression && ts.isIdentifier(expression)) {
-    const name = expression.text;
-    for (const statement of source.statements) {
-      if (!ts.isVariableStatement(statement)) continue;
-      const declaration = statement.declarationList.declarations.find(item => ts.isIdentifier(item.name) && item.name.text === name);
-      if (declaration?.initializer) expression = declaration.initializer;
-    }
-  }
-  while (expression && (ts.isAsExpression(expression) || ts.isSatisfiesExpression(expression) || ts.isParenthesizedExpression(expression))) expression = expression.expression;
-  if (expression && ts.isCallExpression(expression)) expression = expression.arguments[0];
+  if (expression) expression = resolveConstant(source, expression);
+  if (expression && ts.isCallExpression(expression) && expression.arguments[0]) expression = resolveConstant(source, expression.arguments[0]);
   if (!expression || !ts.isObjectLiteralExpression(expression)) {
-    throw new SchematicsException(`Cannot safely edit ${source.fileName}: expected an exported config object. See the manual Storybook setup guide.`);
+    throw new SchematicsException(`Cannot safely edit ${location(source, exported)}. Found exported config: ${snippet(source, expression)}. Expected export default { ... } or a const config object (optionally wrapped in defineConfig). Imported configs and dynamic factories are not executed. No files were written. See the manual Storybook setup guide.`);
   }
   return expression;
+}
+
+function stringValue(source: ts.SourceFile, expression: ts.Expression, seen = new Set<ts.Node>()): string | undefined {
+  expression = resolveConstant(source, expression);
+  if (seen.has(expression)) return undefined;
+  seen.add(expression);
+  if (ts.isStringLiteralLike(expression)) return expression.text;
+  if (ts.isTemplateExpression(expression)) {
+    let value = expression.head.text;
+    for (const span of expression.templateSpans) {
+      const part = stringValue(source, span.expression, new Set(seen));
+      if (part === undefined) return undefined;
+      value += part + span.literal.text;
+    }
+    return value;
+  }
+  if (ts.isBinaryExpression(expression) && expression.operatorToken.kind === ts.SyntaxKind.PlusToken) {
+    const left = stringValue(source, expression.left, new Set(seen));
+    const right = stringValue(source, expression.right, new Set(seen));
+    return left !== undefined && right !== undefined ? left + right : undefined;
+  }
+  if (ts.isCallExpression(expression)) {
+    const name = expression.expression.getText(source);
+    if (["getAbsolutePath", "require.resolve", "import.meta.resolve", "dirname", "path.dirname"].includes(name) && expression.arguments[0]) {
+      return stringValue(source, expression.arguments[0], new Set(seen));
+    }
+    if (["join", "path.join"].includes(name)) {
+      const parts = expression.arguments.map(argument => stringValue(source, argument, new Set(seen)));
+      return parts.every(part => part !== undefined) ? parts.join("/") : undefined;
+    }
+  }
+  return undefined;
+}
+
+function propertyKey(source: ts.SourceFile, name: ts.PropertyName): string | undefined {
+  if (ts.isIdentifier(name) || ts.isStringLiteralLike(name)) return name.text;
+  return ts.isComputedPropertyName(name) ? stringValue(source, name.expression) : undefined;
+}
+
+interface PropertyValue { expression?: ts.Expression; node: ts.Node; inherited?: boolean; }
+function propertyValue(source: ts.SourceFile, object: ts.ObjectLiteralExpression, key: string, seen = new Set<ts.Node>()): PropertyValue | undefined {
+  if (seen.has(object)) return { node: object, inherited: true };
+  seen.add(object);
+  for (const property of [...object.properties].reverse()) {
+    if (ts.isSpreadAssignment(property)) {
+      const spread = resolveConstant(source, property.expression);
+      if (!ts.isObjectLiteralExpression(spread)) return { node: property, inherited: true };
+      const found = propertyValue(source, spread, key, new Set(seen));
+      if (found) return found;
+    } else if (property.name && propertyKey(source, property.name) === key) {
+      if (ts.isPropertyAssignment(property)) return { expression: property.initializer, node: property.initializer };
+      if (ts.isShorthandPropertyAssignment(property)) return { expression: property.name, node: property.name };
+      return { node: property };
+    }
+  }
+  return undefined;
+}
+
+function rejectInheritedEdit(source: ts.SourceFile, object: ts.ObjectLiteralExpression, key: string): void {
+  const inherited = propertyValue(source, object, key);
+  if (inherited) throw new SchematicsException(`Cannot safely edit inherited ${key} at ${location(source, inherited.node)}. Found: ${snippet(source, inherited.node)}. Add an explicit ${key} property that preserves your base configuration, or use manual integration. Imported project code is not executed. No files were written.`);
 }
 
 function parse(content: string, path: string) {
@@ -27,8 +107,11 @@ function parse(content: string, path: string) {
 export function addArrayEntry(content: string, path: string, key: string, entry: string, addon = false): string {
   const source = parse(content, path);
   const object = objectForConfig(source);
-  const property = object.properties.find(item => item.name?.getText(source).replace(/["']/g, "") === key);
-  if (!property) return insertProperty(content, object, `${key}: [${entry}]`);
+  const property = object.properties.find(item => item.name && propertyKey(source, item.name) === key);
+  if (!property) {
+    rejectInheritedEdit(source, object, key);
+    return insertProperty(content, object, `${key}: [${entry}]`);
+  }
   if (!ts.isPropertyAssignment(property) || !ts.isArrayLiteralExpression(property.initializer)) {
     throw new SchematicsException(`Cannot safely edit dynamic ${key} in ${path}. Configure it manually.`);
   }
@@ -48,8 +131,11 @@ export function addArrayEntry(content: string, path: string, key: string, entry:
 export function mergeConfigProperty(content: string, path: string, key: string, expression: string): string {
   const source = parse(content, path);
   const object = objectForConfig(source);
-  const property = object.properties.find(item => item.name?.getText(source).replace(/["']/g, "") === key);
-  if (!property) return insertProperty(content, object, `${key}: ${expression}`);
+  const property = object.properties.find(item => item.name && propertyKey(source, item.name) === key);
+  if (!property) {
+    rejectInheritedEdit(source, object, key);
+    return insertProperty(content, object, `${key}: ${expression}`);
+  }
   let current: string;
   let start: number;
   if (ts.isPropertyAssignment(property)) {
@@ -91,22 +177,37 @@ export function addHelperImport(content: string): string {
   return `import { ${names.join(", ")} } from "./angular-i18n-tools";\n${content}`;
 }
 
-export function requireAngularFramework(content: string, path: string): void {
+export class FrameworkDetectionError extends SchematicsException {
+  constructor(message: string, readonly category: "non-angular" | "unresolved" | "missing") { super(message); }
+}
+
+export function requireAngularFramework(content: string, path: string): string {
   const source = parse(content, path);
   const object = objectForConfig(source);
-  const property = object.properties.find(item => item.name?.getText(source).replace(/["']/g, "") === "framework");
-  let name: string | undefined;
-  if (property && ts.isPropertyAssignment(property)) {
-    const value = property.initializer;
-    if (ts.isStringLiteral(value)) name = value.text;
-    if (ts.isObjectLiteralExpression(value)) {
-      const field = value.properties.find(item => item.name?.getText(source).replace(/["']/g, "") === "name");
-      if (field && ts.isPropertyAssignment(field) && ts.isStringLiteral(field.initializer)) name = field.initializer.text;
-    }
+  let field = propertyValue(source, object, "framework");
+  if (field?.expression) {
+    const framework = resolveConstant(source, field.expression);
+    if (ts.isObjectLiteralExpression(framework)) field = propertyValue(source, framework, "name") ?? { node: framework };
   }
-  if (!["@storybook/angular", "@storybook/angular-vite"].includes(name ?? "")) {
-    throw new SchematicsException(`Expected an existing Angular Storybook framework in ${path}. Dynamic or other frameworks need manual setup.`);
-  }
+  const value = field?.expression ? stringValue(source, field.expression) : undefined;
+  const packageName = value?.replaceAll("\\", "/").match(/(?:^|\/)(@storybook\/(?:angular-vite|angular))(?=$|\/)/)?.[1];
+  if (packageName) return packageName;
+  const category = value !== undefined ? "non-angular" : field ? "unresolved" : "missing";
+  const reason = category === "non-angular"
+    ? `Resolved framework value: ${JSON.stringify(value)}. This is not a supported Angular Storybook framework.`
+    : field?.inherited
+      ? "The framework is inherited or overridden by a spread/imported configuration; it cannot be determined without executing project code."
+      : field
+        ? "The framework expression could not be resolved statically. Local const values and common package-resolution helpers are supported; arbitrary functions/imported values are not executed."
+        : "No explicit framework or framework.name was found in the exported config.";
+  throw new FrameworkDetectionError([
+    `Cannot configure Angular Storybook at ${location(source, field?.node ?? object)}.`,
+    `Found framework expression: ${snippet(source, field?.node)}.`,
+    reason,
+    'Supported packages: "@storybook/angular" and "@storybook/angular-vite".',
+    'Examples: framework: { name: "@storybook/angular", options: {} } or framework: { name: getAbsolutePath("@storybook/angular"), options: {} }.',
+    "Keep the framework your Angular Storybook actually uses; do not switch builders just to satisfy setup. For inherited/dynamic config, add the matching explicit framework override or use manual integration. No files were written."
+  ].join("\n"), category);
 }
 
 export function exportsTranslationLoader(content: string): boolean {

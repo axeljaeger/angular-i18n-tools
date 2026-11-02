@@ -83,3 +83,63 @@ describe("Storybook setup", () => {
     expect(tree.readContent("apps/shop/src/locale-loader.ts")).toContain("customLoader");
   });
 });
+
+describe("Angular library Storybooks", () => {
+  function libraryFixture() {
+    const tree = fixture();
+    const project = { name: "ui", projectType: "library", root: "libs/ui", sourceRoot: "libs/ui/src", targets: {
+      "storybook-preview": { executor: "@storybook/angular-vite:start-storybook", options: { configDir: "libs/ui/.stories-config" } }
+    } };
+    tree.create("libs/ui/project.json", JSON.stringify(project));
+    tree.create("libs/ui/package.json", '{"name":"@example/ui","peerDependencies":{"@angular/core":"^22.0.0"}}');
+    tree.create("libs/ui/src/index.ts", 'export * from "./button";\n');
+    tree.create("libs/ui/src/locale/messages.fr.json", '{"locale":"fr","translations":{"button.label":"Bonjour"}}');
+    tree.create("libs/ui/.stories-config/main.ts", `import { getAbsolutePath } from './paths';\nconst config = { framework: { name: getAbsolutePath('@storybook/angular-vite') }, addons: [] };\nexport default config;\n`);
+    return tree;
+  }
+  it("includes non-buildable libraries and accepts the production getAbsolutePath form", async () => {
+    const tree = libraryFixture();
+    const projectBefore = tree.readContent("libs/ui/project.json");
+    const packageBefore = tree.readContent("libs/ui/package.json");
+    const result = await runner.runSchematic("storybook-localize", { projects: ["ui", "shop"], skipInstall: true }, tree);
+    expect(result.readContent("libs/ui/.stories-config/main.ts")).toContain("getAbsolutePath('@storybook/angular-vite')");
+    expect(result.readContent("libs/ui/.stories-config/main.ts")).toContain('"@angular-i18n-tools/storybook-addon"');
+    expect(result.readContent("libs/ui/.stories-config/angular-i18n-tools.ts")).toContain('["en-US","fr"]');
+    expect(result.exists("libs/ui/.stories-config/preview.ts")).toBe(true);
+    expect(result.exists("libs/ui/.stories-config/locale-loader.ts")).toBe(true);
+    expect(result.exists("libs/ui/src/locale-loader.ts")).toBe(false);
+    expect(result.exists("libs/ui/src/main.ts")).toBe(false);
+    expect(result.readContent("libs/ui/src/index.ts")).toBe('export * from "./button";\n');
+    expect(result.readContent("libs/ui/project.json")).toBe(projectBefore);
+    expect(result.readContent("libs/ui/package.json")).toBe(packageBefore);
+    expect(JSON.parse(result.readContent("package.json")).devDependencies["@angular-i18n-tools/storybook-addon"]).toBe("^0.0.2");
+    expect(result.readContent("libs/ui/src/locale/messages.fr.json")).toContain("Bonjour");
+    expect(result.exists("apps/shop/.storybook/angular-i18n-tools.ts")).toBe(true);
+  });
+  it("also supports buildable ng-packagr libraries without adding app polyfills or extraction", async () => {
+    const tree = libraryFixture();
+    const project = JSON.parse(tree.readContent("libs/ui/project.json"));
+    project.targets.build = { executor: "@nx/angular:ng-packagr-lite", options: { project: "libs/ui/ng-package.json" } };
+    const before = JSON.stringify(project);
+    tree.overwrite("libs/ui/project.json", before);
+    const result = await runner.runSchematic("storybook-localize", { project: "ui", skipInstall: true }, tree);
+    expect(result.readContent("libs/ui/project.json")).toBe(before);
+    expect(result.exists("libs/ui/.stories-config/locale-loader.ts")).toBe(true);
+    expect(result.exists("libs/ui/src/locale-loader.ts")).toBe(false);
+  });
+  it("offers a diagnostic for unresolved library framework expressions and rolls back all projects", async () => {
+    const tree = libraryFixture();
+    tree.overwrite("libs/ui/.stories-config/main.ts", 'export default { framework: { name: customFramework() } };');
+    await expect(runner.runSchematic("storybook-localize", { all: true }, tree)).rejects.toThrow('Project "ui" (library, root: libs/ui)');
+    await expect(runner.runSchematic("storybook-localize", { all: true }, tree)).rejects.toThrow("customFramework()");
+    expect(tree.exists("apps/shop/src/locale-loader.ts")).toBe(false);
+    expect(tree.exists("libs/ui/src/locale-loader.ts")).toBe(false);
+  });
+  it("does not offer known React Storybooks as Angular projects", async () => {
+    const tree = libraryFixture();
+    tree.overwrite("libs/ui/.stories-config/main.ts", 'export default { framework: "@storybook/react-vite" };');
+    const result = await runner.runSchematic("storybook-localize", { all: true, skipInstall: true }, tree);
+    expect(result.exists("apps/shop/.storybook/angular-i18n-tools.ts")).toBe(true);
+    expect(result.exists("libs/ui/src/locale-loader.ts")).toBe(false);
+  });
+});

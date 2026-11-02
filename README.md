@@ -181,7 +181,7 @@ The examples use `@storybook/angular-vite` for Storybook and `@angular/build` fo
 Set up Angular built-in runtime localization with one workspace-aware command:
 
 ```sh
-npx @angular-i18n-tools/ng-generator@0.0.5
+npx @angular-i18n-tools/ng-generator@0.0.6
 ```
 
 Angular CLI and Nx applications are discovered automatically. An interactive
@@ -192,11 +192,12 @@ or `--project=shop,admin`; use `--dry-run` to preview changes.
 For existing Angular Storybooks, install and configure the language switcher with:
 
 ```sh
-npx @angular-i18n-tools/ng-generator@0.0.5 storybook
+npx @angular-i18n-tools/ng-generator@0.0.6 storybook
 ```
 
-This adds the addon, runtime loader integration, and discovered toolbar languages
-while retaining existing Storybook settings. It expects Storybook to be initialized.
+This supports Angular application and library Storybooks, including
+`getAbsolutePath(...)` framework names. It adds the addon, runtime loader
+integration, and discovered toolbar languages while retaining existing settings. It expects Storybook to be initialized.
 
 See the [setup guide](packages/ng-generator/README.md) for supported configurations,
 options, dependency installation, and the extraction/translation workflow.

@@ -6,7 +6,7 @@
   "properties": {
     "project": {
       "type": "string",
-      "description": "Angular application in angular.json or an Nx project.json to configure. Required when multiple apps exist."
+      "description": "Optional project name; otherwise choose applications for runtime setup, or applications and libraries for Storybook."
     },
     "sourceLocale": {
       "type": "string",
@@ -30,12 +30,12 @@
       "items": {
         "type": "string"
       },
-      "description": "Angular applications to configure. Otherwise choose interactively."
+      "description": "Optional selected project names. Otherwise choose interactively."
     },
     "all": {
       "type": "boolean",
       "default": false,
-      "description": "Configure every supported Angular application without prompting."
+      "description": "Configure every supported project for the selected setup mode without prompting."
     },
     "skipInstall": {
       "type": "boolean",

@@ -5,7 +5,7 @@ Angular CLI or Nx workspace. Starting with **0.0.5**, one command detects the
 workspace and lets you choose multiple applications:
 
 ```sh
-npx @angular-i18n-tools/ng-generator@0.0.5
+npx @angular-i18n-tools/ng-generator@0.0.6
 ```
 
 Run from the workspace root. In an interactive Nx terminal, all supported
@@ -22,13 +22,13 @@ Use a current Node 22, 24, or 26 release (see the package's engines field).
 
 ```sh
 # Configure all supported applications without a prompt
-npx @angular-i18n-tools/ng-generator@0.0.5 --all
+npx @angular-i18n-tools/ng-generator@0.0.6 --all
 
 # Select only these applications
-npx @angular-i18n-tools/ng-generator@0.0.5 --project=shop,admin
+npx @angular-i18n-tools/ng-generator@0.0.6 --project=shop,admin
 
 # Preview changes without writing files or installing dependencies
-npx @angular-i18n-tools/ng-generator@0.0.5 --all --dry-run
+npx @angular-i18n-tools/ng-generator@0.0.6 --all --dry-run
 ```
 
 Noninteractive multi-app runs require `--all` or `--project`. `--skip-install`
@@ -40,11 +40,13 @@ is applied only when setup succeeds for every selected application.
 For an **existing Angular Storybook**, run:
 
 ```sh
-npx @angular-i18n-tools/ng-generator@0.0.5 storybook
+npx @angular-i18n-tools/ng-generator@0.0.6 storybook
 ```
 
-Choose the applications whose Storybooks you want to configure. Only applications
-with a discoverable Storybook configuration are offered. `--all`, `--project`,
+Choose the Angular **applications and libraries** whose Storybooks you want to
+configure. Both buildable and non-buildable libraries are offered when their
+project.json and Storybook configuration are discoverable. Known non-Angular
+Storybooks are excluded. `--all`, `--project`,
 `--dry-run`, and `--skip-install` work here too.
 
 The command:
@@ -54,16 +56,63 @@ The command:
 - Creates runtime localization setup when no locale-loader exists. An existing
   compatible loader is preserved, including manual additions.
 - Creates `.storybook/angular-i18n-tools.ts` to load translations and define the
-  toolbar languages discovered from the application.
+  toolbar languages discovered from the selected project.
 - Extends the preview's loaders and locale globals while preserving other
   addons, loaders, decorators, parameters, and globals.
 
+For libraries, setup prepares catalogs and a locale-loader for Storybook only.
+A new loader is placed in `.storybook/locale-loader.ts`, outside production
+library sources; an existing compatible source loader is reused.
+It does not require `main.ts` or `bootstrapApplication`, and does not change the
+library's public entry point, ng-packagr build, polyfills, or extraction targets.
+Extract library messages through your existing host-app/extraction workflow;
+setup does not invent an application build target for a library.
+Libraries can keep their own JSON catalogs or reference shared catalogs through
+`i18n.locales`. Without configured languages/catalogs, only the source language
+is offered; languages are not guessed from other applications.
+
 Supports `@storybook/angular` and `@storybook/angular-vite` with ES module
-`main.ts`/`main.js`/`main.mts`/`main.mjs` configuration. Existing exported config
-objects (including `defineConfig({...})`) are edited without replacing the file.
-Dynamic config factories or dynamic `addons`/`loaders` expressions require
-[manual integration](../../README.md#storybook-addon); setup refuses them rather
-than overwriting code. Each selected app needs its own Storybook config.
+`main.ts`/`main.js`/`main.mts`/`main.mjs` configuration. The framework can be a
+string, object, local const alias, or a standard package-resolution expression:
+
+```ts
+const config = {
+  framework: {
+    name: getAbsolutePath('@storybook/angular-vite'),
+    options: {}
+  },
+  addons: []
+};
+export default config;
+```
+
+`require.resolve(...)`, `import.meta.resolve(...)`, resolved package paths,
+`dirname(require.resolve(join(...)))`, local const spreads, type assertions and
+`satisfies` are also recognized. Setup analyzes the syntax; it does not execute
+your configuration or helper functions. Keep the framework your project already
+uses. Do not switch between Angular and Angular-Vite merely to satisfy setup.
+
+## Troubleshooting Storybook detection
+
+**0.0.5 had two detection limitations fixed in 0.0.6:** it excluded libraries,
+and only accepted literal framework package names. A valid
+`getAbsolutePath('@storybook/angular-vite')` configuration could therefore fail.
+Retry with the pinned 0.0.6 command above; the shown helper form needs no rewrite.
+
+New errors identify the project, file, line/column, actual framework expression,
+why it was rejected, supported values, and recovery examples. In particular:
+
+- Missing `framework`: check the exported config or its inherited base.
+- Imported/dynamic framework: provide a matching explicit override, or use
+  [manual integration](../../README.md#storybook-addon). Arbitrary functions and
+  imported configurations are not evaluated.
+- Non-Angular framework: use this setup only for your actual Angular Storybook.
+- Dynamic or inherited `addons`, `loaders`, or globals: make the relevant property
+  explicit while preserving your base settings, or integrate manually. Setup
+  refuses to silently replace inherited settings.
+
+Selected projects are configured together. Detection/generation failures do not
+write partial files. Each selected project needs its own Storybook config.
 
 This adds localization to an existing Storybook; it does not install the
 Storybook framework itself. If Storybook is not initialized, initialize it first
@@ -120,20 +169,22 @@ changes there first. Catalogs and unrelated configuration are preserved.
 
 ## Supported workspace configuration
 
-Supports Angular CLI `angular.json` and Nx `project.json` with explicit Angular
-application build targets using `@nx/angular`, `@angular/build`, or
+Runtime application setup supports Angular CLI `angular.json` and Nx `project.json`
+with explicit Angular application build targets using `@nx/angular`, `@angular/build`, or
 `@angular-devkit/build-angular`. Build options must identify the standalone entry
 with `browser` or `main`. JSON-with-comments configuration is accepted.
 
-Inferred-only targets, package.json-only projects, custom executors, and NgModule
-bootstrap are outside this setup. Verified with Nx 24 and Angular 22, including
+The Storybook command additionally supports libraries without application build
+targets. Project discovery still requires angular.json entries or project.json;
+package.json-only/inferred project discovery is not implemented. Custom runtime
+application executors and NgModule bootstrap are outside runtime setup. Verified with Nx 24 and Angular 22, including
 real terminal selection, application builds, and a generated Storybook tested
 in Chromium. This is not a claim of compatibility with every Nx version.
 
 The existing schematics remain available for already-installed consumers:
 
 ```sh
-npx ng add @angular-i18n-tools/ng-generator@0.0.5
+npx ng add @angular-i18n-tools/ng-generator@0.0.6
 npx nx generate @angular-i18n-tools/ng-generator:runtime-localize --all
 npx nx generate @angular-i18n-tools/ng-generator:storybook-localize --project=my-app
 ```
