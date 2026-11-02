@@ -15,8 +15,7 @@
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
-              "@angular/localize/init",
-              "zone.js"
+              "@angular/localize/init"
             ],
             "tsConfig": "tsconfig.json",
             "assets": [],
@@ -41,7 +40,8 @@
             "configDir": ".storybook",
             "port": 6006,
             "open": false,
-            "compodoc": false
+            "compodoc": false,
+            "experimentalZoneless": true
           }
         },
         "build-storybook": {
@@ -51,7 +51,8 @@
             "tsConfig": "tsconfig.json",
             "configDir": ".storybook",
             "outputDir": "storybook-static",
-            "compodoc": false
+            "compodoc": false,
+            "experimentalZoneless": true
           }
         }
       }

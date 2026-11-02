@@ -12,7 +12,7 @@ describe("runtime-localize schematic", () => {
     const tree = await runSchematic();
     const angularJson = JSON.parse(tree.readContent("angular.json"));
 
-    expect(angularJson.projects.app.architect.build.options.polyfills).toEqual(["@angular/localize/init", "zone.js"]);
+    expect(angularJson.projects.app.architect.build.options.polyfills).toEqual(["@angular/localize/init"]);
     expect(angularJson.projects.app.architect["extract-i18n"].options).toMatchObject({
       buildTarget: "app:build",
       format: "json",
@@ -25,6 +25,13 @@ describe("runtime-localize schematic", () => {
     expect(tree.readContent("src/main.ts")).toContain(
       "loadRuntimeTranslations().then(() => bootstrapApplication(AppComponent)).catch"
     );
+  });
+
+  it("preserves Zone.js when adding localization to an existing zone-based app", async () => {
+    const tree = await runSchematic({}, ["zone.js"]);
+    const angularJson = JSON.parse(tree.readContent("angular.json"));
+
+    expect(angularJson.projects.app.architect.build.options.polyfills).toEqual(["@angular/localize/init", "zone.js"]);
   });
 
   it("supports custom project, source locale, runtime locales, and query parameter", async () => {
@@ -43,10 +50,10 @@ describe("runtime-localize schematic", () => {
   });
 });
 
-async function runSchematic(options: Record<string, unknown> = {}): Promise<UnitTestTree> {
+async function runSchematic(options: Record<string, unknown> = {}, polyfills: string[] = []): Promise<UnitTestTree> {
   const tree = new UnitTestTree(new EmptyTree());
 
-  tree.create("angular.json", JSON.stringify(createWorkspace(), null, 2));
+  tree.create("angular.json", JSON.stringify(createWorkspace(polyfills), null, 2));
   tree.create(
     "src/main.ts",
     'import { bootstrapApplication } from "@angular/platform-browser";\nimport { AppComponent } from "./app/app.component";\n\nbootstrapApplication(AppComponent).catch((error: unknown) => console.error(error));\n'
@@ -55,7 +62,7 @@ async function runSchematic(options: Record<string, unknown> = {}): Promise<Unit
   return runner.runSchematic("runtime-localize", options, tree);
 }
 
-function createWorkspace(): unknown {
+function createWorkspace(polyfills: string[]): unknown {
   return {
     version: 1,
     projects: {
@@ -68,7 +75,7 @@ function createWorkspace(): unknown {
             builder: "@angular-devkit/build-angular:application",
             options: {
               browser: "src/main.ts",
-              polyfills: ["zone.js"]
+              polyfills
             }
           }
         }
