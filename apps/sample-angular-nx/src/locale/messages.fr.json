@@ -1,0 +1,15 @@
+{
+  "locale": "fr",
+  "translations": {
+    "app.eyebrow": "i18n integree d'Angular",
+    "app.title": "Exemple d'outillage de localisation",
+    "app.subtitle": "Espace de travail d'exemple pour l'outillage de localisation Angular.",
+    "settingsDialog.title": "Parametres",
+    "settingsDialog.description": "Choisissez le comportement de l'application.",
+    "settingsDialog.cancelButton": "Annuler",
+    "settingsDialog.applyButton": "Appliquer",
+    "userProfile.title": "Profil utilisateur",
+    "userProfile.name": "Nom",
+    "userProfile.email": "E-mail"
+  }
+}

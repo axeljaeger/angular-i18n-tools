@@ -5,10 +5,10 @@ import { extname, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 
-const staticDir = fileURLToPath(new URL("../storybook-static/", import.meta.url));
+const staticDir = process.env.STORYBOOK_STATIC_DIR ? resolve(process.env.STORYBOOK_STATIC_DIR) : fileURLToPath(new URL("../storybook-static/", import.meta.url));
 const screenshotDir = fileURLToPath(new URL("../storybook-demo/", import.meta.url));
 // Serve under a project path, as GitHub Pages does, without an SPA fallback.
-const basePath = "/angular-i18n-tools/";
+const basePath = process.env.STORYBOOK_BASE_PATH ?? "/angular-i18n-tools/";
 const contentTypes = {
   ".html": "text/html",
   ".js": "text/javascript",
@@ -75,6 +75,7 @@ try {
 
   async function expectStory(heading, locale) {
     const frame = page.frameLocator("#storybook-preview-iframe");
+    await frame.getByText("Plain angular application", { exact: true }).waitFor();
     try {
       await frame.getByRole("heading", { name: heading, exact: true }).waitFor({ timeout: 15000 });
       assert.equal(await frame.locator("html").getAttribute("lang"), locale);

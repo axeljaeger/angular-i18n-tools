@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore Angular i18n Tools: live Angular CLI and Nx demos, a Storybook locale switcher, and tooling for Angular built-in localization.">
+  <meta name="theme-color" content="#172c39">
+  <title>Angular i18n Tools — Live demos</title>
+  <link rel="icon" href="data:,">
+  <script>
+    // Preserve links from when the root of this site served Storybook.
+    if (new URLSearchParams(location.search).has("path")) {
+      location.replace(new URL("angular/storybook/", location.href).pathname + location.search + location.hash);
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#demos">Skip to demos</a>
+  <div class="hero">
+    <nav class="wrap navigation" aria-label="Main navigation">
+      <a class="wordmark" href="./"><span class="mark" aria-hidden="true">a /</span> Angular i18n Tools</a>
+      <a class="repo" href="https://github.com/axeljaeger/angular-i18n-tools">View on GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+    <header class="wrap introduction">
+      <div>
+        <p class="eyebrow">Built-in Angular localization · Live playground</p>
+        <h1>Angular localization.<br><span>See it in action.</span></h1>
+        <p class="lede">Explore a small, translated Angular app and its components. Try the same experience in a plain Angular application and an Nx workspace.</p>
+        <a class="button primary" href="#demos">Explore the demos <span aria-hidden="true">↓</span></a>
+      </div>
+      <aside class="first-look" aria-labelledby="first-look-title">
+        <p class="eyebrow">Start here</p>
+        <h2 id="first-look-title">One component. Three languages.</h2>
+        <div class="translations" aria-label="Settings in English, German and French">
+          <p><span lang="en">Settings</span><span>EN</span></p>
+          <p><span lang="de">Einstellungen</span><span>DE</span></p>
+          <p><span lang="fr">Parametres</span><span>FR</span></p>
+        </div>
+        <p>Open a Storybook below, then use the globe toolbar to switch between English, German, and French. The preview reloads with the selected translations.</p>
+      </aside>
+    </header>
+  </div>
+  <main class="wrap">
+    <section id="demos" aria-labelledby="demo-title">
+      <div class="section-heading">
+        <p class="eyebrow">Choose your workspace</p>
+        <h2 id="demo-title">Two setups. The same sample.</h2>
+        <p>Both demos contain a settings dialog and a user profile, with matching messages and translations. The difference is how the project is organized and built.</p>
+      </div>
+      <div class="demos">
+        <article class="demo">
+          <p class="demo-number">01 / ANGULAR CLI</p>
+          <h3>Plain Angular application</h3>
+          <p>A familiar Angular CLI project. See the components together in the app, or explore them individually in Storybook.</p>
+          <div class="actions">
+            <a class="button dark" href="angular/">Open Angular app <span aria-hidden="true">↗</span></a>
+            <a class="text-link" href="angular/storybook/?path=/story/sample-settings-dialog--default">Explore Angular Storybook <span aria-hidden="true">→</span></a>
+          </div>
+          <p class="locale-links">Try the app in <a href="angular/?locale=de" lang="de" aria-label="Plain Angular app in German">Deutsch</a> or <a href="angular/?locale=fr" lang="fr" aria-label="Plain Angular app in French">Français</a>.</p>
+        </article>
+        <article class="demo">
+          <p class="demo-number">02 / NX WORKSPACE</p>
+          <h3>Angular application in NX workspace</h3>
+          <p>The same sample in an Nx project, with its own app files and build targets. Explore an equivalent localization setup in a monorepo.</p>
+          <div class="actions">
+            <a class="button dark" href="nx/">Open Nx app <span aria-hidden="true">↗</span></a>
+            <a class="text-link" href="nx/storybook/?path=/story/sample-settings-dialog--default">Explore Nx Storybook <span aria-hidden="true">→</span></a>
+          </div>
+          <p class="locale-links">Try the app in <a href="nx/?locale=de" lang="de" aria-label="Nx app in German">Deutsch</a> or <a href="nx/?locale=fr" lang="fr" aria-label="Nx app in French">Français</a>.</p>
+        </article>
+      </div>
+    </section>
+    <section class="context" aria-labelledby="about-title">
+      <div>
+        <p class="eyebrow">Behind the demos</p>
+        <h2 id="about-title">Tooling around Angular’s own i18n.</h2>
+      </div>
+      <div>
+        <p>Angular i18n Tools helps developers work with stable message IDs and runtime JSON translation catalogs using Angular’s built-in <code>i18n</code>, <code>$localize</code>, and <code>loadTranslations()</code>.</p>
+        <p>These demos showcase the Storybook locale addon. The project also includes a VS Code extension, catalog checks for CI, and an Angular setup generator. You can explore those tools and the demo source in the repository.</p>
+        <p class="demo-note">This is a demonstration interface: the settings and profile are sample content. Changing language reloads the app or story so translations are loaded before Angular renders.</p>
+        <a class="text-link" href="https://github.com/axeljaeger/angular-i18n-tools#readme">Read the documentation on GitHub <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap"><span>Angular i18n Tools</span><a href="https://github.com/axeljaeger/angular-i18n-tools">Source code &amp; project documentation <span aria-hidden="true">↗</span></a></footer>
+</body>
+</html>

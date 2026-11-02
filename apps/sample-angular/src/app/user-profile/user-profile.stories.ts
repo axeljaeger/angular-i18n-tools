@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/angular-vite";
 import { UserProfileComponent } from "./user-profile.component";
 
 const meta: Meta<UserProfileComponent> = {
-  title: "Sample/User Profile",
+  title: "Plain angular application/User Profile",
+  id: "sample-user-profile",
   component: UserProfileComponent
 };
 

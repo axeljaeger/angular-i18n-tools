@@ -1,0 +1,15 @@
+{
+  "locale": "en-US",
+  "translations": {
+    "app.eyebrow": "Angular built-in i18n",
+    "app.title": "Localization tooling sample",
+    "app.subtitle": "Sample workspace for Angular localization tooling.",
+    "settingsDialog.title": "Settings",
+    "settingsDialog.cancelButton": "Cancel",
+    "settingsDialog.applyButton": "Apply",
+    "settingsDialog.description": "Choose how the application should behave.",
+    "userProfile.title": "User profile",
+    "userProfile.name": "Name",
+    "userProfile.email": "Email"
+  }
+}

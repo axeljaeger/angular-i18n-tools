@@ -2,6 +2,23 @@
 
 Tooling for Angular built-in localization workflows with stable custom IDs and runtime JSON catalogs.
 
+## Live Demos
+
+Visit the [project site](https://axeljaeger.github.io/angular-i18n-tools/) for an
+introduction and links to both demo applications and their Storybooks:
+
+- **Plain Angular application** at `/angular/`.
+- **Angular application in NX workspace** at `/nx/`.
+
+Each app demonstrates a settings dialog and user profile in English, German,
+and French. Storybook lets you explore the components individually and switch
+languages with the locale toolbar. The two demos use separate copies of the
+same sample, with their workspace source clearly labeled in Storybook.
+
+Run the Nx Storybook with `pnpm run dev:storybook:nx`, or the app with
+`pnpm exec nx run sample-angular-nx:serve`. See [the Nx demo](apps/sample-angular-nx/README.md)
+and [Pages build and deployment](docs/demo-pages.md) for details.
+
 ## Packages And Artifacts
 
 This repository contains several related products:
@@ -248,7 +265,7 @@ The localization generator also supports zoneless applications without adding Zo
 "@angular-i18n-tools/storybook-addon": "0.0.1"
 ```
 
-That example is useful for the GitHub Pages showcase after the addon is published. Until then, it is expected not to install from a clean checkout.
+The live project site uses the workspace addon, so it can deploy without an npm release. This external-consumer example only installs after its configured package version is published.
 
 ## Release Automation
 

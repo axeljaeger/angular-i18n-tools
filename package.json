@@ -29,15 +29,20 @@
     "test": "pnpm -r --if-present run test",
     "lint": "pnpm -r --if-present run lint",
     "typecheck": "pnpm -r --if-present run typecheck",
-    "check:i18n": "pnpm --filter @angular-i18n-tools/core run build && node packages/core/dist/cli.js apps/sample-angular",
+    "check:i18n": "pnpm --filter @angular-i18n-tools/core run build && node packages/core/dist/cli.js apps/sample-angular && node packages/core/dist/cli.js apps/sample-angular-nx",
     "dev:storybook": "pnpm --filter @angular-i18n-tools/sample-angular run storybook",
     "dev:vscode-web": "pnpm --dir packages/vscode-extension run dev:web",
-    "watch:vscode": "pnpm --dir packages/vscode-extension run watch"
+    "watch:vscode": "pnpm --dir packages/vscode-extension run watch",
+    "build:pages": "node scripts/pages/build.mjs",
+    "test:pages": "node scripts/pages/test.mjs",
+    "dev:storybook:nx": "pnpm exec nx run sample-angular-nx:storybook",
+    "build:demo:nx": "pnpm exec nx run sample-angular-nx:build"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
     "typescript": "~6.0.0",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "nx": "24.0.3"
   },
   "engines": {
     "node": "^22.22.3 || ^24.15.0 || ^26.0.0",

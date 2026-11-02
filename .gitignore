@@ -9,3 +9,5 @@ storybook-static/
 storybook-demo/
 *.tsbuildinfo
 npm-debug.log*
+
+.nx/

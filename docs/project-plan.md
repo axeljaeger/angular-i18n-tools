@@ -22,7 +22,8 @@ This project uses a monorepo.
 
 ```text
 apps/
-└── sample-angular/
+├── sample-angular/
+└── sample-angular-nx/
 packages/
 ├── core/
 ├── vscode-extension/
@@ -119,6 +120,13 @@ The sample Angular application is used to validate the tooling against a real wo
 - Demonstrate Angular built-in `i18n` and `$localize` usage
 - Host Storybook stories that use the `storybook-addon`
 - Provide a workspace target for VS Code extension features
+
+### Nx demo
+
+`apps/sample-angular-nx` copies the app, catalogs, and stories into a conventional
+Nx project with its own sources and configuration. The root `nx.json` enables
+local build caching. See [the Nx demo](../apps/sample-angular-nx/README.md) and
+[Pages deployment](demo-pages.md).
 
 ### Example IDs
 

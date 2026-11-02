@@ -1,0 +1,99 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "sample-angular-nx",
+  "projectType": "application",
+  "sourceRoot": "apps/sample-angular-nx/src",
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "options": {
+        "outputPath": "dist/sample-angular-nx",
+        "index": "apps/sample-angular-nx/src/index.html",
+        "browser": "apps/sample-angular-nx/src/main.ts",
+        "polyfills": [
+          "apps/sample-angular-nx/src/polyfills.ts"
+        ],
+        "tsConfig": "apps/sample-angular-nx/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/sample-angular-nx/public"
+          }
+        ],
+        "styles": [
+          "apps/sample-angular-nx/src/styles.css"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kB",
+              "maximumError": "1MB"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "development",
+      "outputs": [
+        "{options.outputPath}"
+      ]
+    },
+    "serve": {
+      "executor": "@angular/build:dev-server",
+      "configurations": {
+        "development": {
+          "buildTarget": "sample-angular-nx:build:development"
+        },
+        "production": {
+          "buildTarget": "sample-angular-nx:build:production"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular/build:extract-i18n",
+      "options": {
+        "buildTarget": "sample-angular-nx:build",
+        "format": "json",
+        "outFile": "messages.en-US.json",
+        "outputPath": "apps/sample-angular-nx/src/locale"
+      }
+    },
+    "storybook": {
+      "executor": "@storybook/angular-vite:start-storybook",
+      "options": {
+        "tsConfig": "apps/sample-angular-nx/tsconfig.storybook.json",
+        "configDir": "apps/sample-angular-nx/.storybook",
+        "port": 6007,
+        "open": false,
+        "zoneless": true,
+        "styles": [
+          "apps/sample-angular-nx/src/styles.css"
+        ]
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular-vite:build-storybook",
+      "options": {
+        "tsConfig": "apps/sample-angular-nx/tsconfig.storybook.json",
+        "configDir": "apps/sample-angular-nx/.storybook",
+        "outputDir": "dist/storybook/sample-angular-nx",
+        "zoneless": true,
+        "styles": [
+          "apps/sample-angular-nx/src/styles.css"
+        ]
+      },
+      "outputs": [
+        "{options.outputDir}"
+      ]
+    }
+  }
+}

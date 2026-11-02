@@ -1,6 +1,7 @@
-name: Storybook Pages
+name: Project Pages
 
 on:
+  pull_request:
   push:
     branches:
       - main
@@ -8,16 +9,14 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: storybook-pages-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   build:
-    name: Build Storybook
+    name: Build project site and demos
     runs-on: ubuntu-latest
 
     steps:
@@ -30,35 +29,43 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build Storybook addon
-        run: pnpm --filter @angular-i18n-tools/storybook-addon run build
+      - name: Build landing page and both demos
+        run: pnpm run build:pages
 
-      - name: Build sample Storybook
-        run: pnpm --filter @angular-i18n-tools/sample-angular run build-storybook
+      - name: Install browser for site checks
+        run: pnpm --filter @angular-i18n-tools/sample-angular exec playwright install --with-deps chromium
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v6
+      - name: Check landing page, apps, and Storybooks
+        run: pnpm run test:pages
 
-      - name: Upload Storybook artifact
+      - name: Upload project site
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
         with:
-          path: apps/sample-angular/storybook-static
+          path: dist/pages
 
   deploy:
-    name: Deploy Storybook
+    name: Deploy project site
     runs-on: ubuntu-latest
     needs: build
+    if: github.event_name != 'pull_request'
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

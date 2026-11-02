@@ -1,8 +1,13 @@
 import "@angular/localize/init";
-import type { Preview } from "@storybook/angular-vite";
+import { componentWrapperDecorator, type Preview } from "@storybook/angular-vite";
 import { loadTranslationsForLocale, type SupportedLocale } from "../src/locale-loader";
 
 const preview: Preview = {
+  decorators: [
+    componentWrapperDecorator(
+      (story) => `<p style="margin: 0 0 16px; color: #475569; font: 600 14px system-ui;">Plain angular application</p>${story}`
+    )
+  ],
   loaders: [
     async (context) => {
       const locale = context.globals.locale;

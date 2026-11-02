@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc/sample-angular-nx",
+    "resolveJsonModule": true
+  },
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" }
+  ]
+}

@@ -1,0 +1,29 @@
+.shell {
+  box-sizing: border-box;
+  max-width: 980px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+header {
+  margin-bottom: 32px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #2563eb;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
