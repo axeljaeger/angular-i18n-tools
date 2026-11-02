@@ -8,7 +8,7 @@ The project consists of:
 
 1. A VS Code extension
 2. A Storybook addon
-3. An Angular CLI generator
+3. An Angular CLI and Nx setup generator
 4. Shared libraries for localization analysis
 5. A sample Angular application for end-to-end testing
 
@@ -240,13 +240,13 @@ export const globals = {
 
 ## Package: ng-generator
 
-Angular CLI generator for adding the runtime localization workflow to an existing Angular application.
+Setup generator for adding the runtime localization workflow to an existing Angular CLI or Nx application.
 
 ### Features
 
 #### Runtime Localization Setup
 
-Configures an Angular CLI application to load JSON runtime translation catalogs before bootstrap.
+Configures an Angular CLI or Nx application to load JSON runtime translation catalogs before bootstrap.
 
 Generated changes:
 

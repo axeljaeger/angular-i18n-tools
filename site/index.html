@@ -29,13 +29,18 @@
       </header>
       <section id="products" aria-label="Our products" class="products">
         <article class="featured">
+          <h2>Angular setup generator</h2>
+          <p>Set up runtime JSON translations in Angular CLI and Nx apps: catalogs, extraction, and loading before bootstrap.</p>
+          <p class="quick-start">Angular CLI quick start · run in your workspace</p>
+          <div class="command"><code id="setup-command">npx ng add @angular-i18n-tools/ng-generator@0.0.3 --locales de fr</code><button type="button" class="copy" aria-live="polite" data-copy="setup-command">Copy</button></div>
+          <div class="secondary"><a href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/packages/ng-generator/README.md">Angular CLI &amp; Nx setup guide →</a></div>
+        </article>
+        <article>
           <h2>Storybook language switcher</h2>
-          <p>Switch component previews between English, German, and French using the globe toolbar. Translations load on preview reload.</p>
+          <p>Switch component previews between languages with the globe toolbar.</p>
           <div class="actions">
-            <a class="button" href="angular/storybook/?path=/story/sample-settings-dialog--default">Try the language switcher <span aria-hidden="true">↗</span></a>
-          </div>
-          <div class="secondary">
-            <a href="https://github.com/axeljaeger/angular-i18n-tools#storybook-addon">Addon setup</a>
+            <a class="button" href="angular/storybook/?path=/story/sample-settings-dialog--default">Try the demo ↗</a>
+            <a href="https://github.com/axeljaeger/angular-i18n-tools#storybook-addon">Setup</a>
           </div>
         </article>
         <article>
@@ -46,16 +51,10 @@
           <h2><a href="https://github.com/axeljaeger/angular-i18n-tools#github-action">Catalog checks <span aria-hidden="true">→</span></a></h2>
           <p>Find duplicate, missing, and orphaned translations in your terminal or CI.</p>
         </article>
-        <article>
-          <h2><a href="https://github.com/axeljaeger/angular-i18n-tools#angular-generator">Angular setup generator <span aria-hidden="true">→</span></a></h2>
-          <p>Add runtime JSON localization to a standalone Angular CLI app.</p>
-        </article>
       </section>
     </main>
-    <footer>
-      <p>Example projects: <a href="https://github.com/axeljaeger/angular-i18n-tools/tree/main/apps/sample-angular">Angular CLI</a> · <a href="https://github.com/axeljaeger/angular-i18n-tools/tree/main/apps/sample-angular-nx">Nx workspace</a>. Sample apps: <a href="angular/">Angular</a> · <a href="nx/">Nx</a>.</p>
-      <p><a href="https://github.com/axeljaeger/angular-i18n-tools#readme">Source code, installation &amp; documentation on GitHub <span aria-hidden="true">↗</span></a></p>
-    </footer>
+    <footer>Example projects: <a href="https://github.com/axeljaeger/angular-i18n-tools/tree/main/apps/sample-angular">Angular CLI</a> · <a href="https://github.com/axeljaeger/angular-i18n-tools/tree/main/apps/sample-angular-nx">Nx</a> · <a href="https://github.com/axeljaeger/angular-i18n-tools#readme">Documentation ↗</a></footer>
   </div>
+  <script src="clipboard.js"></script>
 </body>
 </html>

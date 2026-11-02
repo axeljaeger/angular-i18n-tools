@@ -51,17 +51,21 @@ try {
   });
   const origin = `http://127.0.0.1:${server.address().port}`;
   const url = origin + basePath;
+  await page.context().grantPermissions(["clipboard-read", "clipboard-write"], { origin });
   await page.goto(url);
   await page.getByRole("heading", { name: "Tools for Angular localization." }).waitFor();
   assert.equal(await page.getByRole("link", { name: "View on GitHub" }).getAttribute("href"), "https://github.com/axeljaeger/angular-i18n-tools");
   const products = page.getByRole("region", { name: "Our products" });
   assert.deepEqual(await products.getByRole("heading", { level: 2 }).allTextContents(), [
-    "Storybook language switcher", "VS Code extension →", "Catalog checks →", "Angular setup generator →"
+    "Angular setup generator", "Storybook language switcher", "VS Code extension →", "Catalog checks →"
   ]);
   assert.equal(await products.locator(".button").count(), 1);
   for (const href of await products.locator(".button").evaluateAll(links => links.map(link => link.getAttribute("href")))) {
     assert.ok(href.includes("/storybook/"), "Primary actions must open Storybook demos");
   }
+  assert.equal(await page.locator("#setup-command").innerText(), "npx ng add @angular-i18n-tools/ng-generator@0.0.3 --locales de fr");
+  await page.getByRole("button", { name: "Copy", exact: true }).click();
+  await page.getByRole("button", { name: "Copied", exact: true }).waitFor();
   // Follow every local destination, including language-selected apps and Storybook links.
   const links = await page.locator("a[href]").evaluateAll(links => links.map(link => link.href));
   for (const href of new Set(links.filter(href => href.startsWith(origin)))) {
