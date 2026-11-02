@@ -64,8 +64,8 @@ try {
     assert.ok(href.includes("/storybook/"), "Primary actions must open Storybook demos");
   }
   const commands = {
-    "Angular CLI": "npx ng add @angular-i18n-tools/ng-generator@0.0.3 --locales de fr",
-    Nx: "npm install --save-dev @angular-i18n-tools/ng-generator@0.0.3 && npx nx generate @angular-i18n-tools/ng-generator:runtime-localize --project=my-app --locales=de,fr"
+    "Angular CLI": "npx ng add @angular-i18n-tools/ng-generator@0.0.4",
+    Nx: "npm install --save-dev @angular-i18n-tools/ng-generator@0.0.4 && npx nx generate @angular-i18n-tools/ng-generator:runtime-localize --project=my-app"
   };
   for (const [workspace, command] of Object.entries(commands)) {
     await page.getByRole("button", { name: workspace, exact: true }).click();

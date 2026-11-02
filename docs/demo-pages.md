@@ -5,7 +5,9 @@ It introduces the project, explains what visitors can try, links to the GitHub
 repository, and lists the products in workflow order: Angular setup generator
 first, followed by the Storybook language switcher, VS Code extension, and catalog
 checks. The generator includes a workspace selector with copyable Angular CLI and Nx
-commands and links to the full setup guide. Setup and Storybook use the same
+commands without language arguments and links to the full setup guide. Generator
+0.0.4 discovers languages from project configuration and existing runtime JSON
+catalogs; optional overrides are documented in the guide. Setup and Storybook use the same
 card design on desktop and mobile.
 The Storybook product has one primary demo: the addon loads translations through
 an explicit preview loader and does not discover Angular CLI or Nx project

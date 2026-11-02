@@ -30,15 +30,15 @@
       <section id="products" aria-label="Our products" class="products">
         <article class="product-card">
           <h2>Angular setup generator</h2>
-          <p>Configure runtime JSON catalogs, extraction, and translation loading for Angular CLI and Nx.</p>
+          <p>Set up runtime JSON localization in Angular CLI and Nx, with automatic language discovery.</p>
           <div class="workspace-choice" role="group" aria-label="Workspace type">
             <button type="button" aria-pressed="true" data-command="setup-command">Angular CLI</button>
             <button type="button" aria-pressed="false" data-command="nx-command">Nx</button>
           </div>
           <p class="quick-start" id="command-hint">Run in your Angular workspace.</p>
           <div class="command">
-            <code id="setup-command">npx ng add @angular-i18n-tools/ng-generator@0.0.3 --locales de fr</code>
-            <code id="nx-command" hidden>npm install --save-dev @angular-i18n-tools/ng-generator@0.0.3 &amp;&amp; npx nx generate @angular-i18n-tools/ng-generator:runtime-localize --project=my-app --locales=de,fr</code>
+            <code id="setup-command">npx ng add @angular-i18n-tools/ng-generator@0.0.4</code>
+            <code id="nx-command" hidden>npm install --save-dev @angular-i18n-tools/ng-generator@0.0.4 &amp;&amp; npx nx generate @angular-i18n-tools/ng-generator:runtime-localize --project=my-app</code>
             <button type="button" class="copy" aria-live="polite" data-copy="setup-command">Copy</button>
           </div>
           <div class="secondary"><a href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/packages/ng-generator/README.md">Angular CLI &amp; Nx setup guide →</a></div>
