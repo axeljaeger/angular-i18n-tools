@@ -12,7 +12,8 @@
     "storybook": "node ../../scripts/with-workbench-port.mjs --offset 1 --fallback-port 6006 -- ng run sample-angular:storybook --port {port}",
     "build-storybook": "ng run sample-angular:build-storybook",
     "demo:storybook-addon": "node scripts/record-storybook-addon-demo.mjs",
-    "typecheck": "tsc -p tsconfig.app.json --noEmit"
+    "typecheck": "tsc -p tsconfig.app.json --noEmit",
+    "test:storybook-static": "node scripts/test-storybook-static.mjs"
   },
   "dependencies": {
     "@angular/animations": "^21.2.0",
@@ -30,10 +31,13 @@
     "@angular-devkit/build-angular": "^21.2.0",
     "@angular/cli": "^21.2.0",
     "@angular/compiler-cli": "^21.2.0",
-    "@storybook/angular": "10.6.5",
     "@angular-i18n-tools/storybook-addon": "workspace:*",
     "playwright": "^1.60.0",
     "storybook": "10.6.5",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "@storybook/angular-vite": "10.6.5",
+    "@angular/build": "^21.2.0",
+    "@analogjs/vite-plugin-angular": "^2.7.3",
+    "vite": "^8.0.0"
   }
 }
