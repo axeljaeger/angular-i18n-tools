@@ -61,6 +61,11 @@ try {
     assert.equal(response.status(), 200, href);
   }
   await mkdir(screenshots, { recursive: true });
+  for (const [width, height] of [[1280, 720], [390, 844]]) {
+    await page.setViewportSize({ width, height });
+    assert.ok(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight), `Landing page exceeds one screen at ${width}x${height}`);
+  }
+  await page.setViewportSize({ width: 1280, height: 720 });
   await page.screenshot({ path: resolve(screenshots, "landing-desktop.png"), fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), "Mobile horizontal overflow");
