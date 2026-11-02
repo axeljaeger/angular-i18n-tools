@@ -232,7 +232,7 @@ By default the action also emits GitHub workflow annotations for each issue, poi
 
 ## Zoneless Angular
 
-Both Angular examples use Angular 21's default zoneless change detection. Their build polyfills load only `@angular/localize/init`, and neither example depends on `zone.js`.
+Both Angular examples use Angular 22's default zoneless change detection. Their build polyfills load only `@angular/localize/init`, and neither example depends on `zone.js`.
 
 Both Storybook targets (`storybook` and `build-storybook`) explicitly set `zoneless: true`, using the Storybook Angular Vite builder. Runtime localization and locale changes continue to load translations before rendering and reload the preview when needed.
 

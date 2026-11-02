@@ -12,13 +12,16 @@ updates:
       time: "08:00"
       timezone: "Europe/Berlin"
     open-pull-requests-limit: 10
+    # Angular 22 supports TypeScript 6.0.x; revisit when upgrading Angular.
+    ignore:
+      - dependency-name: "typescript"
+        versions: [">=6.1"]
     groups:
       angular:
         patterns:
           - "@angular/*"
           - "@angular-devkit/*"
           - "typescript"
-          - "zone.js"
       storybook:
         patterns:
           - "storybook"
