@@ -9,7 +9,7 @@
       "prefix": "demo",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/storybook-npm-demo",
             "index": "src/index.html",

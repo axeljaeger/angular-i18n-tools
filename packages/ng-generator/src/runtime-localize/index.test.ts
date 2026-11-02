@@ -13,6 +13,7 @@ describe("runtime-localize schematic", () => {
     const angularJson = JSON.parse(tree.readContent("angular.json"));
 
     expect(angularJson.projects.app.architect.build.options.polyfills).toEqual(["@angular/localize/init"]);
+    expect(angularJson.projects.app.architect["extract-i18n"].builder).toBe("@angular/build:extract-i18n");
     expect(angularJson.projects.app.architect["extract-i18n"].options).toMatchObject({
       buildTarget: "app:build",
       format: "json",
@@ -28,10 +29,11 @@ describe("runtime-localize schematic", () => {
   });
 
   it("preserves Zone.js when adding localization to an existing zone-based app", async () => {
-    const tree = await runSchematic({}, ["zone.js"]);
+    const tree = await runSchematic({}, ["zone.js"], "@angular-devkit/build-angular:application");
     const angularJson = JSON.parse(tree.readContent("angular.json"));
 
     expect(angularJson.projects.app.architect.build.options.polyfills).toEqual(["@angular/localize/init", "zone.js"]);
+    expect(angularJson.projects.app.architect["extract-i18n"].builder).toBe("@angular-devkit/build-angular:extract-i18n");
   });
 
   it("supports custom project, source locale, runtime locales, and query parameter", async () => {
@@ -50,10 +52,10 @@ describe("runtime-localize schematic", () => {
   });
 });
 
-async function runSchematic(options: Record<string, unknown> = {}, polyfills: string[] = []): Promise<UnitTestTree> {
+async function runSchematic(options: Record<string, unknown> = {}, polyfills: string[] = [], builder = "@angular/build:application"): Promise<UnitTestTree> {
   const tree = new UnitTestTree(new EmptyTree());
 
-  tree.create("angular.json", JSON.stringify(createWorkspace(polyfills), null, 2));
+  tree.create("angular.json", JSON.stringify(createWorkspace(polyfills, builder), null, 2));
   tree.create(
     "src/main.ts",
     'import { bootstrapApplication } from "@angular/platform-browser";\nimport { AppComponent } from "./app/app.component";\n\nbootstrapApplication(AppComponent).catch((error: unknown) => console.error(error));\n'
@@ -62,7 +64,7 @@ async function runSchematic(options: Record<string, unknown> = {}, polyfills: st
   return runner.runSchematic("runtime-localize", options, tree);
 }
 
-function createWorkspace(polyfills: string[]): unknown {
+function createWorkspace(polyfills: string[], builder: string): unknown {
   return {
     version: 1,
     projects: {
@@ -72,7 +74,7 @@ function createWorkspace(polyfills: string[]): unknown {
         sourceRoot: "src",
         architect: {
           build: {
-            builder: "@angular-devkit/build-angular:application",
+            builder,
             options: {
               browser: "src/main.ts",
               polyfills

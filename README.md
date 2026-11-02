@@ -157,6 +157,8 @@ pnpm --filter @angular-i18n-tools/sample-angular run test:storybook-static
 
 The browser check verifies both stories, locale switching, URL-selected locales, asset loading, and that Zone.js is absent. Screenshots are saved in `apps/sample-angular/storybook-demo/`. CI builds the static Storybook on every pull request.
 
+The examples use `@storybook/angular-vite` for Storybook and `@angular/build` for the application build, development server, and translation extraction. The deprecated `@angular-devkit/build-angular` package is no longer a direct dependency. Analog still requires it transitively; unused direct animations, forms, and router dependencies have also been removed.
+
 ## Angular Generator
 
 Add runtime JSON localization setup to an existing standalone Angular application:
