@@ -71,7 +71,9 @@ function updateAngularWorkspace(
   build.options ??= {};
   build.options.polyfills = addLocalizePolyfill(build.options.polyfills);
   targets["extract-i18n"] = {
-    builder: "@angular-devkit/build-angular:extract-i18n",
+    builder: build.builder?.startsWith("@angular/build:")
+      ? "@angular/build:extract-i18n"
+      : "@angular-devkit/build-angular:extract-i18n",
     options: {
       buildTarget: `${projectName}:build`,
       format: "json",

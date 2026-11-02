@@ -10,7 +10,6 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@angular/animations": "^22.2.4",
     "@angular/common": "^22.2.4",
     "@angular/compiler": "^22.2.4",
     "@angular/core": "^22.2.4",
@@ -20,7 +19,6 @@
     "tslib": "^2.8.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^22.2.5",
     "@angular/cli": "^22.2.5",
     "@angular/compiler-cli": "^22.2.4",
     "@angular-i18n-tools/storybook-addon": "0.0.2",
