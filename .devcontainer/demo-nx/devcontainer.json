@@ -1,0 +1,20 @@
+{
+  "name": "Try Angular i18n Tools \u2014 Nx",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:24-bookworm",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/apps/sample-angular-nx",
+  "postCreateCommand": "bash ../../.devcontainer/demo/build.sh",
+  "postAttachCommand": "bash ../../.devcontainer/demo/install.sh",
+  "customizations": {
+    "codespaces": {
+      "openFiles": [
+        "apps/sample-angular-nx/DEMO.md",
+        "apps/sample-angular-nx/src/app/settings-dialog/settings-dialog.component.html"
+      ]
+    },
+    "vscode": {
+      "settings": {
+        "workbench.startupEditor": "none"
+      }
+    }
+  }
+}

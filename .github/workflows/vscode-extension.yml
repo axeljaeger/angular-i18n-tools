@@ -1,0 +1,90 @@
+name: VS Code extension
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the verified VSIX to Visual Studio Marketplace using trusted publishing.
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths:
+      - packages/vscode-extension/**
+      - packages/core/**
+      - apps/sample-angular/**
+      - apps/sample-angular-nx/**
+      - .devcontainer/**
+      - .github/workflows/vscode-extension.yml
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+  pull_request:
+    paths:
+      - packages/vscode-extension/**
+      - packages/core/**
+      - apps/sample-angular/**
+      - apps/sample-angular-nx/**
+      - .devcontainer/**
+      - .github/workflows/vscode-extension.yml
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Build and test extension
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter angular-i18n-tools-vscode run test
+      - run: pnpm --filter angular-i18n-tools-vscode run typecheck
+      - name: Install test browser
+        run: pnpm --filter @angular-i18n-tools/sample-angular exec playwright install --with-deps chromium
+      - name: Package installable extension
+        run: pnpm --filter angular-i18n-tools-vscode run package:vsix
+      - name: Unpack the actual VSIX for host tests
+        run: unzip -q packages/vscode-extension/dist/angular-i18n-tools.vsix -d dist/vscode-package-test
+      - name: Test packaged extension with Angular CLI project
+        working-directory: packages/vscode-extension
+        run: node scripts/run-web-tests.mjs --extension-path=../../dist/vscode-package-test/extension
+      - name: Test packaged extension with Nx project
+        working-directory: packages/vscode-extension
+        run: node scripts/run-web-tests.mjs --project=sample-angular-nx --extension-path=../../dist/vscode-package-test/extension
+      - uses: actions/upload-artifact@v7
+        with:
+          name: vscode-extension
+          path: packages/vscode-extension/dist/angular-i18n-tools.vsix
+          if-no-files-found: error
+
+  publish:
+    name: Publish to Visual Studio Marketplace
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish }}
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v8
+        with:
+          name: vscode-extension
+          path: dist/vscode-publish
+      - name: Publish the tested VSIX using OIDC
+        working-directory: packages/vscode-extension
+        run: pnpm exec vsce publish --oidc --packagePath ../../dist/vscode-publish/angular-i18n-tools.vsix

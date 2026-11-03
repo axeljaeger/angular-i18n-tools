@@ -1,6 +1,7 @@
-src/**
-scripts/**
-dist/web/**
-*.tsbuildinfo
-tsconfig*.json
-**/*.map
+**
+!package.json
+!README.md
+!CHANGELOG.md
+!LICENSE
+!icon.png
+!dist/extension.js

@@ -43,7 +43,7 @@ footer { margin-top: 14px; font-size: 12px; color: #51636c; }
   .wrap { padding: 14px 16px; }
   nav { font-size: 12px; gap: 8px; }
   .wordmark { font-size: 14px; }
-  header { margin: 16px 0 12px; }
+  header { margin: 14px 0 10px; }
   h1 { font-size: 26px; }
   header p { font-size: 12px; margin-top: 6px; }
   .products { grid-template-columns: 1fr; gap: 8px; }

@@ -1,6 +1,11 @@
 # Project site on GitHub Pages
 
 The main entry point is `https://axeljaeger.github.io/angular-i18n-tools/`.
+The VS Code product offers an installable VSIX, a Codespaces demo and its own
+documentation. The Marketplace installation replaces the VSIX action once the
+publisher has completed the initial publication; an unpublished shop URL is
+not presented as an available installation. Codespaces demos open the plain
+Angular and Nx samples separately and install a local build of the extension.
 It introduces the project, explains what visitors can try, links to the GitHub
 repository, and lists the products in workflow order: Angular setup generator
 first, followed by the Storybook language switcher, VS Code extension, and catalog

@@ -57,12 +57,18 @@ try {
   assert.equal(await page.getByRole("link", { name: "View on GitHub" }).getAttribute("href"), "https://github.com/axeljaeger/angular-i18n-tools");
   const products = page.getByRole("region", { name: "Our products" });
   assert.deepEqual(await products.getByRole("heading", { level: 2 }).allTextContents(), [
-    "Angular setup generator", "Storybook language switcher", "VS Code extension →", "Catalog checks →"
+    "Angular setup generator", "Storybook language switcher", "VS Code extension", "Catalog checks →"
   ]);
-  assert.equal(await products.locator(".button").count(), 1);
-  for (const href of await products.locator(".button").evaluateAll(links => links.map(link => link.getAttribute("href")))) {
-    assert.ok(href.includes("/storybook/"), "Primary actions must open Storybook demos");
-  }
+  assert.equal(await products.locator(".button").count(), 2);
+  assert.ok((await products.getByRole("link", { name: "Try the demo" }).getAttribute("href")).includes("/storybook/"));
+  const vscodeProduct = page.locator("#vscode-product");
+  assert.equal(await vscodeProduct.getByRole("link", { name: "Install VSIX" }).getAttribute("href"), "https://github.com/axeljaeger/angular-i18n-tools/releases/download/vscode-v0.0.1/angular-i18n-tools.vsix");
+  const codespaceUrl = new URL(await vscodeProduct.getByRole("link", { name: "Try in Codespaces" }).getAttribute("href"));
+  assert.equal(codespaceUrl.hostname, "codespaces.new");
+  const demoConfig = JSON.parse(await readFile(resolve(root, codespaceUrl.searchParams.get("devcontainer_path")), "utf8"));
+  assert.ok(demoConfig.workspaceFolder.endsWith("/apps/sample-angular"), "Codespace must open one sample catalog");
+  assert.ok(demoConfig.postAttachCommand.endsWith("demo/install.sh"), "Codespace must install the demo extension");
+  assert.ok((await vscodeProduct.getByRole("link", { name: "Docs" }).getAttribute("href")).includes("/packages/vscode-extension/README.md"));
   const commands = {
     "setup-command": "npx @angular-i18n-tools/ng-generator@0.0.8",
     "storybook-command": "npx @angular-i18n-tools/ng-generator@0.0.8 storybook"

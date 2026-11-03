@@ -99,15 +99,27 @@
     "test:web": "pnpm --filter @angular-i18n-tools/core run build && pnpm run build && node scripts/run-web-tests.mjs",
     "watch": "node scripts/build.mjs --watch",
     "dev:web": "node ../../scripts/with-workbench-port.mjs --offset 0 --fallback-port 3000 -- vscode-test-web --browser none --quality stable --extensionDevelopmentPath=. --port {port} ../../apps/sample-angular",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test:web:nx": "pnpm --filter @angular-i18n-tools/core run build && pnpm run build && node scripts/run-web-tests.mjs --project=sample-angular-nx",
+    "vscode:prepublish": "pnpm --filter @angular-i18n-tools/core run build && pnpm run build",
+    "package:vsix": "vsce package --no-dependencies --out dist/angular-i18n-tools.vsix"
   },
   "dependencies": {
     "@angular-i18n-tools/core": "workspace:*"
   },
   "devDependencies": {
-    "@types/vscode": "^1.144.0",
+    "@types/vscode": "^1.100.0",
     "@vscode/test-web": "^0.0.81",
+    "@vscode/vsce": "4.1.0",
     "esbuild": "^0.28.2",
     "vitest": "^5.0.5"
+  },
+  "icon": "icon.png",
+  "preview": true,
+  "capabilities": {
+    "virtualWorkspaces": true,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
   }
 }

@@ -98,7 +98,13 @@ For local development:
 npm run dev:vscode-web
 ```
 
-The release workflow packages a VSIX artifact for GitHub releases. Marketplace publishing is planned once the extension metadata and publisher setup are finalized.
+Install the [VSIX preview](https://github.com/axeljaeger/angular-i18n-tools/releases/tag/vscode-v0.0.1)
+or try it in a prepared Codespace: [Angular CLI](https://codespaces.new/axeljaeger/angular-i18n-tools?quickstart=1&devcontainer_path=.devcontainer%2Fdemo-angular%2Fdevcontainer.json)
+or [Nx](https://codespaces.new/axeljaeger/angular-i18n-tools?quickstart=1&devcontainer_path=.devcontainer%2Fdemo-nx%2Fdevcontainer.json).
+Each demo installs the extension and opens one project with a short `DEMO.md` guide.
+See the [extension guide](packages/vscode-extension/README.md) for features and
+current workspace boundaries. [Marketplace publishing](docs/vscode-extension-release.md)
+is prepared with GitHub trusted publishing and requires publisher setup.
 
 ## Storybook Addon
 
