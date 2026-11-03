@@ -1,8 +1,0 @@
-{
-  "locale": "fr",
-  "translations": {
-    "demo.title": "Verification des catalogues",
-    "demo.saveButton": "Enregistrer",
-    "demo.description": "Examiner les problemes de traduction dans une pull request."
-  }
-}
