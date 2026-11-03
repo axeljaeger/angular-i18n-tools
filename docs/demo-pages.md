@@ -8,7 +8,36 @@ not presented as an available installation. Codespaces demos open the plain
 Angular and Nx samples separately and install a local build of the extension.
 Cursor/Open VSX is identified in the same product card, with a pending status
 and a publishing-guide link until its registry listing is available.
-All four products use the same boxed product-card styling. Catalog checks link to
+All four products use the same boxed product-card styling and action order:
+**demo** (the only primary button), **installer** (secondary link), then **Docs**.
+The generator demo opens the configured Angular application; its npm page is the
+installer. Storybook's installer links to its live addon-catalog entry. Both
+copyable setup commands remain available under a collapsed **One-line setup**
+disclosure. The editor demo opens Codespaces; its secondary installer downloads
+the VSIX. Catalog checks link to the failing PR first and the ready-to-copy
+workflow second. Marketplace availability is separate from these working actions.
+
+The [Storybook catalog entry](https://storybook.js.org/addons/@angular-i18n-tools/storybook-addon)
+is live. The Microsoft and GitHub Action listings currently return 404; do not
+replace working installation links with those listings until they are published.
+
+### Ecosystem installation UI
+
+[Microsoft documents native extension links](https://code.visualstudio.com/docs/configure/command-line#_opening-vs-code-with-urls)
+(`vscode:extension/publisher.name`), which open an extension's details in VS Code;
+they do not install an unpublished VSIX. Its
+[brand guidance](https://code.visualstudio.com/brand#action-buttons-and-links)
+includes Open in VS Code buttons, rather than a reusable Marketplace installation
+widget. [GitHub's native Action installation](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/find-and-customize-actions)
+is copying workflow YAML from the Marketplace listing. No embeddable install
+widget is documented by either source.
+
+The secondary VSIX and Action links use Microsoft's **Extensions** Codicon and
+GitHub's **Workflow** Octicon. These are ecosystem UI symbols, not certification
+badges. Files are hosted locally, with [sources and licenses](../site/icons/README.md).
+
+### Catalog demo
+ Catalog checks link to
 [the intentionally failing demo PR](https://github.com/axeljaeger/angular-i18n-tools/pull/33),
 their [documentation](catalog-checks.md), and a clearly marked Marketplace search
 until the owner publishes the listing. The demo adds missing, orphaned and
