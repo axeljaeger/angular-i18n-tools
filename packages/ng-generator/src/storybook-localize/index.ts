@@ -3,7 +3,8 @@ import { branchAndMerge, chain, SchematicsException, type Rule, type Tree, type 
 import { NodePackageInstallTask } from "@angular-devkit/schematics/tasks/index.js";
 import { addLocalizeDependency, configureRuntimeProject, discoverLocales, findApplications, findProjects, writeRuntimeCatalogSetup, readJson, type AngularProject, type RuntimeLocalizeOptions } from "../runtime-localize/index.js";
 import { selectProjects } from "../project-selection.js";
-import { addArrayEntry, addHelperImport, mergeConfigProperty, requireAngularFramework, FrameworkDetectionError, exportsTranslationLoader } from "./config.js";
+import { addArrayEntry, configurePreview, requireAngularFramework, FrameworkDetectionError, exportsTranslationLoader } from "./config.js";
+import { setupStep } from "../diagnostics.js";
 
 function storybookFiles(tree: Tree, project: AngularProject): { main: string; preview: string; directory: string } | undefined {
   const targets = project.targets ?? project.architect ?? {};
@@ -40,61 +41,62 @@ function addAddonDependency(tree: Tree, root: string): boolean {
 }
 
 export function storybookLocalize(options: RuntimeLocalizeOptions): Rule {
-  return async tree => {
-    const apps = findProjects(tree).filter(app => {
+  return async (tree, setupContext) => {
+    const trace = options.verbose ? (step: string) => setupContext.logger.info(`[setup] ${step}`) : undefined;
+    const apps = setupStep("Discover Angular/Nx projects (angular.json, project.json, package.json#nx)", () => findProjects(tree), trace).filter(app => {
       const files = storybookFiles(tree, app.project);
-      if (!files) return false;
+      if (!files) { trace?.(`Skip project "${app.projectName}" (${app.project.root || "."}): no Storybook main config found`); return false; }
+      trace?.(`Discovered project "${app.projectName}" (${app.project.projectType ?? "project"}, root: ${app.project.root || "."}); main: ${files.main}; preview: ${files.preview}`);
       try { requireAngularFramework(tree.read(files.main)!.toString(), files.main); }
       catch (error) {
         // Keep unresolved configurations visible so selection yields a useful diagnostic.
-        if (error instanceof FrameworkDetectionError && error.category === "non-angular") return false;
+        if (error instanceof FrameworkDetectionError && error.category === "non-angular") { trace?.(`Skip "${app.projectName}": non-Angular framework`); return false; }
+        trace?.(`Keep "${app.projectName}" selectable: main config requires a diagnostic after selection`);
       }
       return true;
     });
     if (apps.length === 0) throw new SchematicsException("No Angular Storybook projects found. Applications and libraries are supported, including non-buildable libraries. Projects must be declared in angular.json, project.json, or package.json#nx. Check target options.configDir or <project root>/.storybook/main.ts and framework @storybook/angular(-vite). Initialize Storybook first if needed, then rerun this command.");
     const selected = await selectProjects(apps, { ...options, selectionLabel: "Angular Storybook projects" }, tree.exists("nx.json"));
+    trace?.(`Selected projects: ${selected.join(", ")}`);
     const directories = selected.map(name => storybookFiles(tree, apps.find(app => app.projectName === name)!.project)!.directory);
     if (new Set(directories).size !== directories.length) throw new SchematicsException("Selected projects share a Storybook configuration. Select one project for each Storybook.");
     let install = false;
     return branchAndMerge(chain([
-      ...selected.map(name => (tree: Tree, context: SchematicContext) => {
+      ...selected.map(name => (tree: Tree, context: SchematicContext) => setupStep(`Project "${name}" (${apps.find(app => app.projectName === name)!.project.projectType ?? "project"}, root: ${apps.find(app => app.projectName === name)!.project.root || "."})`, () => {
         const app = findProjects(tree).find(candidate => candidate.projectName === name)!;
         const files = storybookFiles(tree, app.project)!;
-        try { requireAngularFramework(tree.read(files.main)!.toString(), files.main); }
-        catch (error) { throw new SchematicsException(`Project "${name}" (${app.project.projectType ?? "project"}, root: ${app.project.root || "."}):\n${error instanceof Error ? error.message : String(error)}`); }
+        const step = <T>(action: string, path: string, operation: () => T): T => setupStep(`${action}: ${path}`, operation, trace);
+        step("Detect Angular Storybook framework", files.main, () => requireAngularFramework(tree.read(files.main)!.toString(), files.main));
         const sourceRoot = app.project.sourceRoot ?? posix.join(app.project.root ?? "", "src");
         const application = findApplications(tree).some(candidate => candidate.projectName === name);
         const sourceLoader = posix.join(sourceRoot, "locale-loader.ts");
         const loader = application || tree.exists(sourceLoader) ? sourceLoader : posix.join(files.directory, "locale-loader.ts");
         if (!tree.exists(loader)) {
           if (application) {
-            install = configureRuntimeProject(tree, context, { ...options, project: name }) || install;
+            install = step("Prepare application runtime localization", sourceRoot, () => configureRuntimeProject(tree, context, { ...options, project: name })) || install;
           } else {
-            const setup = discoverLocales(tree, app.project, options);
-            writeRuntimeCatalogSetup(tree, setup, loader);
+            const setup = step("Discover source/target locales and runtime JSON catalogs", sourceRoot, () => discoverLocales(tree, app.project, options));
+            step("Generate Storybook-local locale loader", loader, () => writeRuntimeCatalogSetup(tree, setup, loader));
             if (setup.runtimeLocales.length === 0) context.logger.info(`Project "${name}": no target languages found. Only the source language is configured; add runtime JSON catalogs or i18n.locales references (shared catalogs are supported).`);
           }
         } else if (!exportsTranslationLoader(tree.read(loader)!.toString())) {
           throw new SchematicsException(`Existing ${loader} is not the supported runtime loader. It was not overwritten; use the manual Storybook setup guide.`);
         }
-        install = addLocalizeDependency(tree, app.project.root ?? "") || install;
-        const localeSetup = discoverLocales(tree, findProjects(tree).find(candidate => candidate.projectName === name)!.project);
+        install = step("Check Angular localize dependency", app.project.root || ".", () => addLocalizeDependency(tree, app.project.root ?? "")) || install;
+        const localeSetup = step("Discover toolbar locales", sourceRoot, () => discoverLocales(tree, findProjects(tree).find(candidate => candidate.projectName === name)!.project));
         const locales = [localeSetup.sourceLocale, ...localeSetup.runtimeLocales];
         const helperPath = posix.join(files.directory, "angular-i18n-tools.ts");
         if (tree.exists(helperPath) && !tree.read(helperPath)!.toString().startsWith("// Generated by Angular i18n Tools")) throw new SchematicsException(`${helperPath} already exists and was not generated by this tool. It was not overwritten.`);
         const loaderImport = posix.relative(files.directory, loader.replace(/\.ts$/, ""));
         const helper = `// Generated by Angular i18n Tools. Rerun setup after changing configured languages.\nimport "@angular/localize/init";\nimport { loadTranslationsForLocale } from ${JSON.stringify(loaderImport.startsWith(".") ? loaderImport : `./${loaderImport}`)};\n\nconst locales = ${JSON.stringify(locales)};\nexport const angularI18nGlobalTypes = { locale: { name: "Locale", description: "Locale used when the Storybook preview is loaded.", defaultValue: ${JSON.stringify(localeSetup.sourceLocale)}, toolbar: { icon: "globe", items: locales.map(value => ({ value, title: value })), showName: true } } };\nexport const angularI18nInitialGlobals = { locale: ${JSON.stringify(localeSetup.sourceLocale)} };\nexport async function angularI18nLoader(context: { globals: Record<string, unknown> }): Promise<void> {\n  const locale = context.globals.locale;\n  if (typeof locale === "string" && locales.includes(locale)) await loadTranslationsForLocale(locale as Parameters<typeof loadTranslationsForLocale>[0]);\n}\n`;
         if (tree.exists(helperPath)) tree.overwrite(helperPath, helper); else tree.create(helperPath, helper);
-        tree.overwrite(files.main, addArrayEntry(tree.read(files.main)!.toString(), files.main, "addons", '"@angular-i18n-tools/storybook-addon"', true));
+        tree.overwrite(files.main, step("Update main addons", files.main, () => addArrayEntry(tree.read(files.main)!.toString(), files.main, "addons", '"@angular-i18n-tools/storybook-addon"', true)));
         let preview = tree.exists(files.preview) ? tree.read(files.preview)!.toString() : "const preview = {};\nexport default preview;\n";
-        preview = addHelperImport(preview);
-        preview = addArrayEntry(preview, files.preview, "loaders", "angularI18nLoader");
-        preview = mergeConfigProperty(preview, files.preview, "globalTypes", "angularI18nGlobalTypes");
-        preview = mergeConfigProperty(preview, files.preview, "initialGlobals", "angularI18nInitialGlobals");
+        preview = step("Update preview loaders and locale globals", files.preview, () => configurePreview(preview, files.preview));
         if (tree.exists(files.preview)) tree.overwrite(files.preview, preview); else tree.create(files.preview, preview);
-        install = addAddonDependency(tree, app.project.root ?? "") || install;
+        install = step("Check Storybook addon dependency", app.project.root || ".", () => addAddonDependency(tree, app.project.root ?? "")) || install;
         return tree;
-      }),
+      }, trace, true)),
       (tree, context) => {
         if (install && !options.skipInstall) context.addTask(new NodePackageInstallTask());
         return tree;

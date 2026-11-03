@@ -4,6 +4,7 @@ import { NodePackageInstallTask } from "@angular-devkit/schematics/tasks/index.j
 import { branchAndMerge, chain, SchematicsException, type Rule, type Tree, type SchematicContext } from "@angular-devkit/schematics";
 
 import { selectProjects, type ProjectSelectionOptions } from "../project-selection.js";
+import { setupStep } from "../diagnostics.js";
 
 export interface RuntimeLocalizeOptions extends ProjectSelectionOptions {
   sourceLocale?: string;
@@ -34,14 +35,18 @@ interface AngularTarget {
 }
 
 export function runtimeLocalize(options: RuntimeLocalizeOptions): Rule {
-  return async (tree) => {
-    const selected = await selectProjects(findApplications(tree), options, tree.exists("nx.json"));
+  return async (tree, setupContext) => {
+    const trace = options.verbose ? (step: string) => setupContext.logger.info(`[setup] ${step}`) : undefined;
+    const applications = setupStep("Discover Angular applications (angular.json, project.json, package.json#nx)", () => findApplications(tree), trace);
+    for (const app of applications) trace?.(`Discovered application "${app.projectName}" (root: ${app.project.root || "."})`);
+    const selected = await selectProjects(applications, options, tree.exists("nx.json"));
+    trace?.(`Selected projects: ${selected.join(", ")}`);
     let dependencyChanged = false;
     return branchAndMerge(chain([
-      ...selected.map(project => (tree: Tree, context: SchematicContext) => {
+      ...selected.map(project => (tree: Tree, context: SchematicContext) => setupStep(`Project "${project}"`, () => {
         dependencyChanged = configureRuntimeProject(tree, context, { ...options, project }) || dependencyChanged;
         return tree;
-      }),
+      }, trace, true)),
       (tree, context) => {
         if (dependencyChanged && !options.skipInstall) context.addTask(new NodePackageInstallTask());
         return tree;
@@ -51,18 +56,21 @@ export function runtimeLocalize(options: RuntimeLocalizeOptions): Rule {
 }
 
 export function configureRuntimeProject(tree: Tree, context: SchematicContext, options: RuntimeLocalizeOptions): boolean {
+  const trace = options.verbose ? (step: string) => context.logger.info(`[setup] ${step}`) : undefined;
   const { project, projectName, save } = resolveProject(tree, options.project);
 
-  const { sourceLocale, runtimeLocales, sourceRoot, localePath, catalogs, queryParam } = discoverLocales(tree, project, options);
+  const { sourceLocale, runtimeLocales, sourceRoot, localePath, catalogs, queryParam } = setupStep(`Discover locales and catalogs: ${project.sourceRoot ?? project.root ?? "."}`, () => discoverLocales(tree, project, options), trace);
   if (runtimeLocales.length === 0) context.logger.info("No target languages found. Configure i18n.locales or add messages.<locale>.json catalogs, then rerun. Only the source catalog is created.");
   const mainPath = getMainPath(project);
 
-  updateProject(projectName, project, sourceLocale, localePath);
-  save();
+  setupStep(`Update Angular localization targets: ${projectName}`, () => {
+    updateProject(projectName, project, sourceLocale, localePath);
+    save();
+  }, trace);
 
-  writeRuntimeCatalogSetup(tree, { sourceLocale, runtimeLocales, sourceRoot, catalogs, queryParam });
-  patchMainFile(tree, mainPath, joinPath(sourceRoot, "locale-loader.ts"));
-  return addLocalizeDependency(tree, project.root ?? "");
+  setupStep(`Generate runtime catalogs and locale loader: ${sourceRoot}`, () => writeRuntimeCatalogSetup(tree, { sourceLocale, runtimeLocales, sourceRoot, catalogs, queryParam }), trace);
+  setupStep(`Patch standalone bootstrap: ${mainPath}`, () => patchMainFile(tree, mainPath, joinPath(sourceRoot, "locale-loader.ts")), trace);
+  return setupStep(`Check Angular localize dependency: ${project.root || "."}`, () => addLocalizeDependency(tree, project.root ?? ""), trace);
 }
 
 export function discoverLocales(tree: Tree, project: AngularProject, options: RuntimeLocalizeOptions = {}) {

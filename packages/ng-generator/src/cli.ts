@@ -6,6 +6,11 @@ import { parseArgs } from "node:util";
 import { logging } from "@angular-devkit/core";
 import { NodeWorkflow } from "@angular-devkit/schematics/tools/index.js";
 import { parse as parseJson } from "jsonc-parser";
+import { formatSetupError } from "./diagnostics.js";
+
+function generatorVersion(): string {
+  return (parseJson(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as { version: string }).version;
+}
 
 export function workspaceRoot(start: string): string {
   let root = resolve(start);
@@ -26,15 +31,16 @@ export async function runCli(args: string[], cwd = process.cwd()): Promise<void>
     "query-param": { type: "string" },
     "dry-run": { type: "boolean", default: false },
     "skip-install": { type: "boolean", default: false },
+    verbose: { type: "boolean", default: false },
     help: { type: "boolean", short: "h" },
     version: { type: "boolean", short: "v" }
   } });
   if (values.help) {
-    console.log("Angular i18n Tools setup\n\n  npx @angular-i18n-tools/ng-generator\n  npx @angular-i18n-tools/ng-generator storybook\n\nRun inside an Angular CLI or Nx workspace. Select Angular projects with Space;\npress A to toggle all, and Enter to apply. Storybook setup requires an existing\nAngular Storybook.\n\nOptions: --project app1,app2  --all  --dry-run  --skip-install  --version");
+    console.log("Angular i18n Tools setup\n\n  npx @angular-i18n-tools/ng-generator\n  npx @angular-i18n-tools/ng-generator storybook\n\nRun inside an Angular CLI or Nx workspace. Select Angular projects with Space;\npress A to toggle all, and Enter to apply. Storybook setup requires an existing\nAngular Storybook.\n\nOptions: --project app1,app2  --all  --dry-run  --skip-install  --verbose  --version");
     return;
   }
   if (values.version) {
-    console.log((parseJson(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as { version: string }).version);
+    console.log(generatorVersion());
     return;
   }
   const command = positionals[0] ?? "setup";
@@ -43,6 +49,11 @@ export async function runCli(args: string[], cwd = process.cwd()): Promise<void>
   const pkgPath = join(root, "package.json");
   const pkg = existsSync(pkgPath) ? parseJson(readFileSync(pkgPath, "utf8")) as { packageManager?: string } : {};
   const packageManager = pkg.packageManager?.split("@")[0] || (existsSync(join(root, "pnpm-lock.yaml")) ? "pnpm" : existsSync(join(root, "yarn.lock")) ? "yarn" : "npm");
+  if (values.verbose) {
+    console.log(`[setup] Generator ${generatorVersion()} | Node ${process.version} | ${process.platform}/${process.arch}`);
+    console.log(`[setup] Workspace: ${root} | ${existsSync(join(root, "nx.json")) ? "Nx" : "Angular CLI"} | package manager: ${packageManager}`);
+    console.log(`[setup] Command: ${command} | dry run: ${values["dry-run"]} | skip install: ${values["skip-install"]}`);
+  }
   const workflow = new NodeWorkflow(root, { dryRun: values["dry-run"], packageManager, schemaValidation: true, resolvePaths: [root] });
   const logger = new logging.Logger("angular-i18n-setup");
   logger.subscribe(entry => console.log(entry.message));
@@ -52,7 +63,7 @@ export async function runCli(args: string[], cwd = process.cwd()): Promise<void>
   await new Promise<void>((complete, error) => workflow.execute({
     collection: fileURLToPath(new URL("../collection.json", import.meta.url)),
     schematic: command === "storybook" ? "storybook-localize" : "runtime-localize",
-    options: { projects: values.project ?? [], all: values.all, skipInstall: values["skip-install"],
+    options: { projects: values.project ?? [], all: values.all, skipInstall: values["skip-install"], verbose: values.verbose,
       locales: values.locales?.flatMap(value => value.split(",")) ?? [],
       ...(values["source-locale"] ? { sourceLocale: values["source-locale"] } : {}),
       ...(values["query-param"] ? { queryParam: values["query-param"] } : {})
@@ -68,7 +79,7 @@ if (process.argv[1] && realpathSync(process.argv[1]) === fileURLToPath(import.me
       console.log("Setup cancelled. No files changed.");
       process.exitCode = 130;
     } else {
-      console.error(error instanceof Error ? error.message : String(error));
+      console.error(formatSetupError(error, process.argv.includes("--verbose")));
       process.exitCode = 1;
     }
   });

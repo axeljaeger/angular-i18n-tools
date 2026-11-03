@@ -82,6 +82,18 @@ describe("Storybook setup", () => {
     await expect(runner.runSchematic("storybook-localize", {}, tree)).rejects.toThrow("not overwritten");
     expect(tree.readContent("apps/shop/src/locale-loader.ts")).toContain("customLoader");
   });
+  it("sets up named preview annotations without replacing existing decorators or parameters", async () => {
+    const tree = fixture();
+    const preview = "export const parameters = { layout: 'fullscreen' };\nexport const decorators = [customDecorator];\n";
+    tree.overwrite("apps/shop/.storybook/preview.ts", preview);
+    const result = await runner.runSchematic("storybook-localize", { project: "shop", skipInstall: true }, tree);
+    const actual = result.readContent("apps/shop/.storybook/preview.ts");
+    expect(actual).toContain(preview);
+    expect(actual).toContain("export const loaders = [angularI18nLoader]");
+    expect(actual).not.toContain("export default");
+    const rerun = await runner.runSchematic("storybook-localize", { project: "shop", skipInstall: true }, result);
+    expect(rerun.readContent("apps/shop/.storybook/preview.ts")).toBe(actual);
+  });
 });
 
 describe("Angular library Storybooks", () => {
@@ -131,7 +143,7 @@ describe("Angular library Storybooks", () => {
     const tree = libraryFixture();
     tree.overwrite("libs/ui/.stories-config/main.ts", 'export default { framework: { name: customFramework() } };');
     await expect(runner.runSchematic("storybook-localize", { all: true }, tree)).rejects.toThrow('Project "ui" (library, root: libs/ui)');
-    await expect(runner.runSchematic("storybook-localize", { all: true }, tree)).rejects.toThrow("customFramework()");
+    await expect(runner.runSchematic("storybook-localize", { all: true }, tree)).rejects.toThrow("CallExpression");
     expect(tree.exists("apps/shop/src/locale-loader.ts")).toBe(false);
     expect(tree.exists("libs/ui/src/locale-loader.ts")).toBe(false);
   });

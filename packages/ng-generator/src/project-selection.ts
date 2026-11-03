@@ -7,6 +7,7 @@ export interface ProjectSelectionOptions {
   all?: boolean;
   skipInstall?: boolean;
   selectionLabel?: string;
+  verbose?: boolean;
 }
 
 export interface ProjectChoice {

@@ -4,6 +4,11 @@
   "title": "Angular i18n Runtime Localization",
   "type": "object",
   "properties": {
+    "verbose": {
+      "type": "boolean",
+      "default": false,
+      "description": "Show setup steps and project discovery details. The standalone CLI also shows error cause stacks."
+    },
     "project": {
       "type": "string",
       "description": "Optional project name; otherwise choose applications for runtime setup, or applications and libraries for Storybook."

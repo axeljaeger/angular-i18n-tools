@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { runCli, workspaceRoot } from "./cli";
+import { formatSetupError } from "./diagnostics";
 
 const fixtures: string[] = [];
 function fixture() {
@@ -68,5 +69,30 @@ describe("standalone setup command", () => {
     expect(existsSync(join(root, "libs/ui/.storybook/locale-loader.ts"))).toBe(true);
     expect(readFileSync(join(root, "libs/ui/package.json"), "utf8")).toBe(pkg);
     expect(existsSync(join(root, "libs/ui/project.json"))).toBe(false);
+  });
+  it("traces preview failures with version, project, file, stage and original cause without source contents", async () => {
+    const logs = vi.spyOn(console, "log").mockImplementation(() => {});
+    const root = fixture();
+    mkdirSync(join(root, "apps/shop/.storybook"));
+    writeFileSync(join(root, "apps/shop/.storybook/main.ts"), "export default { framework: '@storybook/angular-vite', addons: [] };");
+    const preview = "export const loaders = getLoaders('SYNTHETIC_SECRET');";
+    writeFileSync(join(root, "apps/shop/.storybook/preview.ts"), preview);
+    let failure: unknown;
+    try { await runCli(["storybook", "--project=shop", "--dry-run", "--verbose"], root); }
+    catch (error) { failure = error; }
+    expect(failure).toBeInstanceOf(Error);
+    const report = formatSetupError(failure, true);
+    expect(report).toContain('Project "shop"');
+    expect(report).toContain("Update preview loaders and locale globals: apps/shop/.storybook/preview.ts");
+    expect(report).toContain("PREVIEW_ANNOTATION_UNRESOLVED");
+    expect(report).toContain("Caused by:");
+    expect(report).not.toContain("SYNTHETIC_SECRET");
+    const trace = logs.mock.calls.flat().join("\n");
+    expect(trace).toContain("[setup] Generator");
+    expect(trace).toContain("Node v");
+    expect(trace).toContain("Selected projects: shop");
+    expect(trace).not.toContain("SYNTHETIC_SECRET");
+    expect(readFileSync(join(root, "apps/shop/.storybook/preview.ts"), "utf8")).toBe(preview);
+    expect(existsSync(join(root, "apps/shop/src/locale-loader.ts"))).toBe(false);
   });
 });

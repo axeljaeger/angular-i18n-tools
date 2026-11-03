@@ -5,7 +5,7 @@ Angular CLI or Nx workspace. Starting with **0.0.5**, one command detects the
 workspace and lets you choose multiple applications:
 
 ```sh
-npx @angular-i18n-tools/ng-generator@0.0.7
+npx @angular-i18n-tools/ng-generator@0.0.8
 ```
 
 Run from the workspace root. In an interactive Nx terminal, all supported
@@ -22,13 +22,13 @@ Use a current Node 22, 24, or 26 release (see the package's engines field).
 
 ```sh
 # Configure all supported applications without a prompt
-npx @angular-i18n-tools/ng-generator@0.0.7 --all
+npx @angular-i18n-tools/ng-generator@0.0.8 --all
 
 # Select only these applications
-npx @angular-i18n-tools/ng-generator@0.0.7 --project=shop,admin
+npx @angular-i18n-tools/ng-generator@0.0.8 --project=shop,admin
 
 # Preview changes without writing files or installing dependencies
-npx @angular-i18n-tools/ng-generator@0.0.7 --all --dry-run
+npx @angular-i18n-tools/ng-generator@0.0.8 --all --dry-run
 ```
 
 Noninteractive multi-app runs require `--all` or `--project`. `--skip-install`
@@ -40,7 +40,7 @@ is applied only when setup succeeds for every selected application.
 For an **existing Angular Storybook**, run:
 
 ```sh
-npx @angular-i18n-tools/ng-generator@0.0.7 storybook
+npx @angular-i18n-tools/ng-generator@0.0.8 storybook
 ```
 
 Choose the Angular **applications and libraries** whose Storybooks you want to
@@ -72,7 +72,11 @@ Libraries can keep their own JSON catalogs or reference shared catalogs through
 is offered; languages are not guessed from other applications.
 
 Supports `@storybook/angular` and `@storybook/angular-vite` with ES module
-`main.ts`/`main.js`/`main.mts`/`main.mjs` configuration. The framework can be a
+`main.ts`/`main.js`/`main.mts`/`main.mjs` configuration. Main config uses a
+local default export; `export { config as default }` is also supported. Preview
+annotations may use either a default object or local named exports such as
+`export const parameters = ...`, `decorators`, `loaders`, `globalTypes` and
+`initialGlobals`. Their style and unrelated settings are preserved. The framework can be a
 string, object, local const alias, or a standard package-resolution expression:
 
 ```ts
@@ -103,9 +107,40 @@ Retry with the current pinned command above; the shown helper form needs no rewr
 discovered angular.json/project.json projects; package-based libraries could
 still be absent from the chooser even with a valid framework configuration.
 
-New errors identify the project, file, line/column, actual framework expression,
-why it was rejected, supported values, and recovery examples. In particular:
+Starting with **0.0.8**, errors include the selected project, the failing setup
+step, main/preview file, location when available, detected export/syntax form,
+reason and concrete recovery instructions. Stable diagnostic codes distinguish
+missing exports, unresolved imports/factories, syntax errors and unsupported
+preview annotations. The original error is retained as the cause.
 
+For a full local trace:
+
+```sh
+npx @angular-i18n-tools/ng-generator@0.0.8 storybook --verbose --dry-run
+```
+
+`--verbose` prints generator/Node versions, platform, workspace/package manager,
+project discovery/selection and each setup step. Failures also print JavaScript
+stacks, including the original causes. Output goes to the terminal; setup does
+not upload a report or write a diagnostic file. Configuration contents and
+source excerpts are omitted, including from parser errors; logs still contain
+project names and file paths, so review these before sharing.
+
+Configuration generation failures leave all selected projects unchanged. An
+installation failure occurs after file changes have been committed; do not
+interpret that as a rollback. `--dry-run` never applies generated files or runs
+the install task.
+
+In particular:
+
+- `CONFIG_EXPORT_NOT_FOUND`: check the file named in the diagnostic. Main needs
+  a local default export. Named preview annotations are supported; a failure in
+  preview is not evidence that the main config is invalid.
+- `CONFIG_EXPORT_UNRESOLVED`: the export exists, but imports/factories prevent
+  safe static editing. Keep your existing config and integrate manually.
+- `CONFIG_SYNTAX_ERROR`: fix syntax at the given file/line/column first.
+- `PREVIEW_ANNOTATION_UNRESOLVED`: dynamic, mutable or re-exported annotations
+  require an explicit local const array/object or manual integration.
 - Missing `framework`: check the exported config or its inherited base.
 - Imported/dynamic framework: provide a matching explicit override, or use
   [manual integration](../../README.md#storybook-addon). Arbitrary functions and
@@ -207,7 +242,7 @@ in Chromium. This is not a claim of compatibility with every Nx version.
 The existing schematics remain available for already-installed consumers:
 
 ```sh
-npx ng add @angular-i18n-tools/ng-generator@0.0.7
+npx ng add @angular-i18n-tools/ng-generator@0.0.8
 npx nx generate @angular-i18n-tools/ng-generator:runtime-localize --all
 npx nx generate @angular-i18n-tools/ng-generator:storybook-localize --project=my-app
 ```
