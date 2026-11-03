@@ -64,8 +64,8 @@ try {
     assert.ok(href.includes("/storybook/"), "Primary actions must open Storybook demos");
   }
   const commands = {
-    "setup-command": "npx @angular-i18n-tools/ng-generator@0.0.6",
-    "storybook-command": "npx @angular-i18n-tools/ng-generator@0.0.6 storybook"
+    "setup-command": "npx @angular-i18n-tools/ng-generator@0.0.7",
+    "storybook-command": "npx @angular-i18n-tools/ng-generator@0.0.7 storybook"
   };
   for (const [id, command] of Object.entries(commands)) {
     const button = page.locator(`[data-copy="${id}"]`);

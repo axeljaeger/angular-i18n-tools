@@ -7,7 +7,8 @@ first, followed by the Storybook language switcher, VS Code extension, and catal
 checks. The generator uses one copyable workspace-aware npx command for both
 Angular CLI and Nx, with a terminal checkbox list for multiple applications.
 Storybook has its own one-line setup command for existing Angular application
-and library Storybooks, including non-buildable Nx libraries (generator 0.0.6+).
+and library Storybooks, including non-buildable Nx libraries. Generator 0.0.7+
+also discovers libraries whose Nx settings live in package.json.
 Both product cards use the same documentation-link styling and link to the
 full setup guide.
 The Storybook product has one primary demo: the addon loads translations through
