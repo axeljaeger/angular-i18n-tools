@@ -210,51 +210,31 @@ options, dependency installation, and the extraction/translation workflow.
 
 ## GitHub Action
 
-This repository provides a reusable GitHub Action that checks Angular built-in localization catalogs for:
-
-- duplicate source localization IDs
-- missing translations
-- orphaned translations that no source ID uses anymore
-
-Example workflow for another Angular project:
+Check duplicate localization IDs and missing/orphaned runtime JSON translations
+in pull requests, with annotations on affected lines and a linked job summary.
+The bundled action needs no dependency installation or application build:
 
 ```yaml
 name: i18n
-
-on:
-  pull_request:
-  push:
-    branches: [main]
-
+on: [pull_request, workflow_dispatch]
+permissions:
+  contents: read
 jobs:
   check-i18n:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
+      - uses: actions/checkout@v7
       - uses: axeljaeger/angular-i18n-tools@v1
         with:
-          path: .
+          path: apps/my-app
 ```
 
-Use `path` when the Angular workspace is in a subdirectory:
-
-```yaml
-- uses: axeljaeger/angular-i18n-tools@v1
-  with:
-    path: apps/web
-```
-
-The action scans `.html`, `.ts`, and `messages.<locale>.json` files. It exits with a non-zero status when catalog issues are found, making it suitable for pull request checks.
-
-By default the action also emits GitHub workflow annotations for each issue, pointing at the source ID or orphaned translation key when a concrete location exists. Disable annotations when plain log output is preferred:
-
-```yaml
-- uses: axeljaeger/angular-i18n-tools@v1
-  with:
-    path: .
-    annotations: "false"
-```
+Select one independent Angular CLI or Nx project at a time. The action checks
+existing `messages.<locale>.json` catalogs; it reports empty/invalid catalogs
+rather than silently accepting them. It reports problems without changing files
+or generating translations. Inputs `annotations` and `summary` can be disabled.
+See the [catalog checks guide](docs/catalog-checks.md) for the demo workflow,
+release tags, limits and Marketplace publication status.
 
 ## Zoneless Angular
 
@@ -284,4 +264,4 @@ The repository includes GitHub workflows for:
 - VS Code extension VSIX packaging
 - Storybook deployment to GitHub Pages
 
-The GitHub Action should be consumed through a stable release tag, for example `axeljaeger/angular-i18n-tools@v1`. npm publishing requires an `NPM_TOKEN` repository secret. Storybook Pages deployment requires GitHub Pages to be enabled for GitHub Actions in the repository settings.
+The GitHub Action should be consumed through a stable release tag, for example `axeljaeger/angular-i18n-tools@v1`. npm publishing uses the configured GitHub trusted-publishing workflow. Storybook Pages deployment requires GitHub Pages to be enabled for GitHub Actions in the repository settings.

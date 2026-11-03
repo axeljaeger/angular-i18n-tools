@@ -36,13 +36,15 @@
     "build:pages": "node scripts/pages/build.mjs",
     "test:pages": "node scripts/pages/test.mjs",
     "dev:storybook:nx": "pnpm exec nx run sample-angular-nx:storybook",
-    "build:demo:nx": "pnpm exec nx run sample-angular-nx:build"
+    "build:demo:nx": "pnpm exec nx run sample-angular-nx:build",
+    "build:action": "tsc -p scripts/catalog-action/tsconfig.json && node scripts/catalog-action/build.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
+    "esbuild": "0.28.2",
+    "nx": "24.0.3",
     "typescript": "~6.0.0",
-    "vitest": "^5.0.5",
-    "nx": "24.0.3"
+    "vitest": "^5.0.5"
   },
   "engines": {
     "node": "^22.22.3 || ^24.15.0 || ^26.0.0",

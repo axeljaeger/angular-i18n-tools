@@ -225,6 +225,14 @@ describe("isIgnoredWorkspacePath", () => {
   });
 });
 
+describe("empty runtime catalogs", () => {
+  it("retains catalog locales even when there are no translated entries", () => {
+    const catalog = createCatalog([{ path: "view.html", content: '<p i18n="@@hello">Hello</p>' }, { path: "messages.de.json", content: '{"locale":"de","translations":{}}' }]);
+    expect(compareTranslations(catalog)).toEqual([{ locale: "de", missing: ["hello"], extra: [] }]);
+    expect(getCatalogDiagnostics(catalog)).toContainEqual(expect.objectContaining({ kind: "missing-translation", locale: "de", id: "hello" }));
+  });
+});
+
 function createBrokenCatalogFixture() {
   return [
     { path: "a.html", content: '<h1 i18n="Title@@home.title">Home</h1>' },

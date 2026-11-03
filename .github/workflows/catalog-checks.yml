@@ -1,0 +1,22 @@
+name: Catalog checks
+
+on:
+  pull_request:
+    paths:
+      - examples/catalog-checks-demo/**
+      - .github/workflows/catalog-checks.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Catalog checks — demo project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check Angular runtime catalogs
+        uses: axeljaeger/angular-i18n-tools@v1
+        with:
+          path: examples/catalog-checks-demo

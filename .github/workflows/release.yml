@@ -33,7 +33,7 @@ permissions:
 jobs:
   release:
     name: Package And Publish
-    if: ${{ github.event_name != 'release' || !startsWith(github.event.release.tag_name, 'vscode-v') }}
+    if: ${{ github.event_name != 'release' || (!startsWith(github.event.release.tag_name, 'vscode-v') && !startsWith(github.event.release.tag_name, 'action-v')) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

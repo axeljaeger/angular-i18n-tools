@@ -47,6 +47,10 @@ jobs:
         run: pnpm run check:i18n
 
       - name: Smoke test reusable GitHub Action
+        # Local source checkouts build the bundle; released action tags include it.
+        run: pnpm run build:action
+
+      - name: Run reusable GitHub Action
         uses: ./
         with:
           path: apps/sample-angular

@@ -23,6 +23,8 @@ export interface LocalizationCatalog {
   entries: LocalizationEntry[];
   sourceEntries: LocalizationEntry[];
   translationEntries: LocalizationEntry[];
+  /** Includes valid empty catalogs, which have no translation entries yet. */
+  locales?: string[];
 }
 
 export interface TranslationCoverage {
@@ -81,7 +83,9 @@ export function createCatalog(files: WorkspaceFile[]): LocalizationCatalog {
   return {
     entries,
     sourceEntries: entries.filter((entry) => entry.kind !== "translation"),
-    translationEntries: entries.filter((entry) => entry.kind === "translation")
+    translationEntries: entries.filter((entry) => entry.kind === "translation"),
+    locales: [...new Set(files.filter(file => !isIgnoredWorkspacePath(file.path) && isTranslationCatalogPath(file.path) && parseRuntimeTranslations(file.content))
+      .flatMap(file => parseLocaleFromPath(file.path) ?? []))].sort()
   };
 }
 
@@ -185,7 +189,7 @@ export function findDuplicateIds(catalog: LocalizationCatalog): Map<string, Loca
 
 export function compareTranslations(catalog: LocalizationCatalog): TranslationCoverage[] {
   const sourceIds = new Set(catalog.sourceEntries.map((entry) => entry.id));
-  const entriesByLocale = new Map<string, LocalizationEntry[]>();
+  const entriesByLocale = new Map<string, LocalizationEntry[]>((catalog.locales ?? []).map(locale => [locale, []]));
 
   for (const entry of catalog.translationEntries) {
     const locale = entry.locale ?? "unknown";
