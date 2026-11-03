@@ -4,7 +4,21 @@ on:
   workflow_dispatch:
     inputs:
       publish:
-        description: Publish the verified VSIX to Visual Studio Marketplace using trusted publishing.
+        description: Publish the verified VSIX to the selected registry or registries.
+        type: boolean
+        default: false
+      registry:
+        description: Registry to publish to; both jobs use the same tested VSIX.
+        type: choice
+        options: [marketplace, open-vsx, both]
+        default: marketplace
+      openvsx_auth:
+        description: Open VSX token for the first release, or trusted publishing after setup.
+        type: choice
+        options: [token, trusted]
+        default: token
+      create_namespace:
+        description: Create a missing Open VSX namespace from the manifest publisher (token mode only).
         type: boolean
         default: false
   push:
@@ -69,7 +83,7 @@ jobs:
 
   publish:
     name: Publish to Visual Studio Marketplace
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish && (inputs.registry == 'marketplace' || inputs.registry == 'both') }}
     needs: verify
     runs-on: ubuntu-latest
     permissions:
@@ -90,3 +104,66 @@ jobs:
       - name: Publish the tested VSIX using OIDC
         working-directory: packages/vscode-extension
         run: pnpm exec vsce publish --oidc --packagePath ../../dist/vscode-publish/angular-i18n-tools.vsix
+
+  publish_openvsx:
+    name: Publish to Open VSX
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish && (inputs.registry == 'open-vsx' || inputs.registry == 'both') }}
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v8
+        with:
+          name: vscode-extension
+          path: dist/vscode-publish
+      - name: Validate Open VSX publishing configuration
+        env:
+          OVSX_PAT: ${{ inputs.openvsx_auth == 'token' && secrets.OVSX_PAT || '' }}
+          OVSX_AUTH_MODE: ${{ inputs.openvsx_auth }}
+          CREATE_NAMESPACE: ${{ inputs.create_namespace }}
+        run: |
+          if [[ "$OVSX_AUTH_MODE" == "token" && -z "$OVSX_PAT" ]]; then
+            echo "::error::Token mode requires the OVSX_PAT repository secret."
+            exit 1
+          fi
+          if [[ "$OVSX_AUTH_MODE" == "trusted" && "$CREATE_NAMESPACE" == "true" ]]; then
+            echo "::error::Namespace creation requires token mode; trusted publishing requires an existing verified namespace and extension."
+            exit 1
+          fi
+      - name: Create Open VSX namespace if requested and missing
+        if: ${{ inputs.create_namespace }}
+        working-directory: packages/vscode-extension
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+          OVSX_REGISTRY_URL: https://open-vsx.org
+        run: |
+          namespace=$(node -p "require('./package.json').publisher")
+          status=$(curl --silent --show-error --connect-timeout 10 --max-time 30 --output /dev/null --write-out '%{http_code}' "https://open-vsx.org/api/$namespace")
+          case "$status" in
+            200) echo "Namespace already exists; publication still requires membership." ;;
+            404) pnpm exec ovsx create-namespace "$namespace" ;;
+            *) echo "::error::Cannot check Open VSX namespace (HTTP $status)."; exit 1 ;;
+          esac
+      - name: Publish tested VSIX with access token
+        if: ${{ inputs.openvsx_auth == 'token' }}
+        working-directory: packages/vscode-extension
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+          OVSX_REGISTRY_URL: https://open-vsx.org
+        run: pnpm exec ovsx publish ../../dist/vscode-publish/angular-i18n-tools.vsix
+      - name: Publish tested VSIX with trusted publishing
+        if: ${{ inputs.openvsx_auth == 'trusted' }}
+        working-directory: packages/vscode-extension
+        env:
+          OVSX_REGISTRY_URL: https://open-vsx.org
+        run: pnpm exec ovsx publish ../../dist/vscode-publish/angular-i18n-tools.vsix --trusted-publishing
