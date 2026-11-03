@@ -57,9 +57,9 @@ try {
   assert.equal(await page.getByRole("link", { name: "View on GitHub" }).getAttribute("href"), "https://github.com/axeljaeger/angular-i18n-tools");
   const products = page.getByRole("region", { name: "Our products" });
   assert.deepEqual(await products.getByRole("heading", { level: 2 }).allTextContents(), [
-    "Angular setup generator", "Storybook language switcher", "VS Code & Cursor extension", "Catalog checks →"
+    "Angular setup generator", "Storybook language switcher", "VS Code & Cursor extension", "Catalog checks"
   ]);
-  assert.equal(await products.locator(".button").count(), 2);
+  assert.equal(await products.locator(".button").count(), 3);
   assert.ok((await products.getByRole("link", { name: "Try the demo" }).getAttribute("href")).includes("/storybook/"));
   const vscodeProduct = page.locator("#vscode-product");
   assert.ok((await vscodeProduct.getByRole("link", { name: "Open VSX publication pending." }).getAttribute("href")).endsWith("#open-vsx--cursor"));
@@ -70,6 +70,13 @@ try {
   assert.ok(demoConfig.workspaceFolder.endsWith("/apps/sample-angular"), "Codespace must open one sample catalog");
   assert.ok(demoConfig.postAttachCommand.endsWith("demo/install.sh"), "Codespace must install the demo extension");
   assert.ok((await vscodeProduct.getByRole("link", { name: "Docs" }).getAttribute("href")).includes("/packages/vscode-extension/README.md"));
+  const catalogProduct = page.locator("#catalog-product");
+  assert.equal(await catalogProduct.getByRole("link", { name: "See failing PR" }).getAttribute("href"), "https://github.com/axeljaeger/angular-i18n-tools/pull/33");
+  const marketplaceUrl = new URL(await catalogProduct.getByRole("link", { name: "Marketplace (pending)" }).getAttribute("href"));
+  assert.equal(marketplaceUrl.origin + marketplaceUrl.pathname, "https://github.com/marketplace");
+  assert.equal(marketplaceUrl.searchParams.get("type"), "actions");
+  assert.ok((await catalogProduct.getByRole("link", { name: "Docs" }).getAttribute("href")).endsWith("/docs/catalog-checks.md"));
+  assert.equal(await products.locator("article.product-card").count(), 4);
   const commands = {
     "setup-command": "npx @angular-i18n-tools/ng-generator@0.0.8",
     "storybook-command": "npx @angular-i18n-tools/ng-generator@0.0.8 storybook"
@@ -84,7 +91,7 @@ try {
     const style = getComputedStyle(link);
     return [style.fontSize, style.fontWeight, style.color, style.textDecorationLine];
   }));
-  assert.equal(docStyles.length, 4);
+  assert.equal(docStyles.length, 5);
   for (const style of docStyles) assert.deepEqual(style, docStyles[0], "Product documentation links must share their appearance");
   // Follow every local destination, including language-selected apps and Storybook links.
   const links = await page.locator("a[href]").evaluateAll(links => links.map(link => link.href));

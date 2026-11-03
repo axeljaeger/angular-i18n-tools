@@ -8,7 +8,12 @@ not presented as an available installation. Codespaces demos open the plain
 Angular and Nx samples separately and install a local build of the extension.
 Cursor/Open VSX is identified in the same product card, with a pending status
 and a publishing-guide link until its registry listing is available.
-The extension uses the same boxed product-card styling as setup and Storybook.
+All four products use the same boxed product-card styling. Catalog checks link to
+[the intentionally failing demo PR](https://github.com/axeljaeger/angular-i18n-tools/pull/33),
+their [documentation](catalog-checks.md), and a clearly marked Marketplace search
+until the owner publishes the listing. The demo adds missing, orphaned and
+duplicate IDs only in `examples/catalog-checks-demo`; keep it open and do not merge.
+The landing page remains within one screen at the tested desktop/mobile sizes.
 It introduces the project, explains what visitors can try, links to the GitHub
 repository, and lists the products in workflow order: Angular setup generator
 first, followed by the Storybook language switcher, VS Code extension, and catalog
