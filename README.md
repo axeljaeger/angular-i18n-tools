@@ -233,7 +233,8 @@ Select one independent Angular CLI or Nx project at a time. The action checks
 existing `messages.<locale>.json` catalogs; it reports empty/invalid catalogs
 rather than silently accepting them. It reports problems without changing files
 or generating translations. Inputs `annotations` and `summary` can be disabled.
-See the [catalog checks guide](docs/catalog-checks.md) for the demo workflow,
+See the [catalog checks guide](docs/catalog-checks.md) and
+[the intentionally failing demo PR](https://github.com/axeljaeger/angular-i18n-tools/pull/33) for the demo workflow,
 release tags, limits and Marketplace publication status.
 
 ## Zoneless Angular

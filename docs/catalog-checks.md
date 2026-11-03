@@ -52,7 +52,8 @@ Inputs:
 
 ## Demo
 
-`examples/catalog-checks-demo` is clean on the default branch. The public demo PR
+`examples/catalog-checks-demo` is clean on the default branch. The
+[public demo PR #33](https://github.com/axeljaeger/angular-i18n-tools/pull/33)
 adds three intentional mistakes: one missing German translation, one orphaned
 French key, and one duplicated source ID. Expect four annotated locations,
 because the duplicated ID has two source occurrences. The PR remains open and
@@ -60,7 +61,8 @@ must not be merged. Other demos and their builds stay unaffected.
 
 The workflow `.github/workflows/catalog-checks.yml` consumes the released action
 exactly as an external project would. A manual run on the default branch is the
-passing counterpart to the failing PR.
+[passing counterpart](https://github.com/axeljaeger/angular-i18n-tools/actions/runs/41662696502)
+to the failing PR.
 
 ## Local CLI
 

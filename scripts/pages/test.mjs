@@ -57,28 +57,54 @@ try {
   assert.equal(await page.getByRole("link", { name: "View on GitHub" }).getAttribute("href"), "https://github.com/axeljaeger/angular-i18n-tools");
   const products = page.getByRole("region", { name: "Our products" });
   assert.deepEqual(await products.getByRole("heading", { level: 2 }).allTextContents(), [
-    "Angular setup generator", "Storybook language switcher", "VS Code & Cursor extension", "Catalog checks →"
+    "Angular setup generator", "Storybook language switcher", "VS Code & Cursor extension", "Catalog checks"
   ]);
-  assert.equal(await products.locator(".button").count(), 2);
+  assert.equal(await products.locator(".button").count(), 4);
+  for (const card of await products.locator("article.product-card").all()) {
+    const actions = card.locator(".actions > a");
+    assert.equal(await actions.count(), 3, "Every card has demo, installer and documentation actions");
+    assert.ok((await actions.nth(0).getAttribute("class")).includes("demo-link"));
+    assert.ok((await actions.nth(0).getAttribute("class")).includes("button"));
+    assert.equal(await actions.nth(1).getAttribute("class"), "install-link");
+    assert.equal(await actions.nth(2).getAttribute("class"), "docs-link");
+    assert.equal(await card.locator(".button:not(.demo-link)").count(), 0, "Only demos use primary styling");
+  }
+  const setupProduct = page.locator("#setup-product");
+  assert.equal(await setupProduct.locator(".demo-link").getAttribute("href"), "angular/?locale=de");
+  assert.equal(await setupProduct.locator(".install-link").getAttribute("href"), "https://www.npmjs.com/package/@angular-i18n-tools/ng-generator");
+  assert.equal(await page.locator("#storybook-product .install-link").getAttribute("href"), "https://storybook.js.org/addons/@angular-i18n-tools/storybook-addon");
   assert.ok((await products.getByRole("link", { name: "Try the demo" }).getAttribute("href")).includes("/storybook/"));
   const vscodeProduct = page.locator("#vscode-product");
-  assert.ok((await vscodeProduct.getByRole("link", { name: "Open VSX publication pending." }).getAttribute("href")).endsWith("#open-vsx--cursor"));
-  assert.equal(await vscodeProduct.getByRole("link", { name: "Install VSIX" }).getAttribute("href"), "https://github.com/axeljaeger/angular-i18n-tools/releases/download/vscode-v0.0.1/angular-i18n-tools.vsix");
+  assert.ok((await vscodeProduct.getByRole("link", { name: "Marketplace & Open VSX pending" }).getAttribute("href")).endsWith("/docs/vscode-extension-release.md"));
+  assert.equal(await vscodeProduct.getByRole("link", { name: "Download VSIX" }).getAttribute("href"), "https://github.com/axeljaeger/angular-i18n-tools/releases/download/vscode-v0.0.1/angular-i18n-tools.vsix");
   const codespaceUrl = new URL(await vscodeProduct.getByRole("link", { name: "Try in Codespaces" }).getAttribute("href"));
   assert.equal(codespaceUrl.hostname, "codespaces.new");
   const demoConfig = JSON.parse(await readFile(resolve(root, codespaceUrl.searchParams.get("devcontainer_path")), "utf8"));
   assert.ok(demoConfig.workspaceFolder.endsWith("/apps/sample-angular"), "Codespace must open one sample catalog");
   assert.ok(demoConfig.postAttachCommand.endsWith("demo/install.sh"), "Codespace must install the demo extension");
   assert.ok((await vscodeProduct.getByRole("link", { name: "Docs" }).getAttribute("href")).includes("/packages/vscode-extension/README.md"));
+  const catalogProduct = page.locator("#catalog-product");
+  assert.equal(await catalogProduct.getByRole("link", { name: "See failing PR" }).getAttribute("href"), "https://github.com/axeljaeger/angular-i18n-tools/pull/33");
+  const marketplaceUrl = new URL(await catalogProduct.getByRole("link", { name: "GitHub Marketplace pending" }).getAttribute("href"));
+  assert.equal(marketplaceUrl.origin + marketplaceUrl.pathname, "https://github.com/marketplace");
+  assert.equal(marketplaceUrl.searchParams.get("type"), "actions");
+  assert.ok((await catalogProduct.getByRole("link", { name: "Docs" }).getAttribute("href")).endsWith("/docs/catalog-checks.md"));
+  assert.equal(await products.locator("article.product-card").count(), 4);
+  assert.ok((await catalogProduct.locator(".install-link").getAttribute("href")).endsWith("/.github/workflows/catalog-checks.yml"));
+  assert.ok(await page.locator(".ecosystem-icon").evaluateAll(icons => icons.length === 2 && icons.every(icon => icon.complete && icon.naturalWidth > 0)), "Official ecosystem icons must load");
   const commands = {
     "setup-command": "npx @angular-i18n-tools/ng-generator@0.0.8",
     "storybook-command": "npx @angular-i18n-tools/ng-generator@0.0.8 storybook"
   };
   for (const [id, command] of Object.entries(commands)) {
     const button = page.locator(`[data-copy="${id}"]`);
+    const details = button.locator("xpath=ancestor::details");
+    assert.equal(await details.getAttribute("open"), null, "Install commands start secondary and collapsed");
+    await details.locator("summary").click();
     await button.click();
     await button.filter({ hasText: "Copied" }).waitFor();
     assert.equal(await page.evaluate(() => navigator.clipboard.readText()), command);
+    await details.locator("summary").click();
   }
   const docStyles = await page.locator(".product-card .docs-link").evaluateAll(links => links.map(link => {
     const style = getComputedStyle(link);
