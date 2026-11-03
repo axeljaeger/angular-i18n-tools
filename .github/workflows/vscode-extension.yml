@@ -52,7 +52,9 @@ jobs:
       - name: Package installable extension
         run: pnpm --filter angular-i18n-tools-vscode run package:vsix
       - name: Unpack the actual VSIX for host tests
-        run: unzip -q packages/vscode-extension/dist/angular-i18n-tools.vsix -d dist/vscode-package-test
+        run: |
+          mkdir -p dist/vscode-package-test
+          unzip -q packages/vscode-extension/dist/angular-i18n-tools.vsix -d dist/vscode-package-test
       - name: Test packaged extension with Angular CLI project
         working-directory: packages/vscode-extension
         run: node scripts/run-web-tests.mjs --extension-path=../../dist/vscode-package-test/extension

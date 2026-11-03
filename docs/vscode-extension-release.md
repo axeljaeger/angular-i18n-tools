@@ -19,6 +19,7 @@ the site; visitors choose their GitHub account, machine and quota themselves.
 ```sh
 pnpm install --frozen-lockfile
 pnpm --filter angular-i18n-tools-vscode run package:vsix
+mkdir -p dist/vscode-package-test
 unzip -q packages/vscode-extension/dist/angular-i18n-tools.vsix -d dist/vscode-package-test
 cd packages/vscode-extension
 node scripts/run-web-tests.mjs --extension-path=../../dist/vscode-package-test/extension
