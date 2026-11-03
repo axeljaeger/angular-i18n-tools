@@ -410,17 +410,37 @@ export function findProjects(tree: Tree): {
     const ignored = new Set(["node_modules", ".git", ".nx", "dist", "coverage", "storybook-static"]);
     const discover = (directory: string): void => {
       const entry = tree.getDir(directory);
-      if (tree.exists(joinPath(directory, "project.json"))) {
-        const path = joinPath(directory, "project.json");
-        const project = readJson<AngularProject>(tree, path);
+      const projectPath = joinPath(directory, "project.json");
+      const packagePath = joinPath(directory, "package.json");
+      const pkg = tree.exists(packagePath) ? readJson<{ name?: string; nx?: AngularProject }>(tree, packagePath) : undefined;
+      if (pkg?.nx !== undefined && (!pkg.nx || typeof pkg.nx !== "object" || Array.isArray(pkg.nx))) {
+        throw new SchematicsException(`Expected an Nx configuration object in ${packagePath}#nx.`);
+      }
+      const projectJson = tree.exists(projectPath) ? readJson<AngularProject>(tree, projectPath) : undefined;
+      if (projectJson || pkg?.nx) {
         const root = directory.replace(/^\//, "");
+        const duplicate = candidates.findIndex(candidate => posix.normalize(candidate.project.root || ".") === posix.normalize(root || "."));
+        const existing = candidates[duplicate];
+        const project = mergeProjectConfiguration(pkg?.nx ?? {}, projectJson ?? {});
         project.root ??= root;
-        const existing = candidates.find(candidate => candidate.project.root === root);
-        const projectName = project.name ?? existing?.projectName ?? root.split("/").pop() ?? "";
-        // Nx's schematic adapter can expose project.json projects through a virtual angular.json.
-        const duplicate = candidates.findIndex(candidate => candidate.projectName === projectName && candidate.project.root === root);
+        const projectName = project.name ?? pkg?.name ?? existing?.projectName ?? root.split("/").pop() ?? "";
+        // Nx's schematic adapter can expose either configuration through a virtual angular.json.
         if (duplicate !== -1) candidates.splice(duplicate, 1);
-        candidates.push({ projectName, project, save: () => writeJson(tree, path, project) });
+        const initial = JSON.parse(JSON.stringify(project)) as AngularProject;
+        candidates.push({ projectName, project, save: () => {
+          const path = projectJson ? projectPath : packagePath;
+          const document = readJson<Record<string, unknown>>(tree, path);
+          const destination = projectJson ? document : document.nx as Record<string, unknown>;
+          // Persist changed settings only, leaving inferred names/roots and package metadata alone.
+          for (const key of Object.keys(project) as (keyof AngularProject)[]) {
+            if (JSON.stringify(project[key]) === JSON.stringify(initial[key])) continue;
+            if (key === "targets" || key === "architect") {
+              const changed = Object.fromEntries(Object.entries(project[key] ?? {}).filter(([name, target]) => JSON.stringify(target) !== JSON.stringify(initial[key]?.[name])));
+              destination[key] = { ...(destination[key] as Record<string, unknown> | undefined), ...changed };
+            } else destination[key] = project[key];
+          }
+          writeJson(tree, path, document);
+        } });
       }
       for (const child of entry.subdirs) {
         if (!ignored.has(child) && !child.startsWith(".")) discover(joinPath(directory, child));
@@ -431,6 +451,22 @@ export function findProjects(tree: Tree): {
   const names = candidates.map(app => app.projectName);
   if (new Set(names).size !== names.length) throw new SchematicsException("Project names must be unique across the workspace.");
   return candidates.sort((left, right) => left.projectName.localeCompare(right.projectName));
+}
+
+function mergeProjectConfiguration(base: AngularProject, override: AngularProject): AngularProject {
+  const project = { ...base, ...override };
+  for (const key of ["targets", "architect"] as const) {
+    if (!base[key] && !override[key]) continue;
+    project[key] = { ...base[key], ...override[key] };
+    for (const [name, target] of Object.entries(override[key] ?? {})) {
+      const previous = base[key]?.[name];
+      project[key][name] = { ...previous, ...target,
+        ...(previous?.options || target.options ? { options: { ...previous?.options, ...target.options } } : {}),
+        ...(previous?.configurations || target.configurations ? { configurations: { ...previous?.configurations, ...target.configurations } } : {})
+      };
+    }
+  }
+  return project;
 }
 
 export function findApplications(tree: Tree) {

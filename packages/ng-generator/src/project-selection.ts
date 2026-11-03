@@ -48,5 +48,5 @@ export async function selectProjects(
     });
   }
   if (available.length === 1) return available;
-  throw new SchematicsException(`Select applications with --project app1,app2 or --all when no interactive terminal is available. Found: ${available.join(", ")}.`);
+  throw new SchematicsException(`Select projects with --project project1,project2 or --all when no interactive terminal is available. Found: ${available.join(", ")}.`);
 }

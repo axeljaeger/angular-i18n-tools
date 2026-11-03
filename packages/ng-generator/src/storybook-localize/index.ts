@@ -51,7 +51,7 @@ export function storybookLocalize(options: RuntimeLocalizeOptions): Rule {
       }
       return true;
     });
-    if (apps.length === 0) throw new SchematicsException("No Angular Storybook projects found. Applications and libraries are supported, including non-buildable libraries. Check target options.configDir or <project root>/.storybook/main.ts and framework @storybook/angular(-vite). Initialize Storybook first if needed, then rerun this command.");
+    if (apps.length === 0) throw new SchematicsException("No Angular Storybook projects found. Applications and libraries are supported, including non-buildable libraries. Projects must be declared in angular.json, project.json, or package.json#nx. Check target options.configDir or <project root>/.storybook/main.ts and framework @storybook/angular(-vite). Initialize Storybook first if needed, then rerun this command.");
     const selected = await selectProjects(apps, { ...options, selectionLabel: "Angular Storybook projects" }, tree.exists("nx.json"));
     const directories = selected.map(name => storybookFiles(tree, apps.find(app => app.projectName === name)!.project)!.directory);
     if (new Set(directories).size !== directories.length) throw new SchematicsException("Selected projects share a Storybook configuration. Select one project for each Storybook.");

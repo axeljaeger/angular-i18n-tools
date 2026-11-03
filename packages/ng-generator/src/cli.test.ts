@@ -54,4 +54,19 @@ describe("standalone setup command", () => {
     await expect(runCli(["--project=shop,missing", "--skip-install"], root)).rejects.toThrow("not found");
     expect(existsSync(join(root, "apps/shop/src/locale-loader.ts"))).toBe(false);
   });
+  it("finds and configures a package.json-only library from inside its source folder", async () => {
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    const root = fixture();
+    mkdirSync(join(root, "libs/ui/src"), { recursive: true });
+    mkdirSync(join(root, "libs/ui/.storybook"));
+    const pkg = '{"name":"@example/ui","nx":{}}';
+    writeFileSync(join(root, "libs/ui/package.json"), pkg);
+    writeFileSync(join(root, "libs/ui/.storybook/main.ts"), "export default { framework: { name: getAbsolutePath('@storybook/angular-vite') }, addons: [] };");
+    await runCli(["storybook", "--project=@example/ui", "--dry-run"], join(root, "libs/ui/src"));
+    expect(existsSync(join(root, "libs/ui/.storybook/locale-loader.ts"))).toBe(false);
+    await runCli(["storybook", "--project=@example/ui", "--skip-install"], join(root, "libs/ui/src"));
+    expect(existsSync(join(root, "libs/ui/.storybook/locale-loader.ts"))).toBe(true);
+    expect(readFileSync(join(root, "libs/ui/package.json"), "utf8")).toBe(pkg);
+    expect(existsSync(join(root, "libs/ui/project.json"))).toBe(false);
+  });
 });

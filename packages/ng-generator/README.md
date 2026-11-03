@@ -5,7 +5,7 @@ Angular CLI or Nx workspace. Starting with **0.0.5**, one command detects the
 workspace and lets you choose multiple applications:
 
 ```sh
-npx @angular-i18n-tools/ng-generator@0.0.6
+npx @angular-i18n-tools/ng-generator@0.0.7
 ```
 
 Run from the workspace root. In an interactive Nx terminal, all supported
@@ -22,13 +22,13 @@ Use a current Node 22, 24, or 26 release (see the package's engines field).
 
 ```sh
 # Configure all supported applications without a prompt
-npx @angular-i18n-tools/ng-generator@0.0.6 --all
+npx @angular-i18n-tools/ng-generator@0.0.7 --all
 
 # Select only these applications
-npx @angular-i18n-tools/ng-generator@0.0.6 --project=shop,admin
+npx @angular-i18n-tools/ng-generator@0.0.7 --project=shop,admin
 
 # Preview changes without writing files or installing dependencies
-npx @angular-i18n-tools/ng-generator@0.0.6 --all --dry-run
+npx @angular-i18n-tools/ng-generator@0.0.7 --all --dry-run
 ```
 
 Noninteractive multi-app runs require `--all` or `--project`. `--skip-install`
@@ -40,12 +40,12 @@ is applied only when setup succeeds for every selected application.
 For an **existing Angular Storybook**, run:
 
 ```sh
-npx @angular-i18n-tools/ng-generator@0.0.6 storybook
+npx @angular-i18n-tools/ng-generator@0.0.7 storybook
 ```
 
 Choose the Angular **applications and libraries** whose Storybooks you want to
 configure. Both buildable and non-buildable libraries are offered when their
-project.json and Storybook configuration are discoverable. Known non-Angular
+project configuration and Storybook configuration are discoverable. Known non-Angular
 Storybooks are excluded. `--all`, `--project`,
 `--dry-run`, and `--skip-install` work here too.
 
@@ -97,7 +97,11 @@ uses. Do not switch between Angular and Angular-Vite merely to satisfy setup.
 **0.0.5 had two detection limitations fixed in 0.0.6:** it excluded libraries,
 and only accepted literal framework package names. A valid
 `getAbsolutePath('@storybook/angular-vite')` configuration could therefore fail.
-Retry with the pinned 0.0.6 command above; the shown helper form needs no rewrite.
+Retry with the current pinned command above; the shown helper form needs no rewrite.
+
+**0.0.7 adds discovery of `package.json#nx` projects.** Earlier versions only
+discovered angular.json/project.json projects; package-based libraries could
+still be absent from the chooser even with a valid framework configuration.
 
 New errors identify the project, file, line/column, actual framework expression,
 why it was rejected, supported values, and recovery examples. In particular:
@@ -169,22 +173,41 @@ changes there first. Catalogs and unrelated configuration are preserved.
 
 ## Supported workspace configuration
 
-Runtime application setup supports Angular CLI `angular.json` and Nx `project.json`
-with explicit Angular application build targets using `@nx/angular`, `@angular/build`, or
+Runtime application setup supports Angular CLI `angular.json`, Nx `project.json`,
+and Nx settings in `package.json#nx`, with explicit Angular application build
+targets using `@nx/angular`, `@angular/build`, or
 `@angular-devkit/build-angular`. Build options must identify the standalone entry
 with `browser` or `main`. JSON-with-comments configuration is accepted.
 
 The Storybook command additionally supports libraries without application build
-targets. Project discovery still requires angular.json entries or project.json;
-package.json-only/inferred project discovery is not implemented. Custom runtime
-application executors and NgModule bootstrap are outside runtime setup. Verified with Nx 24 and Angular 22, including
+targets. Nx packages with an `nx` object are discovered, including `nx: {}`.
+The project name is `nx.name`, then the package name (including its scope), then
+the directory name. When both package.json and project.json exist, their settings
+are combined, with project.json overrides. Setup saves runtime changes in the
+existing config and preserves package metadata; it does not create project.json.
+
+For example, a library with `libs/ui/.storybook/main.ts` needs only:
+
+```json
+{
+  "name": "@example/ui",
+  "nx": {}
+}
+```
+
+Its sources default to `libs/ui/src`. Set `nx.sourceRoot` for another location.
+For a nonstandard Storybook directory, specify `nx.targets.<target>.options.configDir`
+using a workspace-relative path. Storybook framework detection still reads the
+existing main config. Arbitrary Nx plugin inference and packages with neither an
+`nx` object nor a project.json entry are not discovered by this standalone CLI.
+Custom runtime application executors and NgModule bootstrap are outside runtime setup. Verified with Nx 24 and Angular 22, including
 real terminal selection, application builds, and a generated Storybook tested
 in Chromium. This is not a claim of compatibility with every Nx version.
 
 The existing schematics remain available for already-installed consumers:
 
 ```sh
-npx ng add @angular-i18n-tools/ng-generator@0.0.6
+npx ng add @angular-i18n-tools/ng-generator@0.0.7
 npx nx generate @angular-i18n-tools/ng-generator:runtime-localize --all
 npx nx generate @angular-i18n-tools/ng-generator:storybook-localize --project=my-app
 ```

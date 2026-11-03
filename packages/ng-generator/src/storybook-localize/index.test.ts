@@ -143,3 +143,43 @@ describe("Angular library Storybooks", () => {
     expect(result.exists("libs/ui/src/locale-loader.ts")).toBe(false);
   });
 });
+
+describe("package.json Nx library Storybooks", () => {
+  function packageFixture() {
+    const tree = fixture();
+    for (const name of ["ui", "forms"]) {
+      tree.create(`libs/${name}/package.json`, JSON.stringify({ name: `@example/${name}`, exports: { ".": "./src/index.ts" }, peerDependencies: { "@angular/core": "^22.0.0" }, nx: name === "ui" ? {} : {
+        name: "forms", projectType: "library", sourceRoot: "libs/forms/source", i18n: { sourceLocale: "en", locales: { de: { translation: "shared/forms.de.json" } } },
+        targets: { "preview-ui": { options: { configDir: "libs/forms/.stories" } } }
+      } }));
+      tree.create(`libs/${name}/${name === "ui" ? ".storybook" : ".stories"}/main.ts`, `export default { framework: { name: getAbsolutePath('@storybook/angular-vite') }, addons: [] };`);
+    }
+    tree.create("libs/ui/src/locale/messages.fr.json", '{"locale":"fr","translations":{"hello":"Bonjour"}}');
+    tree.create("shared/forms.de.json", '{"locale":"de","translations":{"hello":"Hallo"}}');
+    return tree;
+  }
+  it("sets up applications and package libraries together without rewriting library metadata", async () => {
+    const tree = packageFixture();
+    const before = ["ui", "forms"].map(name => tree.readContent(`libs/${name}/package.json`));
+    const result = await runner.runSchematic("storybook-localize", { all: true, skipInstall: true }, tree);
+    expect(result.exists("apps/shop/.storybook/angular-i18n-tools.ts")).toBe(true);
+    expect(result.readContent("libs/ui/.storybook/angular-i18n-tools.ts")).toContain('["en-US","fr"]');
+    expect(result.readContent("libs/forms/.stories/angular-i18n-tools.ts")).toContain('["en","de"]');
+    expect(result.readContent("libs/forms/.stories/locale-loader.ts")).toContain("shared/forms.de.json");
+    expect(result.readContent("shared/forms.de.json")).toContain("Hallo");
+    for (const [index, name] of ["ui", "forms"].entries()) {
+      expect(result.readContent(`libs/${name}/package.json`)).toBe(before[index]);
+      expect(result.exists(`libs/${name}/project.json`)).toBe(false);
+      expect(result.exists(`libs/${name}/src/main.ts`)).toBe(false);
+    }
+    const rerun = await runner.runSchematic("storybook-localize", { projects: ["@example/ui", "forms"], skipInstall: true }, result);
+    expect(rerun.readContent("libs/ui/.storybook/main.ts")).toBe(result.readContent("libs/ui/.storybook/main.ts"));
+  });
+  it("reports package-based projects by name and rolls back the whole selection on failure", async () => {
+    const tree = packageFixture();
+    tree.overwrite("libs/forms/.stories/main.ts", "export default { framework: customFramework() };");
+    await expect(runner.runSchematic("storybook-localize", { all: true, skipInstall: true }, tree)).rejects.toThrow('Project "forms" (library, root: libs/forms)');
+    expect(tree.exists("libs/ui/.storybook/locale-loader.ts")).toBe(false);
+    expect(tree.exists("apps/shop/src/locale-loader.ts")).toBe(false);
+  });
+});
