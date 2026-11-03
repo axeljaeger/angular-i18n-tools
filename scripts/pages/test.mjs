@@ -84,8 +84,8 @@ try {
     const style = getComputedStyle(link);
     return [style.fontSize, style.fontWeight, style.color, style.textDecorationLine];
   }));
-  assert.equal(docStyles.length, 2);
-  assert.deepEqual(docStyles[0], docStyles[1], "Product documentation links must share their appearance");
+  assert.equal(docStyles.length, 4);
+  for (const style of docStyles) assert.deepEqual(style, docStyles[0], "Product documentation links must share their appearance");
   // Follow every local destination, including language-selected apps and Storybook links.
   const links = await page.locator("a[href]").evaluateAll(links => links.map(link => link.href));
   for (const href of new Set(links.filter(href => href.startsWith(origin)))) {

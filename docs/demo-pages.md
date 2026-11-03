@@ -8,6 +8,7 @@ not presented as an available installation. Codespaces demos open the plain
 Angular and Nx samples separately and install a local build of the extension.
 Cursor/Open VSX is identified in the same product card, with a pending status
 and a publishing-guide link until its registry listing is available.
+The extension uses the same boxed product-card styling as setup and Storybook.
 It introduces the project, explains what visitors can try, links to the GitHub
 repository, and lists the products in workflow order: Angular setup generator
 first, followed by the Storybook language switcher, VS Code extension, and catalog

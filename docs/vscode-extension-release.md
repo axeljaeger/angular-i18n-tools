@@ -1,5 +1,7 @@
 # VS Code extension: demos and publishing
 
+Maintainer follow-up: [manual publishing checklist](manual-publishing-todo.md).
+
 Extension identity: `angular-i18n-tools.angular-i18n-tools-vscode`.
 The VSIX includes the browser bundle and core analysis code. No npm packages
 need to be installed in a user's Angular project.
