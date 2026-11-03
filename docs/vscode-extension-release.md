@@ -61,6 +61,25 @@ to [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemNa
 Keep the Codespaces and documentation links. Do not show an unpublished listing
 as an available Marketplace installation.
 
+## Open VSX / Cursor
+
+The overview lists this as the **VS Code & Cursor extension**: both editors use
+the same extension package. Open VSX publication is pending; the site links here
+until an actual registry listing exists. The VSIX download remains available.
+
+[Cursor uses Open VSX](https://cursor.com/help/customization/extensions) through
+its own marketplace proxy and review process. Publishing on the Microsoft
+Marketplace does not publish to Open VSX or guarantee visibility in Cursor.
+
+To publish there, first create/link the Eclipse and Open VSX accounts, personally
+accept the Publisher Agreement, and create namespace `angular-i18n-tools`.
+Then upload the tested VSIX following the
+[Open VSX publishing guide](https://github.com/eclipse-openvsx/openvsx/wiki/Publishing-Extensions).
+This setup is separate from the Microsoft publisher and workflow above.
+
+Once the extension is publicly available, replace the pending notice with its
+Open VSX listing link, retaining the same extension ID on both registries.
+
 ## VSIX release
 
 Publish the tested VSIX as a GitHub release with a `vscode-v<version>` tag.
