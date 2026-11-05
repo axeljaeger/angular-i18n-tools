@@ -1,6 +1,7 @@
 import { GLOBALS_UPDATED } from "storybook/internal/core-events";
 import { addons } from "storybook/preview-api";
 import { DEFAULT_LOCALES, LOCALE_GLOBAL } from "./constants";
+import { createLocaleGate, readLocaleFromUrl } from "./locale-url";
 
 type StoryFunction = () => unknown;
 interface StoryContext {
@@ -18,8 +19,7 @@ interface GlobalsUpdatedEvent {
   globals?: Record<string, unknown>;
 }
 
-const selectedLocaleStorageKey = "angular-i18n-tools:selected-locale";
-let selectedLocaleFallback: string | undefined;
+const localeChanged = createLocaleGate();
 
 installLocaleReloadHandler();
 
@@ -58,51 +58,16 @@ function installLocaleReloadHandler(): void {
     return;
   }
 
-  rememberSelectedLocale(readLocaleFromUrl() ?? "en");
-
   addons.getChannel().on(GLOBALS_UPDATED, (event: GlobalsUpdatedEvent) => {
     const locale = event.globals?.[LOCALE_GLOBAL];
-
-    if (typeof locale !== "string" || locale === readRememberedLocale()) {
+    if (typeof locale !== "string" || !localeChanged(readLocaleFromUrl(window.location.href), locale)) {
       return;
     }
 
-    rememberSelectedLocale(locale);
-    reloadPreviewForLocale(locale);
+    // Storybook re-renders the story while the manager reloads the iframe.
+    // Hide that half-translated render so the page changes only once.
+    if (document.body) {
+      document.body.style.visibility = "hidden";
+    }
   });
-}
-
-function reloadPreviewForLocale(locale: string): void {
-  const url = new URL(window.location.href);
-  // Storybook initializes globals from the iframe URL before manager updates arrive.
-  // Keep both locale values in sync so initialization cannot trigger another reload.
-  const globals = (url.searchParams.get("globals") ?? "")
-    .split(";")
-    .filter((entry) => entry && !entry.startsWith(`${LOCALE_GLOBAL}:`));
-  globals.push(`${LOCALE_GLOBAL}:${locale}`);
-  url.searchParams.set("globals", globals.join(";"));
-  url.searchParams.set("locale", locale);
-  window.location.replace(url);
-}
-
-function readLocaleFromUrl(): string | undefined {
-  return new URLSearchParams(window.location.search).get("locale") ?? undefined;
-}
-
-function readRememberedLocale(): string | undefined {
-  try {
-    return window.sessionStorage.getItem(selectedLocaleStorageKey) ?? selectedLocaleFallback;
-  } catch {
-    return selectedLocaleFallback;
-  }
-}
-
-function rememberSelectedLocale(locale: string): void {
-  selectedLocaleFallback = locale;
-
-  try {
-    window.sessionStorage.setItem(selectedLocaleStorageKey, locale);
-  } catch {
-    // Some embedded browser contexts can disable session storage.
-  }
 }
