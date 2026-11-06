@@ -266,3 +266,5 @@ The repository includes GitHub workflows for:
 - Storybook deployment to GitHub Pages
 
 The GitHub Action should be consumed through a stable release tag, for example `axeljaeger/angular-i18n-tools@v1`. npm publishing uses the configured GitHub trusted-publishing workflow. Storybook Pages deployment requires GitHub Pages to be enabled for GitHub Actions in the repository settings.
+
+For Storybook-only releases, bump `packages/storybook-addon/package.json` and publish a GitHub release tagged `storybook-v<version>` at that commit. The Release workflow runs the workspace checks and publishes only the Storybook addon to npm. Use the GitHub release notes as the changelog. Other npm release tags retain the shared publication behavior.
