@@ -8,6 +8,39 @@ beforeEach(() => { vi.stubEnv("GITHUB_WORKSPACE", ""); });
 afterEach(async () => { vi.restoreAllMocks(); vi.unstubAllEnvs(); await Promise.all(workspaces.splice(0).map(path => rm(path, { recursive: true, force: true }))); });
 
 describe("runCli", () => {
+  it("warns on duplicate IDs by default and can fail on them", async () => {
+    const root = await createWorkspace({
+      "view.html": '<p i18n="@@save">Save</p><button i18n="@@save">Save</button>',
+      "messages.de.json": '{"translations":{"save":"Speichern"}}'
+    });
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.stubEnv("GITHUB_STEP_SUMMARY", join(root, "summary.md"));
+    expect(await runCli(["--github-annotations", "--github-summary", root])).toBe(0);
+    expect(error.mock.calls.flat().join("\n")).toContain("::warning file=view.html");
+    expect(await readFile(join(root, "summary.md"), "utf8")).toContain("Passed with warnings: 2 findings");
+    error.mockClear();
+    expect(await runCli(["--duplicate-ids", "error", "--github-annotations", root])).toBe(1);
+    expect(error.mock.calls.flat().join("\n")).toContain("::error file=view.html");
+  });
+
+  it("keeps translation findings blocking when duplicates are warnings", async () => {
+    const root = await createWorkspace({
+      "view.html": '<p i18n="@@save">Save</p><p i18n="@@save">Save</p><p i18n="@@missing">Missing</p>',
+      "messages.de.json": '{"translations":{"save":"Speichern","old":"Alt"}}'
+    });
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(await runCli(["--github-annotations", root])).toBe(1);
+    const annotations = error.mock.calls.flat().join("\n");
+    expect(annotations).toContain("::warning file=view.html");
+    expect(annotations).toContain("title=missing-translation");
+    expect(annotations).toContain("title=extra-translation");
+    expect(annotations).toContain("::error file=");
+  });
+
+  it("rejects invalid duplicate ID settings", async () => {
+    await expect(runCli(["--duplicate-ids", "ignore"])).rejects.toThrow("--duplicate-ids must be error or warning.");
+  });
+
   it("returns success for complete catalogs", async () => {
     const root = await createWorkspace({
       "app.component.html": '<h1 i18n="Title@@home.title">Home</h1>',
