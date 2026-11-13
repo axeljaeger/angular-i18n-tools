@@ -1,8 +1,0 @@
-{
-  "locale": "de",
-  "translations": {
-    "demo.title": "Katalogpruefung",
-    "demo.saveButton": "Speichern",
-    "demo.description": "Lokalisierungsprobleme direkt im Pull Request pruefen."
-  }
-}
