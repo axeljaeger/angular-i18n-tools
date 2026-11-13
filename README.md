@@ -35,7 +35,7 @@ The repository includes a `.devcontainer/devcontainer.json` for GitHub Codespace
 
 The guided VS Code tour lives in `.tours/vscode-extension-features.tour`. Codespaces opens the tour file on startup, and desktop VS Code users can run it after installing the recommended CodeTour extension.
 
-Until the Angular i18n Tools VS Code extension is published to the Marketplace or packaged as a VSIX during setup, it is started as a local development extension:
+To start a local extension development host:
 
 ```sh
 npm run dev:vscode-web
@@ -98,13 +98,13 @@ For local development:
 npm run dev:vscode-web
 ```
 
-Install the [VSIX preview](https://github.com/axeljaeger/angular-i18n-tools/releases/tag/vscode-v0.0.1)
+Install the [VS Code Marketplace extension](https://marketplace.visualstudio.com/items?itemName=axeljaeger.angular-i18n-tools-vscode)
 or try it in a prepared Codespace: [Angular CLI](https://codespaces.new/axeljaeger/angular-i18n-tools?quickstart=1&devcontainer_path=.devcontainer%2Fdemo-angular%2Fdevcontainer.json)
 or [Nx](https://codespaces.new/axeljaeger/angular-i18n-tools?quickstart=1&devcontainer_path=.devcontainer%2Fdemo-nx%2Fdevcontainer.json).
 Each demo installs the extension and opens one project with a short `DEMO.md` guide.
 See the [extension guide](packages/vscode-extension/README.md) for features and
-current workspace boundaries. [Marketplace publishing](docs/vscode-extension-release.md)
-is prepared with GitHub trusted publishing and requires publisher setup.
+current workspace boundaries. See [publishing instructions](docs/vscode-extension-release.md)
+for release details.
 
 ## Storybook Addon
 

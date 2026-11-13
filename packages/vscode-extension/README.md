@@ -7,17 +7,15 @@ translations from VS Code. Works in VS Code desktop, the browser and Codespaces.
 
 [Open the Angular demo in Codespaces](https://codespaces.new/axeljaeger/angular-i18n-tools?quickstart=1&devcontainer_path=.devcontainer%2Fdemo-angular%2Fdevcontainer.json)
 or [open the Nx demo](https://codespaces.new/axeljaeger/angular-i18n-tools?quickstart=1&devcontainer_path=.devcontainer%2Fdemo-nx%2Fdevcontainer.json).
-Each demo builds and installs this extension and opens one sample project.
+Each demo installs this extension from the VS Code Marketplace and opens one sample project.
 Allow the setup to finish; follow `DEMO.md` in the editor. A GitHub account and
 Codespaces quota are required. GitHub shows machine and billing details before
 a codespace is created.
 
 ## Install
 
-The Marketplace identity is `angular-i18n-tools.angular-i18n-tools-vscode`.
-Until the initial Marketplace publication is complete, install the VSIX from
-the [extension release](https://github.com/axeljaeger/angular-i18n-tools/releases/tag/vscode-v0.0.1):
-in VS Code, choose **Extensions → … → Install from VSIX…** and select the file.
+Install [Angular i18n Tools from the VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=axeljaeger.angular-i18n-tools-vscode).
+Its Marketplace identity is `axeljaeger.angular-i18n-tools-vscode`.
 
 Open a folder containing one Angular project and expand **Angular i18n** in
 the Explorer. Catalogs are discovered automatically; no extension settings or

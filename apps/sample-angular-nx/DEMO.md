@@ -1,6 +1,6 @@
 # Try Angular i18n Tools
 
-This is the **Angular application in an Nx workspace** demo. The extension is built and installed
+This is the **Angular application in an Nx workspace** demo. The extension is installed from the VS Code Marketplace
 automatically when this Codespace finishes setting up. If the **Angular i18n**
 view is not visible in Explorer, run **Developer: Reload Window** once.
 

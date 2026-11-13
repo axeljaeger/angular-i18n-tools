@@ -2,7 +2,7 @@
   "name": "angular-i18n-tools-vscode",
   "displayName": "Angular i18n Tools",
   "description": "VS Code tooling for Angular built-in localization IDs.",
-  "version": "0.0.1",
+  "version": "0.0.9",
   "license": "MIT",
   "author": "Axel Jaeger",
   "repository": {
@@ -24,7 +24,7 @@
     "rename-provider"
   ],
   "private": true,
-  "publisher": "angular-i18n-tools",
+  "publisher": "axeljaeger",
   "engines": {
     "vscode": "^1.100.0"
   },
