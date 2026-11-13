@@ -1,89 +1,454 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Angular i18n Tools: a Storybook language switcher, VS Code extension, catalog checks, and an Angular setup generator.">
-  <meta name="theme-color" content="#172c39">
-  <title>Angular i18n Tools — Products</title>
-  <link rel="icon" href="data:,">
-  <script>
-    // Preserve links from when the root of this site served Storybook.
-    if (new URLSearchParams(location.search).has("path")) {
-      location.replace(new URL("angular/storybook/", location.href).pathname + location.search + location.hash);
-    }
-  </script>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <a class="skip" href="#products">Skip to products</a>
-  <div class="wrap">
-    <nav aria-label="Main navigation">
-      <a class="wordmark" href="./"><span aria-hidden="true">a /</span> Angular i18n Tools</a>
-      <a href="https://github.com/axeljaeger/angular-i18n-tools">View on GitHub <span aria-hidden="true">↗</span></a>
-    </nav>
-    <main>
-      <header>
-        <h1>Tools for <span>Angular localization.</span></h1>
-        <p>Tools for Angular’s built-in i18n, stable message IDs, and runtime JSON catalogs.</p>
-      </header>
-      <section id="products" aria-label="Our products" class="products">
-        <article id="setup-product" class="product-card">
-          <h2>Angular setup generator</h2>
-          <p>Set up runtime JSON localization in Angular CLI and Nx, with automatic language discovery.</p>
-          <div class="actions">
-            <a class="button demo-link" href="angular/?locale=de">View demo app ↗</a>
-            <a class="install-link" href="https://www.npmjs.com/package/@angular-i18n-tools/ng-generator">Install ↗</a>
-            <a class="docs-link" href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/packages/ng-generator/README.md">Docs →</a>
-          </div>
-          <details class="install-details">
-            <summary>One-line setup</summary>
-            <div class="command">
-              <code id="setup-command">npx @angular-i18n-tools/ng-generator@0.0.8</code>
-              <button type="button" class="copy" aria-label="Copy Angular setup command" aria-live="polite" data-copy="setup-command">Copy</button>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Set up, edit, preview, and check Angular translations with tools for native i18n and runtime JSON catalogs."
+    />
+    <meta name="theme-color" content="#172c39" />
+    <title>Angular i18n Tools — Products</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="landing.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#products">Skip to products</a>
+    <div id="i18n-landing">
+      <nav class="topbar" aria-label="Main navigation">
+        <a class="brand" href="./"
+          ><span aria-hidden="true">a /</span>Angular i18n Tools</a
+        ><a
+          href="https://github.com/axeljaeger/angular-i18n-tools"
+          target="_blank"
+          rel="noopener"
+          >GitHub ↗</a
+        >
+      </nav>
+      <main>
+        <header class="hero">
+          <div class="eyebrow">Four tools. One localization workflow.</div>
+          <h1>Make Angular<br /><span>feel at home. Everywhere.</span></h1>
+          <p class="intro">
+            From your first translation to your next pull request.<br />Small,
+            focused tools for Angular’s built-in i18n.
+          </p>
+        </header>
+        <section
+          id="products"
+          class="rail"
+          tabindex="0"
+          aria-label="Our four products"
+          aria-roledescription="carousel"
+        >
+          <article
+            class="product"
+            id="preview-setup"
+            role="group"
+            aria-roledescription="slide"
+            aria-label="1 of 4"
+          >
+            <div class="media">
+              <span class="media-label">Angular CLI + Nx</span>
+              <div class="visual terminal">
+                <small>● ● ● &nbsp; ~/your-angular-app</small>
+                <div>$ npx @angular-i18n-tools/<br />&nbsp; ng-generator</div>
+                <div class="result">
+                  ✓ Workspace detected<br />✓ Locales discovered<br />✓ Ready to
+                  say hello.
+                </div>
+              </div>
             </div>
-          </details>
-        </article>
-        <article id="storybook-product" class="product-card">
-          <h2>Storybook language switcher</h2>
-          <p>Switch app and library previews between languages with the globe toolbar.</p>
-          <div class="actions">
-            <a class="button demo-link" href="angular/storybook/?path=/story/sample-settings-dialog--default">Try the demo ↗</a>
-            <a class="install-link" href="https://storybook.js.org/addons/@angular-i18n-tools/storybook-addon">Install addon ↗</a>
-            <a class="docs-link" href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/packages/ng-generator/README.md#storybook-setup">Docs →</a>
-          </div>
-          <details class="install-details">
-            <summary>One-line setup</summary>
-            <div class="command">
-              <code id="storybook-command">npx @angular-i18n-tools/ng-generator@0.0.8 storybook</code>
-              <button type="button" class="copy" aria-label="Copy Storybook setup command" aria-live="polite" data-copy="storybook-command">Copy</button>
+            <div class="body">
+              <div class="card-heading">
+                <span class="step">01 / SET UP</span
+                ><a
+                  target="_blank"
+                  rel="noopener"
+                  class="docs-link"
+                  href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/packages/ng-generator/README.md"
+                  >Docs →</a
+                >
+              </div>
+              <h2>Angular setup generator</h2>
+              <p class="description">
+                Set up runtime JSON localization in Angular CLI and Nx, with
+                automatic language discovery.
+              </p>
+              <div class="actions">
+                <a
+                  target="_blank"
+                  rel="noopener"
+                  class="button demo-link"
+                  href="angular/?locale=de"
+                  ><span class="icon icon-play" aria-hidden="true"></span
+                  ><span>View demo app</span></a
+                >
+                <button
+                  type="button"
+                  class="copy-command install-link cursor-interaction"
+                  data-command="npx @angular-i18n-tools/ng-generator@0.0.8"
+                  aria-label="Copy command: npx @angular-i18n-tools/ng-generator@0.0.8"
+                >
+                  <span
+                    class="icon icon-copy copy-icon"
+                    aria-hidden="true"
+                  ></span
+                  ><span class="copy-label" aria-live="polite"
+                    >Copy command</span
+                  ><code class="command-peek" aria-hidden="true"
+                    >npx @angular-i18n-tools/ng-generator@0.0.8</code
+                  >
+                </button>
+              </div>
             </div>
-          </details>
-        </article>
-        <article id="vscode-product" class="product-card">
-          <h2>VS Code &amp; Cursor extension</h2>
-          <p>Navigate and rename IDs; fix translation gaps.</p>
-          <div class="actions">
-            <a class="button demo-link" href="https://codespaces.new/axeljaeger/angular-i18n-tools?quickstart=1&amp;devcontainer_path=.devcontainer%2Fdemo-angular%2Fdevcontainer.json">Try in Codespaces ↗</a>
-            <a class="install-link" href="https://github.com/axeljaeger/angular-i18n-tools/releases/download/vscode-v0.0.1/angular-i18n-tools.vsix"><img class="ecosystem-icon" src="icons/vscode-extensions.svg" width="16" height="16" alt="">Download VSIX ↗</a>
-            <a class="docs-link" href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/packages/vscode-extension/README.md">Docs →</a>
+          </article>
+          <article
+            class="product"
+            id="preview-vscode"
+            role="group"
+            aria-roledescription="slide"
+            aria-label="2 of 4"
+          >
+            <div class="media">
+              <span class="media-label">VS Code</span>
+              <div class="visual tree">
+                ⌄ translations
+                <div class="branch">
+                  ⌄ settingsDialog<br />&nbsp; <mark>applyButton</mark
+                  ><br />&nbsp; cancelButton
+                </div>
+                <div class="branch">⌄ userProfile<br />&nbsp; email</div>
+              </div>
+            </div>
+            <div class="body">
+              <div class="card-heading">
+                <span class="step">02 / EDIT</span
+                ><a
+                  target="_blank"
+                  rel="noopener"
+                  class="docs-link"
+                  href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/packages/vscode-extension/README.md"
+                  >Docs →</a
+                >
+              </div>
+              <h2>VS Code extension</h2>
+              <p class="description">
+                Navigate and rename IDs; fix translation gaps. Try the VS
+                Code-based demo in your browser.
+              </p>
+              <div class="actions">
+                <a
+                  target="_blank"
+                  rel="noopener"
+                  class="button demo-link"
+                  href="https://codespaces.new/axeljaeger/angular-i18n-tools?quickstart=1&amp;devcontainer_path=.devcontainer%2Fdemo-angular%2Fdevcontainer.json"
+                  ><span class="icon icon-play" aria-hidden="true"></span
+                  ><span>Demo</span></a
+                >
+                <button
+                  id="extension-install-button"
+                  type="button"
+                  class="install-link extension-install"
+                  commandfor="extension-install-options"
+                  command="toggle-popover"
+                  aria-expanded="false"
+                >
+                  <span class="icon icon-marketplace" aria-hidden="true"></span
+                  ><span>Install</span>
+                </button>
+              </div>
+            </div>
+          </article>
+          <article
+            class="product"
+            id="preview-storybook"
+            role="group"
+            aria-roledescription="slide"
+            aria-label="3 of 4"
+          >
+            <div class="media">
+              <span class="media-label">Storybook</span>
+              <div class="visual">
+                <div class="languages">
+                  <span>EN</span><span class="chosen">DE</span><span>FR</span>
+                </div>
+                <div class="translation">Guten Tag.</div>
+                <div class="subtranslation">
+                  Same component. A different language.
+                </div>
+              </div>
+            </div>
+            <div class="body">
+              <div class="card-heading">
+                <span class="step">03 / PREVIEW</span
+                ><a
+                  target="_blank"
+                  rel="noopener"
+                  class="docs-link"
+                  href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/packages/ng-generator/README.md#storybook-setup"
+                  >Docs →</a
+                >
+              </div>
+              <h2>Storybook language switcher</h2>
+              <p class="description">
+                Switch app and library previews between languages with the globe
+                toolbar.
+              </p>
+              <div class="actions">
+                <a
+                  target="_blank"
+                  rel="noopener"
+                  class="button demo-link"
+                  href="angular/storybook/?path=/story/sample-settings-dialog--default"
+                  ><span class="icon icon-play" aria-hidden="true"></span
+                  ><span>Try the demo</span></a
+                >
+                <button
+                  type="button"
+                  class="copy-command install-link cursor-interaction"
+                  data-command="npx @angular-i18n-tools/ng-generator@0.0.8 storybook"
+                  aria-label="Copy command: npx @angular-i18n-tools/ng-generator@0.0.8 storybook"
+                >
+                  <span
+                    class="icon icon-copy copy-icon"
+                    aria-hidden="true"
+                  ></span
+                  ><span class="copy-label" aria-live="polite"
+                    >Copy command</span
+                  ><code class="command-peek" aria-hidden="true"
+                    >npx @angular-i18n-tools/ng-generator@0.0.8 storybook</code
+                  >
+                </button>
+              </div>
+            </div>
+          </article>
+          <article
+            class="product"
+            id="preview-catalog"
+            role="group"
+            aria-roledescription="slide"
+            aria-label="4 of 4"
+          >
+            <div class="media">
+              <span class="media-label">GitHub Actions</span>
+              <div class="visual checks">
+                <strong>Translation checks</strong>
+                <div>✓ Catalogs parsed</div>
+                <div class="issue">
+                  ! 1 missing translation<br />! 1 duplicate message ID
+                </div>
+                <div>↳ Found before you merge.</div>
+              </div>
+            </div>
+            <div class="body">
+              <div class="card-heading">
+                <span class="step">04 / CHECK</span
+                ><a
+                  target="_blank"
+                  rel="noopener"
+                  class="docs-link"
+                  href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/docs/catalog-checks.md"
+                  >Docs →</a
+                >
+              </div>
+              <h2>Catalog checks</h2>
+              <p class="description">
+                Catch duplicate IDs and missing or orphaned translations in pull
+                requests.
+              </p>
+              <div class="actions">
+                <a
+                  target="_blank"
+                  rel="noopener"
+                  class="button demo-link"
+                  href="https://github.com/axeljaeger/angular-i18n-tools/pull/33"
+                  ><span class="icon icon-play" aria-hidden="true"></span
+                  ><span>See failing PR</span></a
+                >
+                <a
+                  target="_blank"
+                  rel="noopener"
+                  class="install-link"
+                  href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/.github/workflows/catalog-checks.yml"
+                  ><span class="icon icon-workflow" aria-hidden="true"></span
+                  ><span>Use Action</span></a
+                >
+              </div>
+            </div>
+          </article>
+        </section>
+        <p
+          class="visually-hidden"
+          id="carousel-status"
+          role="status"
+          aria-live="polite"
+        ></p>
+        <nav class="pagination" aria-label="Choose a product">
+          <button
+            type="button"
+            class="page-dot cursor-interaction"
+            aria-label="Set up: Angular setup generator"
+            aria-controls="preview-setup"
+            aria-current="true"
+          >
+            <span></span>
+          </button>
+          <button
+            type="button"
+            class="page-dot cursor-interaction"
+            aria-label="Edit: VS Code extension"
+            aria-controls="preview-vscode"
+          >
+            <span></span>
+          </button>
+          <button
+            type="button"
+            class="page-dot cursor-interaction"
+            aria-label="Preview: Storybook language switcher"
+            aria-controls="preview-storybook"
+          >
+            <span></span>
+          </button>
+          <button
+            type="button"
+            class="page-dot cursor-interaction"
+            aria-label="Check: Catalog checks"
+            aria-controls="preview-catalog"
+          >
+            <span></span>
+          </button>
+        </nav>
+        <section
+          class="angular-example"
+          aria-labelledby="angular-example-title"
+        >
+          <div class="eyebrow">Built on Angular’s native i18n</div>
+          <h2 id="angular-example-title">
+            One ID. From source to translation.
+          </h2>
+          <p class="example-intro">
+            Mark the text in your component, then match its ID in your
+            translation catalog.
+          </p>
+          <div class="example-pair">
+            <figure class="example-file">
+              <figcaption>
+                <span>In your component</span
+                ><span class="file-type">HTML</span>
+              </figcaption>
+              <pre><code>&lt;button
+  i18n="@@<mark>settingsDialog.applyButton</mark>"&gt;
+  Apply
+&lt;/button&gt;</code></pre>
+            </figure>
+            <figure class="example-file">
+              <figcaption>
+                <span>messages.de.json</span><span class="file-type">JSON</span>
+              </figcaption>
+              <pre><code>{
+  "locale": "de",
+  "translations": {
+    "<mark>settingsDialog.applyButton</mark>": "Anwenden"
+  }
+}</code></pre>
+            </figure>
           </div>
-          <p class="availability"><a href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/docs/vscode-extension-release.md">Marketplace &amp; Open VSX pending</a></p>
-        </article>
-        <article id="catalog-product" class="product-card">
-          <h2>Catalog checks</h2>
-          <p>Catch duplicate IDs and missing or orphaned translations in pull requests.</p>
-          <div class="actions">
-            <a class="button demo-link" href="https://github.com/axeljaeger/angular-i18n-tools/pull/33">See failing PR ↗</a>
-            <a class="install-link" href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/.github/workflows/catalog-checks.yml"><img class="ecosystem-icon" src="icons/github-workflow.svg" width="16" height="16" alt="">Use Action ↗</a>
-            <a class="docs-link" href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/docs/catalog-checks.md">Docs →</a>
-          </div>
-          <p class="availability"><a href="https://github.com/marketplace?type=actions&amp;query=Angular%20i18n%20Tools%20Check">GitHub Marketplace pending</a></p>
-        </article>
-      </section>
-    </main>
-    <footer>Example projects: <a href="https://github.com/axeljaeger/angular-i18n-tools/tree/main/apps/sample-angular">Angular CLI</a> · <a href="https://github.com/axeljaeger/angular-i18n-tools/tree/main/apps/sample-angular-nx">Nx</a> · <a href="https://github.com/axeljaeger/angular-i18n-tools#readme">Documentation ↗</a> · <a href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/site/icons/README.md">Icon credits</a></footer>
-  </div>
-  <script src="clipboard.js"></script>
-</body>
+          <p class="example-connection">
+            One stable ID connects your source, editor, previews, and
+            translation checks.
+          </p>
+          <p class="runtime-note">
+            Translations load before the app starts. Switching language reloads
+            the app.
+          </p>
+          <nav
+            class="angular-resources"
+            aria-label="Angular i18n documentation"
+          >
+            <a
+              href="https://angular.dev/guide/i18n/prepare"
+              target="_blank"
+              rel="noopener"
+              >Mark text for translation <span aria-hidden="true">↗</span></a
+            >
+            <a
+              href="https://angular.dev/guide/i18n/manage-marked-text"
+              target="_blank"
+              rel="noopener"
+              >Custom message IDs <span aria-hidden="true">↗</span></a
+            >
+            <a
+              href="https://angular.dev/api/localize/loadTranslations"
+              target="_blank"
+              rel="noopener"
+              >Runtime translations <span aria-hidden="true">↗</span></a
+            >
+          </nav>
+        </section>
+      </main>
+      <footer>
+        <span>Built around Angular. Open source.</span
+        ><span
+          >Example projects:
+          <a
+            href="https://github.com/axeljaeger/angular-i18n-tools/tree/main/apps/sample-angular"
+            target="_blank"
+            rel="noopener"
+            >Angular CLI ↗</a
+          >
+          ·
+          <a
+            href="https://github.com/axeljaeger/angular-i18n-tools/tree/main/apps/sample-angular-nx"
+            target="_blank"
+            rel="noopener"
+            >Nx ↗</a
+          >
+          ·
+          <a
+            href="https://github.com/axeljaeger/angular-i18n-tools/blob/main/site/icons/README.md"
+            target="_blank"
+            rel="noopener"
+            >Icon credits</a
+          ></span
+        >
+      </footer>
+      <div
+        id="extension-install-options"
+        class="extension-options"
+        popover="auto"
+        aria-label="Extension installation options"
+      >
+        <a href="vscode:extension/axeljaeger.angular-i18n-tools-vscode"
+          ><span class="icon icon-marketplace" aria-hidden="true"></span
+          ><span>Add to VS Code</span></a
+        >
+        <button type="button" class="unavailable-option" disabled>
+          <span class="icon icon-mouse-pointer-2" aria-hidden="true"></span
+          ><span>Add to Cursor</span>
+        </button>
+        <hr />
+        <a
+          href="https://marketplace.visualstudio.com/items?itemName=axeljaeger.angular-i18n-tools-vscode"
+          target="_blank"
+          rel="noopener"
+          ><span class="icon icon-marketplace" aria-hidden="true"></span
+          ><span>View in VS Code Marketplace</span></a
+        >
+        <button type="button" class="unavailable-option" disabled>
+          <span class="icon icon-store" aria-hidden="true"></span
+          ><span>View in Open VSX</span>
+        </button>
+        <hr />
+        <a
+          href="https://github.com/axeljaeger/angular-i18n-tools/releases/download/vscode-v0.0.1/angular-i18n-tools.vsix"
+          target="_blank"
+          rel="noopener"
+          ><span class="icon icon-download" aria-hidden="true"></span
+          ><span>Download VSIX</span></a
+        >
+      </div>
+    </div>
+  </body>
 </html>

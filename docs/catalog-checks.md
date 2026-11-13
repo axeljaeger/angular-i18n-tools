@@ -28,11 +28,12 @@ outside its scope.
 
 ## Findings and GitHub experience
 
-- Duplicate source IDs, missing translations and orphaned keys fail the check.
+- Duplicate source IDs produce warnings by default. Missing translations and
+  orphaned keys fail the check. Set `duplicate-ids: error` to block on duplicates.
 - Empty catalogs still define a locale: their missing translations are reported.
 - Invalid JSON/catalog values and paths with no runtime catalogs fail clearly.
-- Up to ten blocking error annotations point at repository-relative source or
-  catalog lines, including when the project is in a subdirectory.
+- Up to ten error or warning annotations point at repository-relative source or
+  catalog lines, including when the project is in a subdirectory. Errors take priority.
 - The job summary contains counts, linked findings (up to 100 locations), and
   repair guidance. Duplicated IDs are reported at each source occurrence.
 
@@ -46,9 +47,22 @@ Inputs:
 | Input | Default | Meaning |
 | --- | --- | --- |
 | `path` | `.` | Project directory inside the checkout |
-| `annotations` | `true` | Show blocking findings on affected file lines |
+| `duplicate-ids` | `warning` | Set to `error` to fail the check on repeated source IDs |
+| `annotations` | `true` | Show findings on affected file lines |
 | `summary` | `true` | Write the job summary |
 | `install-dependencies` | `false` | Legacy compatibility flag; ignored by the bundled action |
+
+For example, to fail the check on repeated IDs:
+
+```yaml
+- uses: axeljaeger/angular-i18n-tools@v1
+  with:
+    duplicate-ids: error
+```
+
+This setting applies to every repeated ID; the checker does not compare source
+messages. Verify that occurrences have compatible meaning and placeholders,
+because they share the same translation.
 
 ## Demo
 
@@ -70,7 +84,8 @@ to the failing PR.
 npx @angular-i18n-tools/core@0.0.3 apps/my-app
 ```
 
-The CLI returns 0 for complete catalogs and 1 for findings. `--github-annotations`
+The CLI returns 0 when there are no errors and 1 for errors. Pass
+`--duplicate-ids error` to make repeated IDs blocking. `--github-annotations`
 uses `GITHUB_WORKSPACE` or `--annotation-root <directory>` for annotation paths.
 `--github-summary` writes to `GITHUB_STEP_SUMMARY` when used in GitHub Actions.
 

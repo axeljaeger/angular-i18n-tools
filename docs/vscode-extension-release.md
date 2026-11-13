@@ -1,15 +1,15 @@
 # VS Code extension: demos and publishing
 
-Extension identity: `angular-i18n-tools.angular-i18n-tools-vscode`.
+Extension identity: `axeljaeger.angular-i18n-tools-vscode`.
 The VSIX includes the browser bundle and core analysis code. No npm packages
 need to be installed in a user's Angular project.
 
 ## Demo
 
 The landing page links to dedicated `.devcontainer/demo-angular` and
-`.devcontainer/demo-nx` configurations. Each opens one project, builds a local
-VSIX in postCreateCommand and installs it through VS Code's CLI in
-postAttachCommand. This keeps the demos usable before Marketplace approval.
+`.devcontainer/demo-nx` configurations. Each opens one project, installs workspace
+dependencies in postCreateCommand, and installs the published extension through
+VS Code's CLI in postAttachCommand.
 The `DEMO.md` file guides users through source/translation navigation, rename
 and a missing-translation Quick Fix. No Codespace is created automatically by
 the site; visitors choose their GitHub account, machine and quota themselves.
@@ -37,8 +37,7 @@ The package allowlist excludes tests, source files and development dependencies.
 ## Initial Marketplace setup
 
 Sign in to [publisher management](https://marketplace.visualstudio.com/manage/publishers/).
-Create or open publisher **angular-i18n-tools**. If this ID is unavailable, change
-the manifest publisher and documentation/links consistently before publishing.
+Open publisher **axeljaeger**, matching the publisher in the extension manifest.
 
 Under **Trusted Publishing**, create a policy with:
 
@@ -61,7 +60,7 @@ gh workflow run vscode-extension.yml --ref main -f publish=true
 ```
 
 After publication is visible, update the landing page's VSIX installation link
-to [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=angular-i18n-tools.angular-i18n-tools-vscode).
+to [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=axeljaeger.angular-i18n-tools-vscode).
 Keep the Codespaces and documentation links. Do not show an unpublished listing
 as an available Marketplace installation.
 
@@ -88,7 +87,7 @@ arguments. The account must have accepted the Open VSX Publisher Agreement and
 be authorized to publish in the namespace.
 
 `create_namespace: true` checks the namespace from the package manifest's
-`publisher`. A missing namespace is created; an existing one is preserved and
+`publisher` (`axeljaeger`). A missing namespace is created; an existing one is preserved and
 still requires publisher membership. Unexpected registry errors stop the job.
 This option is restricted to token mode and is off by default.
 
