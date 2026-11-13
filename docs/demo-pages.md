@@ -5,7 +5,7 @@ The VS Code & Cursor product offers an installable VSIX, a Codespaces demo and i
 documentation. The Marketplace installation replaces the VSIX action once the
 publisher has completed the initial publication; an unpublished shop URL is
 not presented as an available installation. Codespaces demos open the plain
-Angular and Nx samples separately and install a local build of the extension.
+Angular and Nx samples separately and install the published Marketplace extension.
 Cursor/Open VSX is identified in the same product card, with a pending status
 and a publishing-guide link until its registry listing is available.
 All four products use the same boxed product-card styling and action order:

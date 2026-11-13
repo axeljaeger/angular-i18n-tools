@@ -7,9 +7,9 @@ need to be installed in a user's Angular project.
 ## Demo
 
 The landing page links to dedicated `.devcontainer/demo-angular` and
-`.devcontainer/demo-nx` configurations. Each opens one project, builds a local
-VSIX in postCreateCommand and installs it through VS Code's CLI in
-postAttachCommand. This keeps the demos usable before Marketplace approval.
+`.devcontainer/demo-nx` configurations. Each opens one project, installs workspace
+dependencies in postCreateCommand, and installs the published extension through
+VS Code's CLI in postAttachCommand.
 The `DEMO.md` file guides users through source/translation navigation, rename
 and a missing-translation Quick Fix. No Codespace is created automatically by
 the site; visitors choose their GitHub account, machine and quota themselves.
