@@ -11,9 +11,13 @@ inputs:
     required: false
     default: "."
   annotations:
-    description: Emit error annotations on affected source and catalog lines.
+    description: Emit error and warning annotations on affected source and catalog lines.
     required: false
     default: "true"
+  duplicate-ids:
+    description: Treat repeated source IDs as error or warning. Warnings do not fail the check.
+    required: false
+    default: "warning"
   summary:
     description: Add finding counts, source links and repair guidance to the job summary.
     required: false
