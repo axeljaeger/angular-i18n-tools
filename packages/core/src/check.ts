@@ -11,7 +11,11 @@ export async function runCli(args: string[] = process.argv.slice(2)): Promise<nu
   const files = await readWorkspaceFiles(root);
   validateRuntimeCatalogs(files);
   const catalog = createCatalog(files);
-  const diagnostics = getCatalogDiagnostics(catalog);
+  const diagnostics = getCatalogDiagnostics(catalog).map(diagnostic => ({
+    ...diagnostic,
+    severity: diagnostic.kind === "duplicate-source-id" ? options.duplicateIds : "error" as const
+  }));
+  const errors = diagnostics.filter(diagnostic => diagnostic.severity === "error");
   const annotationRoot = options.annotationRoot ?? process.env.GITHUB_WORKSPACE;
   const repositoryPath = (file: string) => annotationRoot ? toWorkspacePath(relative(resolve(annotationRoot), resolve(root, file))) : file;
   if (options.githubSummary) {
@@ -24,7 +28,10 @@ export async function runCli(args: string[] = process.argv.slice(2)): Promise<nu
     return 0;
   }
 
-  for (const [index, diagnostic] of diagnostics.entries()) {
+  const reportedDiagnostics = options.githubAnnotations
+    ? [...errors, ...diagnostics.filter(diagnostic => diagnostic.severity === "warning")]
+    : diagnostics;
+  for (const [index, diagnostic] of reportedDiagnostics.entries()) {
     if (options.githubAnnotations) {
       if (index < 10) console.error(toGithubAnnotation(diagnostic, repositoryPath));
       continue;
@@ -39,13 +46,14 @@ export async function runCli(args: string[] = process.argv.slice(2)): Promise<nu
   }
   if (options.githubAnnotations && diagnostics.length > 10) console.log(`${diagnostics.length} findings; the first 10 are annotated. See the job summary for details.`);
 
-  return 1;
+  return errors.length ? 1 : 0;
 }
 
 interface CliOptions {
   root: string;
   githubAnnotations: boolean;
   githubSummary: boolean;
+  duplicateIds: "error" | "warning";
   annotationRoot?: string;
 }
 
@@ -54,6 +62,7 @@ function parseArgs(args: string[]): CliOptions {
   let githubAnnotations = false;
   let githubSummary = false;
   let annotationRoot: string | undefined;
+  let duplicateIds: "error" | "warning" = "warning";
 
   for (let index = 0; index < args.length; index++) {
     const arg = args[index]!;
@@ -63,6 +72,10 @@ function parseArgs(args: string[]): CliOptions {
       githubAnnotations = false;
     } else if (arg === "--github-summary") {
       githubSummary = true;
+    } else if (arg === "--duplicate-ids") {
+      const value = args[++index];
+      if (value !== "error" && value !== "warning") throw new Error("--duplicate-ids must be error or warning.");
+      duplicateIds = value;
     } else if (arg === "--annotation-root") {
       annotationRoot = args[++index];
       if (!annotationRoot || annotationRoot.startsWith("--")) throw new Error("--annotation-root requires a directory.");
@@ -78,13 +91,15 @@ function parseArgs(args: string[]): CliOptions {
     root: positional[0] ?? ".",
     githubAnnotations,
     githubSummary,
+    duplicateIds,
     ...(annotationRoot ? { annotationRoot } : {})
   };
 }
 
-function toGithubAnnotation(diagnostic: ReturnType<typeof getCatalogDiagnostics>[number], repositoryPath: (file: string) => string): string {
-  // All findings block this CLI check, independently of editor diagnostic severity.
-  const command = "error";
+type CheckDiagnostic = Omit<ReturnType<typeof getCatalogDiagnostics>[number], "severity"> & { severity: "error" | "warning" };
+
+function toGithubAnnotation(diagnostic: CheckDiagnostic, repositoryPath: (file: string) => string): string {
+  const command = diagnostic.severity;
   const properties = diagnostic.entry
     ? `file=${escapeGithubCommandProperty(repositoryPath(diagnostic.entry.sourceFile))},line=${diagnostic.entry.range.start.line},col=${diagnostic.entry.range.start.column},title=${escapeGithubCommandProperty(diagnostic.kind)}`
     : `title=${escapeGithubCommandProperty(diagnostic.kind)}`;
@@ -97,9 +112,11 @@ function html(value: string): string {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("|", "&#124;").replaceAll("`", "&#96;").replaceAll("[", "&#91;").replaceAll("]", "&#93;").replaceAll(/\r?\n/g, " ");
 }
 
-function createGithubSummary(diagnostics: ReturnType<typeof getCatalogDiagnostics>, repositoryPath: (file: string) => string): string {
+function createGithubSummary(diagnostics: CheckDiagnostic[], repositoryPath: (file: string) => string): string {
   const labels = { "duplicate-source-id": "Duplicate ID", "missing-translation": "Missing translation", "extra-translation": "Orphaned translation" };
-  const lines = ["## Angular i18n catalog checks", "", diagnostics.length ? `**Failed: ${diagnostics.length} findings.**` : "**Passed: catalogs are complete.**", ""];
+  const hasErrors = diagnostics.some(diagnostic => diagnostic.severity === "error");
+  const status = hasErrors ? "Failed" : "Passed with warnings";
+  const lines = ["## Angular i18n catalog checks", "", diagnostics.length ? `**${status}: ${diagnostics.length} findings.**` : "**Passed: catalogs are complete.**", ""];
   for (const [kind, label] of Object.entries(labels)) lines.push(`- ${label}: ${diagnostics.filter(diagnostic => diagnostic.kind === kind).length}`);
   if (!diagnostics.length) return lines.join("\n") + "\n";
   lines.push("", "| Finding | ID | Locale | Location |", "| --- | --- | --- | --- |");
@@ -118,7 +135,7 @@ function createGithubSummary(diagnostics: ReturnType<typeof getCatalogDiagnostic
     lines.push(`| ${labels[diagnostic.kind]} | <code>${html(diagnostic.id)}</code> | ${html(diagnostic.locale ?? "—")} | ${location} |`);
   }
   if (diagnostics.length > 100) lines.push("", `Showing the first 100 of ${diagnostics.length} findings.`);
-  lines.push("", "### How to fix", "", "- Missing translation: add the ID to the indicated locale's translations map.", "- Orphaned translation: remove the unused catalog key, or restore the intended source ID.", "- Duplicate ID: use a distinct custom ID for each source message and update its catalog keys.", "", "The check only reports findings; it does not modify files or generate translations.");
+  lines.push("", "### How to fix", "", "- Missing translation: add the ID to the indicated locale's translations map.", "- Orphaned translation: remove the unused catalog key, or restore the intended source ID.", "- Duplicate ID: verify that all occurrences can share the same translation, or use distinct IDs and update their catalog keys.", "", "The check only reports findings; it does not modify files or generate translations.");
   return lines.join("\n") + "\n";
 }
 

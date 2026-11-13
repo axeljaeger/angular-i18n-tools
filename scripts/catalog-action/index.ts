@@ -17,7 +17,7 @@ try {
   if (project === ".." || project.startsWith("../") || project.startsWith("..\\") || isAbsolute(project)) {
     throw new Error("path must stay inside the checked-out repository.");
   }
-  const args = [root, "--annotation-root", workspace];
+  const args = [root, "--annotation-root", workspace, "--duplicate-ids", process.env["INPUT_DUPLICATE-IDS"] || "warning"];
   if (enabled("INPUT_ANNOTATIONS", "true")) args.push("--github-annotations");
   if (enabled("INPUT_SUMMARY", "true") && process.env.GITHUB_STEP_SUMMARY) args.push("--github-summary");
   console.log(`Checking runtime JSON catalogs: ${project || "."}`);
