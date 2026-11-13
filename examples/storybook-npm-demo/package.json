@@ -22,9 +22,9 @@
     "@angular/cli": "^22.2.5",
     "@angular/compiler-cli": "^22.2.4",
     "@angular-i18n-tools/storybook-addon": "0.0.2",
-    "storybook": "10.6.5",
+    "storybook": "10.6.7",
     "typescript": "~6.0.0",
-    "@storybook/angular-vite": "10.6.5",
+    "@storybook/angular-vite": "10.6.7",
     "@angular/build": "^22.2.5",
     "@analogjs/vite-plugin-angular": "^2.9.6",
     "vite": "^8.0.0"
