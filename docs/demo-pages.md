@@ -1,66 +1,49 @@
 # Project site on GitHub Pages
 
 The main entry point is `https://axeljaeger.github.io/angular-i18n-tools/`.
-The VS Code & Cursor product offers an installable VSIX, a Codespaces demo and its own
-documentation. The Marketplace installation replaces the VSIX action once the
-publisher has completed the initial publication; an unpublished shop URL is
-not presented as an available installation. Codespaces demos open the plain
-Angular and Nx samples separately and install the published Marketplace extension.
-Cursor/Open VSX is identified in the same product card, with a pending status
-and a publishing-guide link until its registry listing is available.
-All four products use the same boxed product-card styling and action order:
-**demo** (the only primary button), **installer** (secondary link), then **Docs**.
-The generator demo opens the configured Angular application; its npm page is the
-installer. Storybook's installer links to its live addon-catalog entry. Both
-copyable setup commands remain available under a collapsed **One-line setup**
-disclosure. The editor demo opens Codespaces; its secondary installer downloads
-the VSIX. Catalog checks link to the failing PR first and the ready-to-copy
-workflow second. Marketplace availability is separate from these working actions.
+The static landing page in `site/`, both Angular apps, and both Storybooks are
+assembled into a single GitHub Pages deployment. The landing page needs no
+framework runtime, CDN scripts, or build step of its own.
 
-The [Storybook catalog entry](https://storybook.js.org/addons/@angular-i18n-tools/storybook-addon)
-is live. The Microsoft and GitHub Action listings currently return 404; do not
-replace working installation links with those listings until they are published.
+## Landing page
 
-### Ecosystem installation UI
+Four product cards follow the workflow **Set up → Edit → Preview → Check**.
+A native horizontal scroll-snap carousel centers each card; mobile shows one
+card with neighboring edges. Four dot controls follow scrolling immediately.
+Dot navigation takes 200 ms, or is instant when reduced motion is requested.
+Shared subgrid rows align titles, descriptions, and primary actions. Each card
+has a Docs link beside its phase label, a demo action, and an install action.
 
-[Microsoft documents native extension links](https://code.visualstudio.com/docs/configure/command-line#_opening-vs-code-with-urls)
-(`vscode:extension/publisher.name`), which open an extension's details in VS Code;
-they do not install an unpublished VSIX. Its
-[brand guidance](https://code.visualstudio.com/brand#action-buttons-and-links)
-includes Open in VS Code buttons, rather than a reusable Marketplace installation
-widget. [GitHub's native Action installation](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/find-and-customize-actions)
-is copying workflow YAML from the Marketplace listing. No embeddable install
-widget is documented by either source.
+The generator and Storybook install buttons copy the versioned setup commands.
+Hover or keyboard focus shows the real command with ellipsis inside the button;
+copy feedback preserves its dimensions. Product illustrations animate on hover
+only when reduced motion is not requested; these are placeholders for future
+short videos, not recordings of the demos.
 
-The secondary VSIX and Action links use Microsoft's **Extensions** Codicon and
-GitHub's **Workflow** Octicon. These are ecosystem UI symbols, not certification
-badges. Files are hosted locally, with [sources and licenses](../site/icons/README.md).
+The VS Code card opens the Angular sample in Codespaces. Its Install popover
+links to `vscode:extension/axeljaeger.angular-i18n-tools-vscode`, the published
+[VS Code Marketplace listing](https://marketplace.visualstudio.com/items?itemName=axeljaeger.angular-i18n-tools-vscode),
+and the existing VSIX release. Cursor and Open VSX options are disabled until
+those destinations are available. The popup dismisses on Escape or outside click.
+The official Microsoft Extensions icon and other local assets have
+[attribution and licenses](../site/icons/README.md).
 
-### Catalog demo
- Catalog checks link to
-[the intentionally failing demo PR](https://github.com/axeljaeger/angular-i18n-tools/pull/33),
-their [documentation](catalog-checks.md), and a clearly marked Marketplace search
-until the owner publishes the listing. The demo adds missing, orphaned and
-duplicate IDs only in `examples/catalog-checks-demo`; keep it open and do not merge.
-The landing page remains within one screen at the tested desktop/mobile sizes.
-It introduces the project, explains what visitors can try, links to the GitHub
-repository, and lists the products in workflow order: Angular setup generator
-first, followed by the Storybook language switcher, VS Code extension, and catalog
-checks. The generator uses one copyable workspace-aware npx command for both
-Angular CLI and Nx, with a terminal checkbox list for multiple applications.
-Storybook has its own one-line setup command for existing Angular application
-and library Storybooks, including non-buildable Nx libraries. Generator 0.0.7+
-also discovers libraries whose Nx settings live in package.json. Generator 0.0.8+
-adds contextual setup errors and a `--verbose --dry-run` trace for troubleshooting.
-Both product cards use the same documentation-link styling and link to the
-full setup guide.
-The Storybook product has one primary demo: the addon loads translations through
-an explicit preview loader and does not discover Angular CLI or Nx project
-configuration. The second Storybook remains available at its existing URL but
-is not presented as a separate product demonstration. Angular CLI and Nx sample
-projects remain available for editor and catalog tooling; their source and app
-links are secondary. The setup generator supports explicit Nx `project.json` targets starting with
-version 0.0.3; see [the setup guide](../packages/ng-generator/README.md).
+Catalog checks link to the [intentionally failing demo PR](https://github.com/axeljaeger/angular-i18n-tools/pull/33)
+and the ready-to-copy workflow. Keep the demo PR open and do not merge it.
+The page does not advertise an unpublished GitHub Marketplace listing.
+
+Below the products, matching template and runtime JSON snippets illustrate a
+stable custom ID. Links lead to Angular's annotation, custom-ID, and runtime
+translation documentation. Translations load before bootstrap; switching the
+language reloads the app.
+
+## Demos
+
+The generator demo opens the configured Angular application. The primary
+Storybook demo uses an explicit preview loader; the addon does not discover
+Angular CLI or Nx configuration. The second Storybook remains available at its
+existing URL. Generator setup for Angular CLI and Nx, including existing app
+and library Storybooks, is documented in the [setup guide](../packages/ng-generator/README.md).
 
 Published routes:
 
@@ -101,7 +84,8 @@ when testing another repository path. Storybook assets use relative URLs.
 `scripts/pages/assemble.mjs` recreates the staging directory so removed assets
 do not survive a rebuild. Landing-page source lives in `site/`.
 
-The browser check follows local landing-page links, checks the mobile layout,
+The browser check follows local landing-page links, checks carousel navigation,
+copy buttons, the install popup, reduced motion, icons, and the mobile layout,
 loads both apps in three locales, and tests both staged Storybooks for locale
 switching, URL-selected locales, and missing assets. Screenshots are written to
 `dist/pages-check/` and each sample's ignored `storybook-demo/` directory.
