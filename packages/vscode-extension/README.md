@@ -14,7 +14,7 @@ a codespace is created.
 
 ## Install
 
-The Marketplace identity is `angular-i18n-tools.angular-i18n-tools-vscode`.
+The Marketplace identity is `axeljaeger.angular-i18n-tools-vscode`.
 Until the initial Marketplace publication is complete, install the VSIX from
 the [extension release](https://github.com/axeljaeger/angular-i18n-tools/releases/tag/vscode-v0.0.1):
 in VS Code, choose **Extensions → … → Install from VSIX…** and select the file.
