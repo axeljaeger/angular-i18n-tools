@@ -49,8 +49,8 @@ importers:
         version: 2.9.1
     devDependencies:
       '@analogjs/vite-plugin-angular':
-        specifier: ^2.7.3
-        version: 2.9.4(d4acb8712d220ab79326af3fc8d195dd)
+        specifier: ^2.9.6
+        version: 2.9.6(d4acb8712d220ab79326af3fc8d195dd)
       '@angular-i18n-tools/storybook-addon':
         specifier: workspace:*
         version: link:../../packages/storybook-addon
@@ -65,7 +65,7 @@ importers:
         version: 22.2.4(@angular/compiler@22.2.4)(typescript@6.0.3)
       '@storybook/angular-vite':
         specifier: 10.6.7
-        version: 10.6.7(1d9ecfea3cab4fbeb4e52338c07078a4)
+        version: 10.6.7(200194f096cfacb9ce9bfe80f72325e5)
       playwright:
         specifier: ^1.64.1
         version: 1.64.1
@@ -104,8 +104,8 @@ importers:
         version: 2.9.1
     devDependencies:
       '@analogjs/vite-plugin-angular':
-        specifier: ^2.7.3
-        version: 2.9.4(d4acb8712d220ab79326af3fc8d195dd)
+        specifier: ^2.9.6
+        version: 2.9.6(d4acb8712d220ab79326af3fc8d195dd)
       '@angular-i18n-tools/storybook-addon':
         specifier: workspace:*
         version: link:../../packages/storybook-addon
@@ -123,7 +123,7 @@ importers:
         version: 24.0.3(cdb8898d506bc3a4c881db1c8e203675)
       '@storybook/angular-vite':
         specifier: 10.6.7
-        version: 10.6.7(1d9ecfea3cab4fbeb4e52338c07078a4)
+        version: 10.6.7(200194f096cfacb9ce9bfe80f72325e5)
       playwright:
         specifier: ^1.64.1
         version: 1.64.1
@@ -208,8 +208,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@analogjs/vite-plugin-angular@2.9.4':
-    resolution: {integrity: sha512-YiCyGQPOs7+9ZdKM0eCPK6J1oGZs+1UxqHM1UyuVj4b5l7y7vAgID3QV1ZZWvZ2TFGr0XENknYr9bxTocDnJQQ==}
+  '@analogjs/vite-plugin-angular@2.9.6':
+    resolution: {integrity: sha512-mgFc3GdHWH1D4xpFn1N5R352Q/vwALkSt02s95pGRJw9lrt7MSH3w15+TDJjDxmsLCbe+/51usU6MMTVJz+79A==}
     peerDependencies:
       '@angular-devkit/build-angular': ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0
       '@angular/build': ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0
@@ -2140,9 +2140,6 @@ packages:
 
   '@jridgewell/source-map@0.3.11':
     resolution: {integrity: sha512-ZMp1V8ZFcPG5dIWnQLr3NSI1MiCU7UETdS/A0G8V/XWHvJv3ZsFqutJn1Y5RPmAPX6F3BiE397OqveU/9NCuIA==}
-
-  '@jridgewell/sourcemap-codec@1.5.5':
-    resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
 
   '@jridgewell/sourcemap-codec@1.6.0':
     resolution: {integrity: sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw==}
@@ -7553,7 +7550,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
 
-  '@analogjs/vite-plugin-angular@2.9.4(d4acb8712d220ab79326af3fc8d195dd)':
+  '@analogjs/vite-plugin-angular@2.9.6(d4acb8712d220ab79326af3fc8d195dd)':
     dependencies:
       magic-string: 0.30.21
       obug: 2.2.1
@@ -10007,8 +10004,6 @@ snapshots:
       '@jridgewell/trace-mapping': 0.3.31
     optional: true
 
-  '@jridgewell/sourcemap-codec@1.5.5': {}
-
   '@jridgewell/sourcemap-codec@1.6.0': {}
 
   '@jridgewell/trace-mapping@0.3.31':
@@ -10392,6 +10387,13 @@ snapshots:
     dependencies:
       '@emnapi/core': 1.9.2
       '@emnapi/runtime': 1.9.2
+      '@tybys/wasm-util': 0.10.4
+    optional: true
+
+  '@napi-rs/wasm-runtime@1.2.7(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)':
+    dependencies:
+      '@emnapi/core': 2.0.0-alpha.3
+      '@emnapi/runtime': 2.0.0-alpha.3
       '@tybys/wasm-util': 0.10.4
     optional: true
 
@@ -10787,7 +10789,7 @@ snapshots:
 
   '@oxc-parser/binding-wasm32-wasi@0.121.0(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)':
     dependencies:
-      '@napi-rs/wasm-runtime': 1.2.6(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)
+      '@napi-rs/wasm-runtime': 1.2.7(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)
     transitivePeerDependencies:
       - '@emnapi/core'
       - '@emnapi/runtime'
@@ -11339,9 +11341,9 @@ snapshots:
 
   '@secretlint/types@10.2.2': {}
 
-  '@storybook/angular-vite@10.6.7(1d9ecfea3cab4fbeb4e52338c07078a4)':
+  '@storybook/angular-vite@10.6.7(200194f096cfacb9ce9bfe80f72325e5)':
     dependencies:
-      '@analogjs/vite-plugin-angular': 2.9.4(d4acb8712d220ab79326af3fc8d195dd)
+      '@analogjs/vite-plugin-angular': 2.9.6(d4acb8712d220ab79326af3fc8d195dd)
       '@angular-devkit/architect': 0.2202.5(chokidar@5.0.0)
       '@angular-devkit/core': 22.2.5(chokidar@5.0.0)
       '@angular/animations': 22.2.4(@angular/core@22.2.4(@angular/compiler@22.2.4)(rxjs@7.8.2)(zone.js@0.15.1))
@@ -13558,7 +13560,7 @@ snapshots:
 
   magic-string@0.30.21:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.5
+      '@jridgewell/sourcemap-codec': 1.6.0
 
   magic-string@1.4.1:
     dependencies:

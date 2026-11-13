@@ -31,7 +31,7 @@
     "typescript": "~6.0.0",
     "@storybook/angular-vite": "10.6.7",
     "@angular/build": "^22.2.5",
-    "@analogjs/vite-plugin-angular": "^2.7.3",
+    "@analogjs/vite-plugin-angular": "^2.9.6",
     "vite": "^8.3.7",
     "@nx/angular": "24.0.3"
   }
