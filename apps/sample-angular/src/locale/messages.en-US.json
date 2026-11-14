@@ -4,6 +4,7 @@
     "app.eyebrow": "Angular built-in i18n",
     "app.title": "Localization tooling sample",
     "app.subtitle": "Sample workspace for Angular localization tooling.",
+    "app.language": "Language",
     "settingsDialog.title": "Settings",
     "settingsDialog.cancelButton": "Cancel",
     "settingsDialog.applyButton": "Apply",

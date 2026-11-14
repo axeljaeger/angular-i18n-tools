@@ -343,6 +343,20 @@ try {
       assert.equal(await page.locator("html").getAttribute("lang"), locale);
     }
   }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${url}angular/?example=kept&locale=en#section`);
+  const languages = page.getByRole("navigation", { name: "Language" });
+  assert.equal(await languages.getByRole("link", { name: "English" }).getAttribute("aria-current"), "page");
+  await languages.getByRole("link", { name: "Deutsch" }).click();
+  await page.getByRole("heading", { name: "Einstellungen", exact: true }).waitFor();
+  assert.equal(new URL(page.url()).searchParams.get("example"), "kept");
+  assert.equal(new URL(page.url()).hash, "#section");
+  assert.equal(await page.getByRole("navigation", { name: "Sprache" }).getByRole("link", { name: "Deutsch" }).getAttribute("aria-current"), "page");
+  await page.getByRole("link", { name: "Français" }).click();
+  await page.getByRole("heading", { name: "Parametres", exact: true }).waitFor();
+  await page.getByRole("link", { name: "English" }).click();
+  await page.getByRole("heading", { name: "Settings", exact: true }).waitFor();
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), "App mobile horizontal overflow");
   await page.goto(
     `${url}?path=/story/sample-settings-dialog--default&globals=locale:de#preview`,
   );

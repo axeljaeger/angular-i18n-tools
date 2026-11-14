@@ -4,6 +4,7 @@
     "app.eyebrow": "Angular integrierte i18n",
     "app.title": "Beispiel fuer Lokalisierungswerkzeuge",
     "app.subtitle": "Beispielarbeitsbereich fuer Angular-Lokalisierungswerkzeuge.",
+    "app.language": "Sprache",
     "settingsDialog.title": "Einstellungen",
     "settingsDialog.description": "Waehlen Sie, wie sich die Anwendung verhalten soll.",
     "settingsDialog.cancelButton": "Abbrechen",
