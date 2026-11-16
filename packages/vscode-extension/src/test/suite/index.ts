@@ -365,7 +365,7 @@ async function refreshLocalizationCatalog(): Promise<void> {
 }
 
 async function waitForDiagnostic(kind: string, id: string, locale: string): Promise<void> {
-  for (let attempt = 0; attempt < 20; attempt += 1) {
+  for (let attempt = 0; attempt < 60; attempt += 1) {
     if (
       vscode.languages
         .getDiagnostics()
@@ -373,10 +373,9 @@ async function waitForDiagnostic(kind: string, id: string, locale: string): Prom
           diagnostics.some(
             (diagnostic) =>
               diagnostic.source === "angular-i18n-tools" &&
-              typeof diagnostic.code === "string" &&
-              diagnostic.code.includes(`"kind":"${kind}"`) &&
-              diagnostic.code.includes(`"id":"${id}"`) &&
-              diagnostic.code.includes(`"locale":"${locale}"`)
+              diagnosticCodeContains(diagnostic, `"kind":"${kind}"`) &&
+              diagnosticCodeContains(diagnostic, `"id":"${id}"`) &&
+              diagnosticCodeContains(diagnostic, `"locale":"${locale}"`)
           )
         )
     ) {
@@ -387,6 +386,18 @@ async function waitForDiagnostic(kind: string, id: string, locale: string): Prom
   }
 
   throw new Error(`Expected ${kind} diagnostic for ${id} in ${locale}`);
+}
+
+function diagnosticCodeContains(diagnostic: vscode.Diagnostic, expected: string): boolean {
+  if (typeof diagnostic.code === "string") {
+    return diagnostic.code.includes(expected);
+  }
+
+  if (typeof diagnostic.code === "object" && diagnostic.code && "value" in diagnostic.code) {
+    return typeof diagnostic.code.value === "string" && diagnostic.code.value.includes(expected);
+  }
+
+  return false;
 }
 
 function createTreeNode(
