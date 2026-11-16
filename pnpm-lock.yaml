@@ -49,8 +49,8 @@ importers:
         version: 2.9.1
     devDependencies:
       '@analogjs/vite-plugin-angular':
-        specifier: ^2.7.3
-        version: 2.9.4(0442d0dcd152d6f92a96f151eaedc022)
+        specifier: ^2.9.7
+        version: 2.9.7(0442d0dcd152d6f92a96f151eaedc022)
       '@angular-i18n-tools/storybook-addon':
         specifier: workspace:*
         version: link:../../packages/storybook-addon
@@ -65,7 +65,7 @@ importers:
         version: 22.2.6(@angular/compiler@22.2.6)(typescript@6.0.3)
       '@storybook/angular-vite':
         specifier: 10.6.7
-        version: 10.6.7(98bdeea8fe4dda2f08df702bfa75e027)
+        version: 10.6.7(a672f92aefb92e73f52afe493f3f5fde)
       playwright:
         specifier: ^1.65.0
         version: 1.65.0
@@ -104,8 +104,8 @@ importers:
         version: 2.9.1
     devDependencies:
       '@analogjs/vite-plugin-angular':
-        specifier: ^2.7.3
-        version: 2.9.4(0442d0dcd152d6f92a96f151eaedc022)
+        specifier: ^2.9.7
+        version: 2.9.7(0442d0dcd152d6f92a96f151eaedc022)
       '@angular-i18n-tools/storybook-addon':
         specifier: workspace:*
         version: link:../../packages/storybook-addon
@@ -123,7 +123,7 @@ importers:
         version: 24.0.3(8eb9069ea75ed692aa4ea37581ba4f18)
       '@storybook/angular-vite':
         specifier: 10.6.7
-        version: 10.6.7(98bdeea8fe4dda2f08df702bfa75e027)
+        version: 10.6.7(a672f92aefb92e73f52afe493f3f5fde)
       playwright:
         specifier: ^1.65.0
         version: 1.65.0
@@ -208,8 +208,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@analogjs/vite-plugin-angular@2.9.4':
-    resolution: {integrity: sha512-YiCyGQPOs7+9ZdKM0eCPK6J1oGZs+1UxqHM1UyuVj4b5l7y7vAgID3QV1ZZWvZ2TFGr0XENknYr9bxTocDnJQQ==}
+  '@analogjs/vite-plugin-angular@2.9.7':
+    resolution: {integrity: sha512-ZieiH1to3YW985GdejZHsMsA1+WSmuUd8rHGu1CHtGHBiPw4yLn6YQpyNogq3AcF0DY8z6WnN2jmz7NACCEtFg==}
     peerDependencies:
       '@angular-devkit/build-angular': ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0
       '@angular/build': ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0
@@ -1800,8 +1800,8 @@ packages:
     resolution: {integrity: sha512-R76UKbvsqI68DJJVTVyqFKqU98CN4+B+acxNfEA2IFarSzP0SjtKf/3+fFiXzTyv5Fj3PxLkGHe2wnVWWMxobQ==}
     engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
 
-  '@eslint/config-array@0.23.5':
-    resolution: {integrity: sha512-Y3kKLvC1dvTOT+oGlqNQ1XLqK6D1HU2YXPc52NmAlJZbMMWDzGYXMiPRJ8TYD39muD/OTjlZmNJ4ib7dvSrMBA==}
+  '@eslint/config-array@0.23.6':
+    resolution: {integrity: sha512-WrTH7nioI9QPY4NZGnsywmecswJdgeq4BCM76qok9VgjTO29ZgUzUvcuJLVPYVQM4uDbaPBU0M33R9DIxI8X3w==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
   '@eslint/config-helpers@0.7.0':
@@ -2154,6 +2154,9 @@ packages:
     peerDependenciesMeta:
       '@types/node':
         optional: true
+
+  '@isaacs/nonrecursive-glob-match@1.1.0':
+    resolution: {integrity: sha512-GPm/Dbvk5RLmhRnxXIa7nTpK0xtl4E0wj0MslsuNiJ1FIROU+2+9lgUC/dgF7Ey4QCWhfEsgxilMRMCdHPfDfw==}
 
   '@istanbuljs/schema@0.1.6':
     resolution: {integrity: sha512-+Sg6GCR/wy1oSmQDFq4LQDAhm3ETKnorxN+y5nbLULOR3P0c14f2Wurzj3/xqPXtasLFfHd5iRFQ7AJt4KH2cw==}
@@ -3881,6 +3884,9 @@ packages:
   '@rolldown/pluginutils@1.1.0':
     resolution: {integrity: sha512-K+NU2HDCEem4sClgHH4ZZXwdJeNFkJo+hRk479DIwdIviAPN2hFJH1KHHwg8CxHQXvi0M5XY4deTXINfIiSG6w==}
 
+  '@rolldown/pluginutils@1.1.1':
+    resolution: {integrity: sha512-glFIJDvLNDtJhT9qrMFWLPbvS+skxgt4L0K8Ei2YtnhPysAJnsI7nyxSJxKj4ADeKX0OLjC4ntRkwpLOoS3rwA==}
+
   '@rollup/rollup-android-arm-eabi@4.61.1':
     resolution: {integrity: sha512-JnBB8MdXj45cajvTuO5FmPlvFVJRQgvrz1uSEl3NwqFnReAPGwb8EanbGi4z2nRaqLzjJSv5/JmycoTKlRZxHA==}
     cpu: [arm]
@@ -4589,6 +4595,10 @@ packages:
     resolution: {integrity: sha512-1pHv8LX9CpKut1Zp4EXey7Z8OfH11ONNH6Dhi2WDUt31VVZFXZzKwXcysBgqSumFCmR+0dqjMK5v5JiFHzi0+g==}
     engines: {node: 20 || >=22}
 
+  balanced-match@4.0.4:
+    resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
+    engines: {node: 18 || 20 || >=22}
+
   bare-events@2.9.2:
     resolution: {integrity: sha512-AIPKioV7/Y/8KfZ3AAhjPJxLLbY49S64Ym5DakZlUg75qQiTgUq9hEJoEwa4eUezPUlXRy/i5NpsKvo9jgKmoA==}
     peerDependencies:
@@ -4674,6 +4684,10 @@ packages:
 
   brace-expansion@5.0.12:
     resolution: {integrity: sha512-YovQ3rzhaLMIrDjNDMkNS01tea93qhEhG5xy8f6+R0l+dw3Ki+5sCoIoI942iuLZTHWogWktgwVDhU09iNEimQ==}
+    engines: {node: 20 || >=22}
+
+  brace-expansion@5.0.13:
+    resolution: {integrity: sha512-Vh3dmFbc4wZeox7M9I/0L9GfFd83Su4+yCck/OF9Gi/P/dAHn0RT7X4K9R7gMNMhDck3DvhR6QXsnQdjjgwNvQ==}
     engines: {node: 20 || >=22}
 
   braces@3.0.3:
@@ -6107,6 +6121,10 @@ packages:
     resolution: {integrity: sha512-vpLQEs+VLCr1nU0BXS07maYoFwlDAH0gngQuuttxIwutDFEMHq2blX+8vpgxDdK3J1PwjCJiep77OitTZ4Ll1A==}
     engines: {node: 18 || 20 || >=22}
 
+  minimatch@11.0.8:
+    resolution: {integrity: sha512-nFQuYSTVrGvysVBps5Ih+0BdnYFN/Cj3C816r6+p7yK+FHrVLGE4O4N9AFwykrlNlvM2HYt+Rad1Uiro6h88Ig==}
+    engines: {node: 20 || >=22}
+
   minimist@1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
 
@@ -7156,8 +7174,8 @@ packages:
     resolution: {integrity: sha512-gAQ9qrUN/UCypHtGFbbe7Rc/f9bzO88IwrG8TDo/aMKAApKyD6E3W4Cm0EfhfBb6Z6SKt59tTCTfD+n1xmAvMg==}
     engines: {node: '>=16.0.0'}
 
-  tapable@2.3.3:
-    resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
+  tapable@2.3.4:
+    resolution: {integrity: sha512-NHFiWnAbMJxNNpBwiO7jJVGDuqMxT9/oV8v57RR+fgBQShkJil5inGD8/xWy0hjLyHQyX1tu27QANhlz3KBqCg==}
     engines: {node: '>=6'}
 
   tar-fs@3.1.3:
@@ -7726,7 +7744,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
 
-  '@analogjs/vite-plugin-angular@2.9.4(0442d0dcd152d6f92a96f151eaedc022)':
+  '@analogjs/vite-plugin-angular@2.9.7(0442d0dcd152d6f92a96f151eaedc022)':
     dependencies:
       magic-string: 0.30.21
       obug: 2.2.1
@@ -9768,11 +9786,11 @@ snapshots:
 
   '@eslint-community/regexpp@4.12.3': {}
 
-  '@eslint/config-array@0.23.5':
+  '@eslint/config-array@0.23.6':
     dependencies:
       '@eslint/object-schema': 3.0.5
       debug: 4.4.3
-      minimatch: 10.2.6
+      minimatch: 11.0.8
     transitivePeerDependencies:
       - supports-color
 
@@ -10084,6 +10102,8 @@ snapshots:
   '@inquirer/type@4.3.0(@types/node@26.6.6)':
     optionalDependencies:
       '@types/node': 26.6.6
+
+  '@isaacs/nonrecursive-glob-match@1.1.0': {}
 
   '@istanbuljs/schema@0.1.6':
     optional: true
@@ -11353,6 +11373,9 @@ snapshots:
 
   '@rolldown/pluginutils@1.1.0': {}
 
+  '@rolldown/pluginutils@1.1.1':
+    optional: true
+
   '@rollup/rollup-android-arm-eabi@4.61.1':
     optional: true
 
@@ -11462,9 +11485,9 @@ snapshots:
 
   '@secretlint/types@10.2.2': {}
 
-  '@storybook/angular-vite@10.6.7(98bdeea8fe4dda2f08df702bfa75e027)':
+  '@storybook/angular-vite@10.6.7(a672f92aefb92e73f52afe493f3f5fde)':
     dependencies:
-      '@analogjs/vite-plugin-angular': 2.9.4(0442d0dcd152d6f92a96f151eaedc022)
+      '@analogjs/vite-plugin-angular': 2.9.7(0442d0dcd152d6f92a96f151eaedc022)
       '@angular-devkit/architect': 0.2202.7(chokidar@5.0.0)
       '@angular-devkit/core': 22.2.7(chokidar@5.0.0)
       '@angular/animations': 22.2.6(@angular/core@22.2.6(@angular/compiler@22.2.6)(rxjs@7.8.2)(zone.js@0.15.1))
@@ -12133,6 +12156,8 @@ snapshots:
 
   balanced-match@4.0.3: {}
 
+  balanced-match@4.0.4: {}
+
   bare-events@2.9.2: {}
 
   bare-fs@4.8.4:
@@ -12229,6 +12254,10 @@ snapshots:
   brace-expansion@5.0.12:
     dependencies:
       balanced-match: 4.0.3
+
+  brace-expansion@5.0.13:
+    dependencies:
+      balanced-match: 4.0.4
 
   braces@3.0.3:
     dependencies:
@@ -12714,7 +12743,7 @@ snapshots:
   enhanced-resolve@5.27.0:
     dependencies:
       graceful-fs: 4.2.12
-      tapable: 2.3.3
+      tapable: 2.3.4
     optional: true
 
   entities@2.2.0:
@@ -12805,7 +12834,7 @@ snapshots:
     dependencies:
       '@eslint-community/eslint-utils': 4.10.1(eslint@10.14.0(jiti@2.7.0))
       '@eslint-community/regexpp': 4.12.3
-      '@eslint/config-array': 0.23.5
+      '@eslint/config-array': 0.23.6
       '@eslint/config-helpers': 0.7.0
       '@eslint/core': 1.2.1
       '@eslint/plugin-kit': 0.7.3
@@ -13101,7 +13130,7 @@ snapshots:
       html-minifier-terser: 6.1.0
       lodash: 4.18.1
       pretty-error: 4.0.0
-      tapable: 2.3.3
+      tapable: 2.3.4
     optionalDependencies:
       webpack: 5.112.0(esbuild@0.28.2)(postcss@8.5.32)
     optional: true
@@ -13742,7 +13771,7 @@ snapshots:
   mini-css-extract-plugin@2.10.2(webpack@5.112.0(esbuild@0.28.2)(postcss@8.5.32)):
     dependencies:
       schema-utils: 4.8.3(webpack@5.112.0(esbuild@0.28.2)(postcss@8.5.32))
-      tapable: 2.3.3
+      tapable: 2.3.4
       webpack: 5.112.0(esbuild@0.28.2)(postcss@8.5.32)
     optional: true
 
@@ -13753,6 +13782,11 @@ snapshots:
   minimatch@10.2.6:
     dependencies:
       brace-expansion: 5.0.12
+
+  minimatch@11.0.8:
+    dependencies:
+      '@isaacs/nonrecursive-glob-match': 1.1.0
+      brace-expansion: 5.0.13
 
   minimist@1.2.8: {}
 
@@ -14610,7 +14644,7 @@ snapshots:
   rolldown@1.2.15:
     dependencies:
       '@oxc-project/types': 0.155.0
-      '@rolldown/pluginutils': 1.1.0
+      '@rolldown/pluginutils': 1.1.1
     optionalDependencies:
       '@rolldown/binding-android-arm-eabi': 1.2.15
       '@rolldown/binding-android-arm64': 1.2.15
@@ -15098,7 +15132,7 @@ snapshots:
 
   sync-message-port@1.2.0: {}
 
-  tapable@2.3.3:
+  tapable@2.3.4:
     optional: true
 
   tar-fs@3.1.3:
@@ -15457,7 +15491,7 @@ snapshots:
       mime-db: 1.54.0
       minimizer-webpack-plugin: 5.14.0(esbuild@0.28.2)(postcss@8.5.32)(webpack@5.112.0(esbuild@0.28.2)(postcss@8.5.28))
       schema-utils: 4.8.3(webpack@5.112.0(esbuild@0.28.2)(postcss@8.5.32))
-      tapable: 2.3.3
+      tapable: 2.3.4
       watchpack: 2.6.4
       webpack-sources: 3.7.0
     transitivePeerDependencies:
