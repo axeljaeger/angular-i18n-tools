@@ -14,8 +14,8 @@ view is not visible in Explorer, run **Developer: Reload Window** once.
    template, see the diagnostic, and try **Quick Fix → Add missing de
    translation**. The new text is empty for you to translate; undo afterward.
 
-This extension edits message IDs and catalogs. Changing the application language
-is demonstrated separately by the [Storybook language switcher](https://axeljaeger.github.io/angular-i18n-tools/angular/storybook/).
+This extension edits message IDs and catalogs. Use the language switcher in the
+application to see the translations, or try the [Storybook language switcher](https://axeljaeger.github.io/angular-i18n-tools/angular/storybook/).
 
 [Open the other Codespaces demo](https://codespaces.new/axeljaeger/angular-i18n-tools?quickstart=1&devcontainer_path=.devcontainer%2Fdemo-nx%2Fdevcontainer.json).
 Each demo opens one project so copied IDs from the two independent samples are

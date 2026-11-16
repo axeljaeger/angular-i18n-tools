@@ -10,13 +10,65 @@ header {
   margin-bottom: 32px;
 }
 
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0 12px;
+  margin-bottom: 8px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.language-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.language-options a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0 7px;
+  border-radius: 8px;
+  color: #334155;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.language-options a:hover {
+  background: #f1f5f9;
+}
+
+.language-options a[aria-current="page"] {
+  background: #dbeafe;
+  color: #1e40af;
+  box-shadow: inset 0 0 0 1px #93c5fd;
+}
+
+.language-options a:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
 h1 {
   margin: 0 0 8px;
   font-size: 2rem;
 }
 
 .eyebrow {
-  margin: 0 0 8px;
+  margin: 0;
   color: #2563eb;
   font-weight: 700;
   text-transform: uppercase;

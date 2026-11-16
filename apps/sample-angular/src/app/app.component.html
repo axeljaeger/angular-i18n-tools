@@ -1,6 +1,19 @@
 <main class="shell">
   <header>
-    <p class="eyebrow" i18n="Sample app eyebrow@@app.eyebrow">Angular built-in i18n</p>
+    <div class="header-top">
+      <p class="eyebrow" i18n="Sample app eyebrow@@app.eyebrow">Angular built-in i18n</p>
+      <nav class="language-switcher" aria-labelledby="language-label">
+        <span id="language-label" class="visually-hidden" i18n="Language switcher label@@app.language">Language</span>
+        <div class="language-options">
+          @for (language of languages; track language.locale) {
+            <a [href]="language.href" [attr.lang]="language.locale" [attr.hreflang]="language.locale"
+               [attr.aria-current]="currentLocale === language.locale ? 'page' : null">
+              <span aria-hidden="true">{{ language.flag }}</span> {{ language.name }}
+            </a>
+          }
+        </div>
+      </nav>
+    </div>
     <h1 i18n="Application title@@app.title">Localization tooling sample</h1>
     <p>{{ subtitle }}</p>
   </header>
