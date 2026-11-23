@@ -16,23 +16,23 @@
     "test:storybook-static": "node scripts/test-storybook-static.mjs"
   },
   "dependencies": {
-    "@angular/common": "^22.2.6",
-    "@angular/compiler": "^22.2.6",
-    "@angular/core": "^22.2.6",
-    "@angular/localize": "^22.2.6",
-    "@angular/platform-browser": "^22.2.6",
+    "@angular/common": "^22.3.0",
+    "@angular/compiler": "^22.3.0",
+    "@angular/core": "^22.3.0",
+    "@angular/localize": "^22.3.0",
+    "@angular/platform-browser": "^22.3.0",
     "rxjs": "^7.8.0",
     "tslib": "^2.9.1"
   },
   "devDependencies": {
-    "@angular/cli": "^22.2.7",
-    "@angular/compiler-cli": "^22.2.6",
+    "@angular/cli": "^22.3.0",
+    "@angular/compiler-cli": "^22.3.0",
     "@angular-i18n-tools/storybook-addon": "workspace:*",
     "playwright": "^1.65.0",
     "storybook": "10.6.7",
     "typescript": "~6.0.0",
     "@storybook/angular-vite": "10.6.7",
-    "@angular/build": "^22.2.7",
+    "@angular/build": "^22.3.0",
     "@analogjs/vite-plugin-angular": "^2.7.3",
     "vite": "^8.3.7"
   }
